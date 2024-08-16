@@ -1,8 +1,18 @@
-import './App.css';
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import Header from "./layout/Header";
+import Footer from "./layout/Footer";
+import Home from "./components/Home";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
-    <h1>HELLO WORLD</h1>
+      <BrowserRouter>
+        <Header/>
+        <Routes>
+            <Route path="/" element={<Home/>}/>
+        </Routes>
+        <Footer/>
+      </BrowserRouter>
   );
 }
 
