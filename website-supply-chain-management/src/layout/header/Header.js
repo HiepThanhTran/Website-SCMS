@@ -1,47 +1,18 @@
-import { Link, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import "./Header.css";
 import { Navbar, Container, Nav } from "react-bootstrap";
 
 const Header = () => {
-    const location = useLocation();
-
     return (
-        <Navbar expand="lg" className="navbar-custom">
+        <Navbar expand="lg" className="navbar-custom fixed-top">
             <Container>
-                <Link to="/" className="navbar-brand navbar-custom__logo">F&H Logistic</Link>
+                <NavLink to="/" className="navbar-brand navbar-custom__logo">F&H Logistic</NavLink>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ms-auto navbar-custom__menu">
-                        <Link 
-                            to="/" 
-                            className={`nav-link navbar-custom__menu--item ${location.pathname === "/" ? "active" : ""}`}
-                        >
-                            Trang chủ
-                        </Link>
-                        <Link 
-                            to="/about" 
-                            className={`nav-link navbar-custom__menu--item ${location.pathname === "/about" ? "active" : ""}`}
-                        >
-                            Giới thiệu
-                        </Link>
-                        <Link 
-                            to="/order" 
-                            className={`nav-link navbar-custom__menu--item ${location.pathname === "/order" ? "active" : ""}`}
-                        >
-                            Đặt hàng
-                        </Link>
-                        <Link 
-                            to="/tracking" 
-                            className={`nav-link navbar-custom__menu--item ${location.pathname === "/tracking" ? "active" : ""}`}
-                        >
-                            Theo dõi đơn hàng
-                        </Link>
-                        <Link 
-                            to="/login" 
-                            className={`nav-link navbar-custom__menu--item ${location.pathname === "/login" ? "active" : ""}`}
-                        >
-                            Đăng nhập
-                        </Link>
+                        <NavLink exact to="/" activeClassName="active" className="nav-link navbar-custom__menu--item">Trang chủ</NavLink>
+                        <NavLink to="/order" activeClassName="active" className="nav-link navbar-custom__menu--item">Đặt hàng</NavLink>
+                        <NavLink to="/tracking" activeClassName="active" className="nav-link navbar-custom__menu--item">Theo dõi đơn hàng</NavLink>
                     </Nav>
                 </Navbar.Collapse>
             </Container>

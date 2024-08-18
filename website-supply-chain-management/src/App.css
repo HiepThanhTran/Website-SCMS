@@ -16,6 +16,7 @@ html{
 :root{
     --background-white: #fff;
     --text-color: #414656;
-    --primary-color: #114F9E;
+    --text-color-white: #fff;
+    --primary-color: #009970;
     --grey: #ccc;
 }
