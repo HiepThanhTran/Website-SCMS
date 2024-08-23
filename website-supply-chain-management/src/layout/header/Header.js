@@ -1,23 +1,48 @@
-import { NavLink } from "react-router-dom";
+import { useContext } from "react";
+import { Container, Nav, Navbar } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { MyUserContext } from "../../App";
 import "./Header.css";
-import { Navbar, Container, Nav } from "react-bootstrap";
 
 const Header = () => {
-    return (
-        <Navbar expand="lg" className="navbar-custom fixed-top">
-            <Container>
-                <NavLink to="/" className="navbar-brand navbar-custom__logo">F&H Logistic</NavLink>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="ms-auto navbar-custom__menu">
-                        <NavLink exact to="/" activeClassName="active" className="nav-link navbar-custom__menu--item">Trang chủ</NavLink>
-                        <NavLink to="/order" activeClassName="active" className="nav-link navbar-custom__menu--item">Đặt hàng</NavLink>
-                        <NavLink to="/tracking" activeClassName="active" className="nav-link navbar-custom__menu--item">Theo dõi đơn hàng</NavLink>
-                    </Nav>
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
-    );
+  //const nav = useNavigate();
+  const [user] = useContext(MyUserContext);
+  // const logout = () => {
+  //   dispatch({
+  //     type: "logout",
+  //   });
+  //   nav("/");
+  // };
+  return (
+    <Navbar expand="lg" className="bg-body-tertiary">
+      <Container>
+        <Navbar.Brand href="/">React-Bootstrap</Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto mx-auto">
+            <Nav.Link href="/">Home</Nav.Link>
+            <Nav.Link href="/profile">Test Navigate to Profile</Nav.Link>
+            <Nav.Link href="/">Link 2</Nav.Link>
+          </Nav>
+          <Nav>
+            {user === null ? (
+              <>
+                <Nav.Link href="/login">Login</Nav.Link>
+                <Nav.Link href="/register">Register</Nav.Link>
+              </>
+            ) : (
+              <>
+                <Link className="nav-link">
+                  Xin chào, {user?.username || "Nguyen Van A"}
+                </Link>
+              </>
+            )}
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
+  );
 };
 
 export default Header;

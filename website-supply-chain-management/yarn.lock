@@ -3498,6 +3498,11 @@ cookie-signature@1.0.6:
   resolved "https://registry.npmjs.org/cookie-signature/-/cookie-signature-1.0.6.tgz"
   integrity sha512-QADzlaHc8icV8I7vbaJXJwod9HWYp8uCqf1xa4OfNu1T7JVxQIrUgOWtHdNDtPiywmFbiS12VjotIXLrKM3orQ==
 
+cookie@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/cookie/-/cookie-0.3.1.tgz"
+  integrity sha512-+IJOX0OqlHCszo2mBUq+SrEbCj6w7Kpffqx60zYbPTFaO4+yYgRjHwcZNpWvaTylDHaV7PPmBHzSecZiMhtPgw==
+
 cookie@0.6.0:
   version "0.6.0"
   resolved "https://registry.npmjs.org/cookie/-/cookie-0.6.0.tgz"
@@ -8027,6 +8032,14 @@ react-bootstrap@^2.10.4:
     uncontrollable "^7.2.1"
     warning "^4.0.3"
 
+react-cookies@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/react-cookies/-/react-cookies-0.1.1.tgz"
+  integrity sha512-PP75kJ4vtoHuuTdq0TAD3RmlAv7vuDQh9fkC4oDlhntgs9vX1DmREomO0Y1mcQKR9nMZ6/zxoflaMJ3MAmF5KQ==
+  dependencies:
+    cookie "^0.3.1"
+    object-assign "^4.1.1"
+
 react-dev-utils@^12.0.1:
   version "12.0.1"
   resolved "https://registry.npmjs.org/react-dev-utils/-/react-dev-utils-12.0.1.tgz"
@@ -9794,6 +9807,24 @@ webpack-sources@^3.2.3:
     terser-webpack-plugin "^5.3.10"
     watchpack "^2.4.1"
     webpack-sources "^3.2.3"
+
+"website-supply-chain-management@file:":
+  version "0.1.0"
+  resolved "file:"
+  dependencies:
+    "@testing-library/jest-dom" "^5.14.1"
+    "@testing-library/react" "^13.0.0"
+    "@testing-library/user-event" "^13.2.1"
+    axios "^1.7.4"
+    bootstrap "^5.3.3"
+    react "^18.3.1"
+    react-bootstrap "^2.10.4"
+    react-cookies "^0.1.1"
+    react-dom "^18.3.1"
+    react-router-dom "^6.26.1"
+    react-scripts "5.0.1"
+    web-vitals "^2.1.0"
+    website-supply-chain-management "file:"
 
 websocket-driver@^0.7.4, websocket-driver@>=0.5.1:
   version "0.7.4"
