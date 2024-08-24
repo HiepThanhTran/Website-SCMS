@@ -20,6 +20,7 @@ export const authApi = () => {
     },
   });
 };
+
 export default axios.create({
   baseURL: SERVER,
 });

@@ -52,6 +52,10 @@
 }
 
 /* Core value */
+.col-custom .card-corevalue{
+    height: 200px;
+}
+
 .card-corevalue__icon {
     background-color: var(--primary-color);
     height: 60px;
