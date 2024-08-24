@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Header from "./layout/header/Header";
 import Footer from "./layout/footer/Footer";
 import Home from "./components/home/Home";
-import Order from "./components/order/Order";
+import Order from "./components/product/Product";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
