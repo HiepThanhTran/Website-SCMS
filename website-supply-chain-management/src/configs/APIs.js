@@ -12,11 +12,10 @@ export const endpoints = {
 };
 
 export const authApi = () => {
-  // const token = cookie.load("token").trim();
   return axios.create({
     baseURL: SERVER,
     headers: {
-      Authorization: cookie.load("token"),
+      "Authorization": cookie.load("token")
     },
   });
 };

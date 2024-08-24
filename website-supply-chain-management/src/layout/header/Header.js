@@ -18,7 +18,7 @@ const Header = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto mx-auto navbar-custom__menu">
             <Nav.Link as={NavLink} exact to="/" className="navbar-custom__menu--item">Trang chủ</Nav.Link>
-            <Nav.Link as={NavLink} to="/profile" className="navbar-custom__menu--item">Đặt hàng</Nav.Link>
+            <Nav.Link as={NavLink} to="/order" className="navbar-custom__menu--item">Đặt hàng</Nav.Link>
             <Nav.Link as={NavLink} to="/order-details" className="navbar-custom__menu--item">Chi tiết đơn hàng</Nav.Link>
           </Nav>
           
