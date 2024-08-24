@@ -8,7 +8,7 @@ const Header = () => {
   const [user] = useContext(MyUserContext);
 
   return (
-    <Navbar expand="lg" className="navbar-custom">
+    <Navbar expand="lg" className="navbar-custom fixed-top">
       <Container>
         <Navbar.Brand as={NavLink} to="/" className="navbar-custom__logo">
           F&H Logistic

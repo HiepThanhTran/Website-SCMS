@@ -1,8 +1,8 @@
 .navbar-custom{
     background-color: var(--background-white);
-    border-bottom-left-radius: 16px;
-    border-bottom-right-radius: 16px;
-    padding: 0;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    box-shadow: 0 5px 5px 0 rgba(0,0,0,0.1);
 }
 
 .navbar-custom .navbar-custom__logo {
