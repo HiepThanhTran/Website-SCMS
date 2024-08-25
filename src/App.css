@@ -13,6 +13,19 @@ html{
     scroll-behavior: smooth;
 }
 
+li{
+    list-style: none;
+}
+
+a{
+    text-decoration: none;
+}
+
+button{
+    border: none;
+    outline: none;
+}
+
 :root{
     --background-white: #fff;
     --text-color: #414656;

@@ -1,76 +1,9 @@
-/* Đổi tên các class để tránh xung đột */
-.products-page {
-    padding: 5% 0 0;
+.card-product{
+    width: 500px;
+    height: 500px;
 }
 
-.products-card {
-    border: none;
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
-}
-
-.products-card-body {
-    color: #fff;
-    background: #2a2f40;
-}
-
-.products-card-title {
-    font-size: 30px;
-    font-weight: 700;
-    transition: all .5s ease-in-out;
-}
-
-.products-btn-group .products-btn {
-    background: #fe6d38;
-    color: #fff;
-    font-size: 18px;
-    margin-right: 5px;
-    padding: 10px 20px;
-    font-weight: 700;
-    transition: all .6s ease-in;
-}
-
-.products-price {
-    font-size: 25px;
-    font-weight: 900;
-    transition: .6s;
-}
-
-.products-card:hover .products-price {
-    animation: products-pulse .5s ease-in-out infinite;
-}
-
-@keyframes products-pulse {
-    0% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(.95);
-    }
-
-    100% {
-        transform: scale(1);
-    }
-}
-
-.products-card:hover .products-card-title {
-    letter-spacing: 5px;
-    font-weight: 300;
-}
-
-.products-btn:hover {
-    background: #fff;
-    color: #262626;
-}
-
-@media (max-width: 991px) {
-    .products-card {
-        margin-bottom: 30px;
-    }
-}
-
-@media (max-width: 767px) {
-    .products-btn-group .products-btn {
-        font-size: 9px;
-    }
+.card-product__image{
+    width: 100px;
+    height: 100px;
 }

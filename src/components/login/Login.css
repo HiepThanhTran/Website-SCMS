@@ -38,7 +38,7 @@
 
 .password-toggle {
   position: absolute;
-  top: 73%;
+  top: 50%;
   right: 10px;
   transform: translateY(-50%);
   color: #6c757d;
@@ -50,14 +50,12 @@
     color: var(--primary-color);
 }
 
-.form-label {
-    font-weight: 500;
-}
 
 input {
+    height: 50px;
     padding-right: 40px;
 }
 
 button {
-    border: none;
+    height: 40px;
 }
