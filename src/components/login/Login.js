@@ -57,7 +57,6 @@ const Login = () => {
         <h2 className="text-center mb-3 login-title">Đăng nhập</h2>
         <Form onSubmit={login} className="login-form">
           <Form.Group className="mb-3">
-            <Form.Label className="form-label">Tên đăng nhập</Form.Label>
             <Form.Control
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -67,7 +66,6 @@ const Login = () => {
             />
           </Form.Group>
           <Form.Group className="mb-3 position-relative">
-            <Form.Label className="form-label">Mật khẩu</Form.Label>
             <Form.Control
               value={password}
               onChange={(e) => setPassword(e.target.value)}

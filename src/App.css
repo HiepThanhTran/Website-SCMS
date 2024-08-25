@@ -13,11 +13,25 @@ html{
     scroll-behavior: smooth;
 }
 
+li{
+    list-style: none;
+}
+
+a{
+    text-decoration: none;
+}
+
+button{
+    border: none;
+    outline: none;
+}
+
 :root{
     --background-white: #fff;
     --text-color: #414656;
     --text-color-white: #fff;
     --primary-color: #009970;
+    --primary-color-hover: #036e52;
     --sub-color: #14656;
     --grey: #ccc;
 }
