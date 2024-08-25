@@ -1,5 +1,5 @@
 {
-  "name": "website-supply-chain-management",
+  "name": "website-scms",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -15,7 +15,7 @@
     "react-router-dom": "^6.26.1",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.0",
-    "website-supply-chain-management": "file:"
+    "website-scms": "file:"
   },
   "scripts": {
     "start": "react-scripts start",
