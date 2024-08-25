@@ -32,7 +32,7 @@ const Login = () => {
       cookie.save("token", res.data);
 
       setTimeout(async () => {
-        let currentUser = await authApi().get("http://localhost:8080/Supply-Chain-Management/api/users/profile");
+        let currentUser = await authApi().get(endpoints.profile);
         cookie.save("user", currentUser.data);
 
         dispatch({
