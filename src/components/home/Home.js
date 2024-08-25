@@ -93,8 +93,8 @@ const Home = () => {
                 </div>
 
                 <div className="row">
-                    <div className="col-3">
-                        <div className="card text-center border-0 shadow">
+                    <div className="col-3 col-custom">
+                        <div className="card text-center border-0 shadow card-corevalue">
                             <div className="card-corevalue__icon position-absolute start-50 translate-middle rounded-circle p-2">
                                 <i className='bx bx-line-chart'></i>
                             </div>
@@ -108,44 +108,44 @@ const Home = () => {
                         </div>
                     </div>
 
-                    <div className="col-3">
-                        <div className="card text-center border-0 shadow">
+                    <div className="col-3 col-custom">
+                        <div className="card text-center border-0 shadow card-corevalue">
                             <div className="card-corevalue__icon position-absolute start-50 translate-middle rounded-circle p-2">
-                                <i className='bx bx-line-chart'></i>
+                                <i class='bx bxs-happy-alt' ></i>
                             </div>
 
                             <div className="card-corevalue__body mt-5 p-3">
-                                <h5 className="card-corevalue__body--title fw-5">Đổi mới</h5>
+                                <h5 className="card-corevalue__body--title fw-5">Tin cậy</h5>
                                 <p className="card-corevalue__body--text fw-3">
-                                    Luôn cải tiến và áp dụng công nghệ mới để mang lại giải pháp tối ưu nhất.
+                                Đảm bảo chất lượng dịch vụ và độ chính xác trong mọi giao dịch.
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="col-3">
-                        <div className="card text-center border-0 shadow">
+                    <div className="col-3 col-custom">
+                        <div className="card text-center border-0 shadow card-corevalue">
                             <div className="card-corevalue__icon position-absolute start-50 translate-middle rounded-circle p-2">
-                                <i className='bx bx-line-chart'></i>
+                            <i class='bx bx-male-female'></i>
                             </div>
 
                             <div className="card-corevalue__body mt-5 p-3">
-                                <h5 className="card-corevalue__body--title fw-5">Đổi mới</h5>
+                                <h5 className="card-corevalue__body--title fw-5">Khách hàng</h5>
                                 <p className="card-corevalue__body--text fw-3">
-                                    Luôn cải tiến và áp dụng công nghệ mới để mang lại giải pháp tối ưu nhất.
+                                Đặt nhu cầu và sự hài lòng của khách hàng lên hàng đầu.
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="col-3">
-                        <div className="card text-center border-0 shadow">
+                    <div className="col-3 col-custom">
+                        <div className="card text-center border-0 shadow card-corevalue">
                             <div className="card-corevalue__icon position-absolute start-50 translate-middle rounded-circle p-2">
-                                <i className='bx bx-line-chart'></i>
+                                <i class='bx bxs-color'></i>
                             </div>
 
                             <div className="card-corevalue__body mt-5 p-3">
-                                <h5 className="card-corevalue__body--title fw-5">Đổi mới</h5>
+                                <h5 className="card-corevalue__body--title fw-5">Bền vững</h5>
                                 <p className="card-corevalue__body--text fw-3">
                                     Luôn cải tiến và áp dụng công nghệ mới để mang lại giải pháp tối ưu nhất.
                                 </p>

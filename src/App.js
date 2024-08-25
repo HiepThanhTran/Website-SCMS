@@ -1,9 +1,9 @@
 import { createContext, useReducer } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Header from "./layout/header/Header";
 import Footer from "./layout/footer/Footer";
 import Home from "./components/home/Home";
-import Order from "./components/order/Order";
+import Order from "./components/product/Product";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -20,6 +20,7 @@ function App() {
     MyUserReducer,
     cookie.load("user") || null
   );
+
   return (
     <MyUserContext.Provider value={[user, dispatch]}>
       <BrowserRouter>
@@ -31,10 +32,17 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/order" element={<Order />} />
         </Routes>
-        <Footer />
+        <ConditionalFooter />
       </BrowserRouter>
     </MyUserContext.Provider>
   );
+}
+
+function ConditionalFooter() {
+  const location = useLocation();
+  const hideFooter = location.pathname === "/login";
+
+  return hideFooter ? null : <Footer />;
 }
 
 export default App;

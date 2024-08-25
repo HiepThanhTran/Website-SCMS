@@ -1,41 +1,38 @@
 import { useContext } from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { MyUserContext } from "../../App";
 import "./Header.css";
 
 const Header = () => {
-  //const nav = useNavigate();
   const [user] = useContext(MyUserContext);
-  // const logout = () => {
-  //   dispatch({
-  //     type: "logout",
-  //   });
-  //   nav("/");
-  // };
+
   return (
-    <Navbar expand="lg" className="bg-body-tertiary">
+    <Navbar expand="lg" className="navbar-custom fixed-top">
       <Container>
-        <Navbar.Brand href="/">React-Bootstrap</Navbar.Brand>
+        <Navbar.Brand as={NavLink} to="/" className="navbar-custom__logo">
+          F&H Logistic
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto mx-auto">
-            <Nav.Link href="/">Home</Nav.Link>
-            <Nav.Link href="/profile">Test Navigate to Profile</Nav.Link>
-            <Nav.Link href="/">Link 2</Nav.Link>
+          <Nav className="me-auto mx-auto navbar-custom__menu">
+            <Nav.Link as={NavLink} exact to="/" className="navbar-custom__menu--item">Trang chủ</Nav.Link>
+            <Nav.Link as={NavLink} to="/order" className="navbar-custom__menu--item">Đặt hàng</Nav.Link>
+            <Nav.Link as={NavLink} to="/order-details" className="navbar-custom__menu--item">Chi tiết đơn hàng</Nav.Link>
           </Nav>
-          <Nav>
+          
+          <Nav className="navbar-custom__menu">
             {user === null ? (
               <>
-                <Nav.Link href="/login">Login</Nav.Link>
-                <Nav.Link href="/register">Register</Nav.Link>
+                <Nav.Link as={NavLink} to="/login" className="navbar-custom__menu--item">Đăng nhập</Nav.Link>
+                <Nav.Link as={NavLink} to="/register" className="navbar-custom__menu--item">Đăng ký</Nav.Link>
               </>
             ) : (
               <>
-                <Link className="nav-link">
+                <NavLink className="nav-link" to="/profile">
                   Xin chào, {user?.username || "Nguyen Van A"}
-                </Link>
+                </NavLink>
               </>
             )}
           </Nav>

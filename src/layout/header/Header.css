@@ -1,0 +1,53 @@
+.navbar-custom{
+    background-color: var(--background-white);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    box-shadow: 0 5px 5px 0 rgba(0,0,0,0.1);
+}
+
+.navbar-custom .navbar-custom__logo {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+.navbar-custom .navbar-custom__logo:hover {
+    color: var(--primary-color);
+}
+
+.navbar-custom .navbar-custom__menu .navbar-custom__menu--item {
+    position: relative;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+.navbar-custom .navbar-custom__menu .navbar-custom__menu--item::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: width 0.3s;
+}
+
+.navbar-custom .navbar-custom__menu .navbar-custom__menu--item:hover {
+    color: var(--primary-color);
+}
+
+.navbar-custom .navbar-custom__menu .navbar-custom__menu--item:hover::after {
+    width: 60%;
+}
+
+.navbar-custom .navbar-custom__menu .navbar-custom__menu--item.active {
+    color: var(--primary-color);
+}
+
+.navbar-custom .navbar-custom__menu .navbar-custom__menu--item.active::after {
+    width: 60%;
+}

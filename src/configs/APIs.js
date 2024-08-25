@@ -9,17 +9,18 @@ export const endpoints = {
   register: `${SERVER_CONTEXT}/api/users/register`,
   getCurrentUser: `${SERVER_CONTEXT}/api/users/profile`,
   updateProfile: `${SERVER_CONTEXT}/api/users/profile/update`,
+  products : `${SERVER_CONTEXT}/api/products`,
 };
 
 export const authApi = () => {
-  // const token = cookie.load("token").trim();
   return axios.create({
     baseURL: SERVER,
     headers: {
-      Authorization: cookie.load("token"),
+      "Authorization": cookie.load("token")
     },
   });
 };
+
 export default axios.create({
   baseURL: SERVER,
 });
