@@ -14,7 +14,13 @@ const Product = () => {
     const loadProduct = async () => {
         setLoading(true);
         try {
-            let res = await APIs.get(`${endpoints.products}?page=${page}&size=${size}&q=${q}`);
+            let params = new URLSearchParams({
+                page: page,
+                size: size,
+                q: q
+            }).toString();
+
+            let res = await APIs.get(`${endpoints.products}?${params}`);
             setProducts(res.data);
         } catch (error) {
             console.error('Failed to fetch products:', error);
@@ -28,6 +34,7 @@ const Product = () => {
     }, [page, size, q]);
 
     const handleSearch = (event) => {
+        event.preventDefault();
         setQ(event.target.value);
     };
 
