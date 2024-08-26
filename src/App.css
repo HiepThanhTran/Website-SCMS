@@ -1,37 +1,37 @@
 /* Font */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 
 /* Reset CSS */
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Roboto", sans-serif;
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: "Roboto", sans-serif;
 }
 
-html{
-    scroll-behavior: smooth;
+html {
+	scroll-behavior: smooth;
 }
 
-li{
-    list-style: none;
+li {
+	list-style: none;
 }
 
-a{
-    text-decoration: none;
+a {
+	text-decoration: none;
 }
 
-button{
-    border: none;
-    outline: none;
+button {
+	border: none;
+	outline: none;
 }
 
-:root{
-    --background-white: #fff;
-    --text-color: #414656;
-    --text-color-white: #fff;
-    --primary-color: #009970;
-    --primary-color-hover: #036e52;
-    --sub-color: #14656;
-    --grey: #ccc;
+:root {
+	--background-white: #fff;
+	--text-color: #414656;
+	--text-color-white: #fff;
+	--primary-color: #009970;
+	--primary-color-hover: #036e52;
+	--sub-color: #14656;
+	--grey: #ccc;
 }
