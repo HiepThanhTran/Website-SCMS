@@ -1,5 +1,6 @@
 .product {
     margin: 100px 0 50px 0;
+    position: relative;
 }
 
 .product__title {
