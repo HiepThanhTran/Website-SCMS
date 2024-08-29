@@ -1,500 +1,310 @@
-import { useContext, useRef, useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import "./Profile.css";
+import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { authApi, endpoints } from "../../configs/APIs";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import Swal from "sweetalert2";
+import Loading from "../../layout/loading/Loading";
 import { useNavigate } from "react-router-dom";
-import { MyUserContext } from "../../App";
-import APIs, { endpoints } from "../../configs/APIs";
 
 const Profile = () => {
-	//   const [userRole, setUserRole] = useState("ROLE_CUSTOMER");
-	const [user, dispatch] = useContext(MyUserContext);
-	const [previewImage, setPreviewImage] = useState(null);
-	const nav = useNavigate();
-	const [error, setError] = useState({});
-	const [profile, setProfile] = useState({
-		firstName: "",
-		middleName: "",
-		lastName: "",
-		email: "",
-		userRole: "",
-		username: "",
-		password: "",
-		address: "",
-		phone: "",
-		contactInfo: "",
-		name: "",
-		avatar: "https://e7.pngegg.com/pngimages/753/432/png-clipart-user-profile-2018-in-sight-user-conference-expo-business-default-business-angle-service.png",
-	});
-	const avatar = useRef(null);
-	//   if (user === null) {
-	//     nav("/login");
-	//   }
+    const navigate = useNavigate();
 
-	//   useEffect(() => {
-	// const fetchProfile = async () => {
-	//   let endpoint = endpoints.register;
-	//   await APIs.get(`${endpoint}${id}`)
-	//     .then((res) =>
-	//       setProfile((preValues) => ({
-	//         ...preValues,
-	//         id: res.data.id,
-	//         name: res.data.name,
-	//         phone: res.data.phone,
-	//         cccd: res.data.cccd,
-	//         email: res.data.email,
-	//         birth: res.data.birth,
-	//         gender: res.data.gender,
-	//         address: res.data.address,
-	//         avatar: res.data.avatar,
-	//       }))
-	//     )
-	//     .catch((error) => {
-	//       console.error("Error fetching data:", error);
-	//     });
-	// };
-	// fetchProfile();
-	//   }, [id]);
-	const change = (evt, field) => {
-		setProfile((current) => {
-			return { ...current, [field]: evt.target.value };
-		});
-	};
+    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
+    const [avatar, setAvatar] = useState(null);
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [role, setRole] = useState("");
+    const [confirm, setConfirm] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [isConfirmed, setIsConfirmed] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-	const handleUpdateProfile = async (e) => {
-		e.preventDefault();
+    const loadProfile = async () => {
+        try {
+            let res = await authApi().get(endpoints.profile);
+            setEmail(res.data.email);
+            setUsername(res.data.username);
+            setAvatar(res.data.avatar);
+            setRole(res.data.role);
+            const isConfirmed = res.data.isConfirm;
+            setConfirm(isConfirmed === false ? "Chưa xác thực" : "Đã xác thực");
+            setIsConfirmed(isConfirmed);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-		const processUser = async () => {
-			let form = new FormData();
-			for (let field in profile) {
-				if (field !== "avatar") {
-					form.append(field, profile[field]);
-				}
-			}
-			form.append("avatar", avatar.current.files[0] || profile.avatar);
-			let res = await APIs.post(endpoints.updateProfile, form);
-			if (res.status === 200) {
-				alert("Cập nhật thành công");
-			}
-		};
-		const messageError = {};
-		if (!profile.firstName.trim()) {
-			messageError.firstName = "Họ không được bỏ trống";
-		}
-		if (!profile.middleName.trim()) {
-			messageError.middleName = "Tên đệm không được bỏ trống";
-		}
-		if (!profile.lastName.trim()) {
-			messageError.lastName = "Tên không được bỏ trống";
-		}
-		if (!profile.email.trim()) {
-			messageError.email = "Email không được bỏ trống";
-		}
-		if (!profile.username.trim()) {
-			messageError.username = "Tên đăng nhập không được bỏ trống";
-		}
-		if (!profile.password.trim()) {
-			messageError.password = "Mật khẩu không được bỏ trống";
-		}
-		if (!profile.address.trim()) {
-			messageError.address = "Địa chỉ không được bỏ trống";
-		}
-		if (!profile.phone.trim()) {
-			messageError.phone = "Số điện thoại không được bỏ trống";
-		}
-		// if (profile.confirmPassword !== profile.password) {
-		//   messageError.match = "Mật khẩu không trùng khớp";
-		// }
-		if (profile.userRole === "ROLE_SUPPLIER") {
-			if (!profile.name.trim()) {
-				messageError.name = "Tên nhà cung cấp không được bỏ trống";
-			}
-			if (!profile.contactInfo.trim()) {
-				messageError.contactInfo =
-					"Thông tin liên hệ không được bỏ trống";
-			}
-		}
-		setError(messageError);
+    useEffect(() => {
+        loadProfile();
+    }, []);
 
-		if (Object.keys(messageError).length > 0) {
-			return;
-		}
-		// const messageError = {};
-		// if (!profile.name.trim()) {
-		//   messageError.name = "Họ và tên không được bỏ trống";
-		// } else if (profile.name.length < 3) {
-		//   messageError.name = "Họ và tên tối thiểu 3 ký tự";
-		// }
+    const handleAvatarChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setAvatar(file);
+        }
+    };
 
-		// if (!profile.phone.trim()) {
-		//   messageError.phone = "Số điện thoại không được để trống";
-		// } else if (profile.phone.length !== 10) {
-		//   messageError.phone = "Số điện thoại phải đúng 10 ký tự";
-		// }
+    const handleUpdateProfile = async () => {
+        try {
+            const formData = new FormData();
+            formData.append("email", email);
+            formData.append("username", username);
+            formData.append("role", role);
+            formData.append("confirm", confirm);
 
-		// if (profile.cccd.length !== 12) {
-		//   messageError.cccd = "Căn cước công dân phải đủ 12 ký tự";
-		// }
+            if (avatar instanceof File) {
+                formData.append("avatar", avatar);
+            }
 
-		// if (!profile.email.trim()) {
-		//   messageError.email = "Địa chỉ email không được để trống";
-		// } else if (!validateEmail(profile.email)) {
-		//   messageError.email = "Vui lòng nhập đúng định dạng email";
-		// }
+            const res = await authApi().post(endpoints.updateProfile, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
 
-		// if (!profile.address.trim()) {
-		//   messageError.gender = "Địa chỉ không được để trống";
-		// } else if (profile.address.length < 40) {
-		//   messageError.address = "Vui lòng nhập địa chỉ chi tiết";
-		// }
-		// setError(messageError);
+            if (res.status === 200) {
+                Swal.fire({
+                    title: "Cập nhật thành công!",
+                    text: "Thông tin hồ sơ của bạn đã được cập nhật.",
+                    icon: "success",
+                    confirmButtonText: "Đóng",
+                    customClass: {
+                        confirmButton: 'swal2-confirm'
+                    }
+                }).then(() => {
+                    navigate('/');
+                });
+            }
+        } catch (err) {
+            console.error(err);
+            Swal.fire({
+                title: "Cập nhật thất bại",
+                text: "Đã xảy ra lỗi khi cập nhật hồ sơ.",
+                icon: "error",
+                confirmButtonText: "Đóng",
+                customClass: {
+                    confirmButton: 'swal2-confirm'
+                }
+            });
+        }
+    };
 
-		// if (Object.keys(messageError).length === 0) {
-		//   await processUser();
-		// }
-	};
-	//   const validateEmail = (email) => {
-	//     // Biểu thức chính quy để kiểm tra địa chỉ email
-	//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-	//     return emailRegex.test(email);
-	//   };
-	const handleImageChange = (e) => {
-		const file = e.target.files[0];
-		if (file) {
-			const reader = new FileReader();
 
-			reader.onload = (e) => {
-				setPreviewImage(e.target.result);
-			};
+    const handleConfirmAccount = async () => {
+        if (password !== confirmPassword) {
+            Swal.fire({
+                title: "Lỗi",
+                text: "Mật khẩu và xác nhận mật khẩu không khớp!",
+                icon: "error",
+                confirmButtonText: "Đóng",
+                customClass: {
+                    confirmButton: 'swal2-confirm'
+                }
+            });
+            return;
+        }
 
-			reader.readAsDataURL(file);
-		}
-	};
+        try {
+            setLoading(true);
+            const res = await authApi().post(endpoints.confirm);
+            if (res.status === 200) {
+                Swal.fire({
+                    title: "Xác thực thành công",
+                    text: "Tài khoản của bạn đã được xác thực.",
+                    icon: "success",
+                    confirmButtonText: "Đóng",
+                    customClass: {
+                        confirmButton: 'swal2-confirm'
+                    }
+                });
+                setConfirm("Đã xác thực");
+                setIsConfirmed(true);
+            }
+        } catch (err) {
+            console.error(err);
+            Swal.fire({
+                title: "Xác thực thất bại",
+                text: "Đã xảy ra lỗi khi xác thực tài khoản.",
+                icon: "error",
+                confirmButtonText: "Đóng",
+                customClass: {
+                    confirmButton: 'swal2-confirm'
+                }
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
-	return (
-		<>
-			<Container style={{ height: "100%", marginTop: "100px" }}>
-				<div className="shadow-lg p-3 mb-3 bg-body rounded gap-3">
-					<Row>
-						<Col sm={3}>
-							<div className="d-flex flex-column align-items-center justify-content-center">
-								<img
-									className="rounded-circle shadow"
-									src={previewImage || profile.avatar}
-									style={{
-										width: 190,
-										height: 190,
-										objectFit: "cover",
-									}}
-									alt="Ảnh tạm thời"
-								/>
-								<label
-									htmlFor="avatar"
-									type="button"
-									className="btn btn-secondary mt-3">
-									Chọn ảnh
-								</label>
-								<Form.Control
-									id="avatar"
-									type="file"
-									style={{ display: "none" }}
-									onChange={handleImageChange}
-									ref={avatar}
-									accept=".jpg,.jpeg,.png"
-								/>
-							</div>
-						</Col>
+    return (
+        <Container className="profile-container">
+            {loading ? (
+                <Loading />
+            ) : (
+                <div className="shadow-lg p-3 mb-3 bg-body rounded gap-3">
+                    <Row>
+                        <Col sm={3}>
+                            <div className="d-flex flex-column align-items-center justify-content-center">
+                                <img
+                                    className="rounded-circle shadow"
+                                    style={{
+                                        width: 190,
+                                        height: 190,
+                                        objectFit: "cover",
+                                    }}
+                                    src={
+                                        avatar instanceof File
+                                            ? URL.createObjectURL(avatar)
+                                            : avatar
+                                                ? avatar
+                                                : "https://e7.pngegg.com/pngimages/753/432/png-clipart-user-profile-2018-in-sight-user-conference-expo-business-default-business-angle-service.png"
+                                    }
+                                    alt="Avatar người dùng"
+                                />
+                                <label
+                                    htmlFor="avatar"
+                                    type="button"
+                                    className="btn btn-secondary mt-3"
+                                >
+                                    Chọn ảnh
+                                </label>
+                                <Form.Control
+                                    id="avatar"
+                                    type="file"
+                                    style={{ display: "none" }}
+                                    accept=".jpg,.jpeg,.png"
+                                    onChange={handleAvatarChange}
+                                />
+                            </div>
+                        </Col>
 
-						<Col sm={9}>
-							<div>
-								<h3
-									style={{ background: "#009970" }}
-									className="text-white p-3">
-									Thông tin cá nhân
-								</h3>
-								<div>
-									<Form>
-										<Row>
-											<Col md={4}>
-												<Form.Group className="mb-3">
-													<Form.Label>Họ</Form.Label>
-													<Form.Control
-														value={profile.name}
-														onChange={(e) =>
-															change(
-																e,
-																"firstName"
-															)
-														}
-														type="text"
-														placeholder="Họ"
-													/>
-													{error.firstName && (
-														<span className="text-danger">
-															{error.firstName}
-														</span>
-													)}
-												</Form.Group>
-											</Col>
-											<Col md={4}>
-												<Form.Group className="mb-3">
-													<Form.Label>
-														Tên đệm
-													</Form.Label>
-													<Form.Control
-														value={
-															profile.middleName
-														}
-														onChange={(e) =>
-															change(
-																e,
-																"middleName"
-															)
-														}
-														type="text"
-														placeholder="Tên đệm"
-													/>
-													{error.middleName && (
-														<span className="text-danger">
-															{error.middleName}
-														</span>
-													)}
-												</Form.Group>
-											</Col>
-											<Col md={4}>
-												<Form.Group className="mb-3">
-													<Form.Label>Tên</Form.Label>
-													<Form.Control
-														value={profile.lastName}
-														onChange={(e) =>
-															change(
-																e,
-																"lastName"
-															)
-														}
-														type="text"
-														placeholder="Tên"
-													/>
-													{error.lastName && (
-														<span className="text-danger">
-															{error.lastName}
-														</span>
-													)}
-												</Form.Group>
-											</Col>
-										</Row>
-										<Row>
-											<Col md={6}>
-												<Form.Group className="mb-3">
-													<Form.Label>
-														Email (
-														<span className="text-danger">
-															*
-														</span>
-														)
-													</Form.Label>
-													<Form.Control
-														value={profile.email}
-														onChange={(e) =>
-															change(e, "email")
-														}
-														type="email"
-														placeholder="Email"
-													/>
-													{error.email && (
-														<span className="text-danger">
-															{error.email}
-														</span>
-													)}
-												</Form.Group>
-											</Col>
-											<Col md={6}>
-												<Form.Group className="mb-3">
-													<Form.Label>
-														Vai trò người dùng (
-														<span className="text-danger">
-															*
-														</span>
-														)
-													</Form.Label>
-													<Form.Select
-														value={profile.userRole}
-														onChange={(e) =>
-															change(
-																e,
-																"userRole"
-															)
-														}
-														disabled>
-														<option value="ROLE_CUSTOMER">
-															Khách hàng
-														</option>
-														<option value="ROLE_SUPPLIER">
-															Nhà cung cấp
-														</option>
-														{/* <option value="ROLE_DISTRIBUTOR">Nhà phân phối</option>
-                          <option value="ROLE_MANUFACTURER">Nhà sản xuất</option> */}
-														<option value="ROLE_SHIPPER">
-															Người giao hàng
-														</option>
-													</Form.Select>
-												</Form.Group>
-											</Col>
-										</Row>
+                        <Col sm={9}>
+                            <div className="profile-content">
+                                <h3 className="text-white p-3 product-content__title">Thông tin chung</h3>
+                            </div>
 
-										<Form.Group className="mb-3">
-											<Form.Label>
-												Tên đăng nhập (
-												<span className="text-danger">
-													*
-												</span>
-												)
-											</Form.Label>
-											<Form.Control
-												value={profile.username}
-												onChange={(e) =>
-													change(e, "username")
-												}
-												type="text"
-												placeholder="Tên đăng nhập"
-											/>
-											{error.username && (
-												<span className="text-danger">
-													{error.username}
-												</span>
-											)}
-										</Form.Group>
-										<Form.Group className="mb-3">
-											<Form.Label>
-												Mật khẩu (
-												<span className="text-danger">
-													*
-												</span>
-												)
-											</Form.Label>
-											<Form.Control
-												value={profile.password}
-												onChange={(e) =>
-													change(e, "password")
-												}
-												type="password"
-												placeholder="Mật khẩu"
-											/>
-											{error.password && (
-												<span className="text-danger">
-													{error.password}
-												</span>
-											)}
-										</Form.Group>
+                            {!isConfirmed && (
+                                <Button
+                                    className="mb-3"
+                                    variant="success"
+                                    onClick={handleConfirmAccount}
+                                    style={{
+                                        backgroundColor: 'var(--primary-color)',
+                                        border: 'none',
+                                        color: 'white',
+                                        fontWeight: 500
+                                    }}
+                                >
+                                    Xác thực tài khoản
+                                </Button>
+                            )}
 
-										<Form.Group className="mb-3">
-											<Form.Label>
-												Địa chỉ(
-												<span className="text-danger">
-													*
-												</span>
-												)
-											</Form.Label>
-											<Form.Control
-												value={profile.address}
-												onChange={(e) =>
-													change(e, "address")
-												}
-												type="text"
-												placeholder="Địa chỉ"
-											/>
-											{error.address && (
-												<span className="text-danger">
-													{error.address}
-												</span>
-											)}
-										</Form.Group>
-										<Form.Group className="mb-3">
-											<Form.Label>
-												Số điện thoại(
-												<span className="text-danger">
-													*
-												</span>
-												)
-											</Form.Label>
-											<Form.Control
-												value={profile.phone}
-												onChange={(e) =>
-													change(e, "phone")
-												}
-												type="text"
-												placeholder="Số điện thoại"
-											/>
-											{error.phone && (
-												<span className="text-danger">
-													{error.phone}
-												</span>
-											)}
-										</Form.Group>
-										{profile.userRole ===
-											"ROLE_SUPPLIER" && (
-											<>
-												<Form.Group className="mb-3">
-													<Form.Label>
-														Thông tin liên hệ
-													</Form.Label>
-													<Form.Control
-														value={
-															profile.contactInfo
-														}
-														onChange={(e) =>
-															change(
-																e,
-																"contactInfo"
-															)
-														}
-														type="text"
-														placeholder="Thông tin liên hệ"
-													/>
-													{error.contactInfo && (
-														<span className="text-danger">
-															{error.contactInfo}
-														</span>
-													)}
-												</Form.Group>
-												<Form.Group className="mb-3">
-													<Form.Label>
-														Tên nhà cung cấp(
-														<span className="text-danger">
-															*
-														</span>
-														)
-													</Form.Label>
-													<Form.Control
-														value={profile.name}
-														onChange={(e) =>
-															change(e, "name")
-														}
-														type="text"
-														placeholder="Tên nhà cung cấp"
-													/>
-													{error.name && (
-														<span className="text-danger">
-															{error.name}
-														</span>
-													)}
-												</Form.Group>
-											</>
-										)}
+                            <div className="profile-input">
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Email</Form.Label>
+                                    <Form.Control
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                </Form.Group>
 
-										<Form.Group className="mb-3 d-flex justify-content-end">
-											<Button
-												onClick={handleUpdateProfile}>
-												Cập nhật
-											</Button>
-										</Form.Group>
-									</Form>
-								</div>
-							</div>
-						</Col>
-					</Row>
-				</div>
-			</Container>
-		</>
-	);
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Username</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                    />
+                                </Form.Group>
+
+                                <Row className="position-relative">
+                                    <Col md={6}>
+                                        <Form.Group className="mb-3 position-relative">
+                                            <Form.Label>Mật khẩu mới</Form.Label>
+                                            <Form.Control
+                                                value={password}
+                                                type={showPassword ? "text" : "password"}
+                                                placeholder="Mật khẩu"
+                                                required
+                                                onChange={(e) => setPassword(e.target.value)}
+                                            />
+                                            <Button
+                                                variant="link"
+                                                className="password-toggle-profile"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            >
+                                                {showPassword ? <FaEyeSlash style={{ color: "var(--primary-color)" }} /> : <FaEye style={{ color: "var(--primary-color)" }} />}
+                                            </Button>
+                                        </Form.Group>
+                                    </Col>
+
+                                    <Col md={6}>
+                                        <Form.Group className="mb-3 position-relative">
+                                            <Form.Label>Xác nhận mật khẩu</Form.Label>
+                                            <Form.Control
+                                                value={confirmPassword}
+                                                type={showConfirmPassword ? "text" : "password"}
+                                                placeholder="Xác nhận mật khẩu"
+                                                required
+                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                            />
+                                            <Button
+                                                variant="link"
+                                                className="password-toggle-profile"
+                                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            >
+                                                {showConfirmPassword ? <FaEyeSlash style={{ color: "var(--primary-color)" }} /> : <FaEye style={{ color: "var(--primary-color)" }} />}
+                                            </Button>
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Vai trò</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        value={role}
+                                        onChange={(e) => setRole(e.target.value)}
+                                    />
+                                </Form.Group>
+
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Trạng thái xác thực</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        value={confirm}
+                                        readOnly
+                                    />
+                                </Form.Group>
+
+                                <div className="text-center">
+                                    <Button
+                                        variant="primary"
+                                        onClick={handleUpdateProfile}
+                                        style={{
+                                            backgroundColor: 'var(--primary-color)',
+                                            border: 'none',
+                                            color: 'white',
+                                            fontWeight: 500
+                                        }}
+                                    >
+                                        Cập nhật
+                                    </Button>
+                                </div>
+                            </div>
+                        </Col>
+                    </Row>
+                </div>
+            )}
+        </Container>
+    );
 };
 
 export default Profile;

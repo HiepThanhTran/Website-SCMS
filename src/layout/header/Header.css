@@ -51,3 +51,49 @@
 .navbar-custom .navbar-custom__menu .navbar-custom__menu--item.active::after {
 	width: 60%;
 }
+
+.name-user {
+	font-size: 1.125rem;
+	font-weight: 500;
+	color: var(--text-color);
+}	
+
+.name-user:hover {
+	color: var(--primary-color);
+}
+
+.name-user-wrapper {
+	position: relative;
+	display: inline-block;
+}
+
+.user-dropdown {
+	display: none;
+	position: absolute;
+	top: 100%;
+	right: 4px;
+	background-color: var(--background-white);
+	box-shadow: 0 4px 5px rgba(0, 0, 0, 0.8);
+	border-radius: 4px;
+	padding: 0.5rem 0;
+	z-index: 1000;
+}
+
+.user-dropdown .dropdown-item {
+	padding: 10px;
+	font-size: 1rem;
+	font-weight: 500;
+	color: var(--text-color);
+	text-decoration: none;
+	display: block;
+	white-space: nowrap;
+	transition: background-color 0.2s ease;
+}
+
+.user-dropdown .dropdown-item:hover {
+	color: var(--primary-color);
+}
+
+.name-user-wrapper:hover .user-dropdown {
+	display: block;
+}

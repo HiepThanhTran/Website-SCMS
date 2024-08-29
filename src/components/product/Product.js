@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Spinner from "react-bootstrap/Spinner";
 import APIs, { endpoints } from "../../configs/APIs";
 import productDefaultImage from "../../images/Product/product_default.jpg";
 import "./Product.css";
+import cookie from "react-cookies";
+import { MyCartContext } from "../../App";
 
 const Product = () => {
 	const [products, setProducts] = useState([]);
@@ -10,6 +12,7 @@ const Product = () => {
 	const [size, setSize] = useState(8);
 	const [loading, setLoading] = useState(true);
 	const [q, setQ] = useState("");
+	const [, dispatch] = useContext(MyCartContext);
 
 	const loadProduct = async () => {
 		setLoading(true);
@@ -17,7 +20,6 @@ const Product = () => {
 			let params = new URLSearchParams({
 				page: page,
 				size: size,
-				q: q,
 			}).toString();
 
 			let res = await APIs.get(`${endpoints.products}?${params}`);
@@ -31,7 +33,7 @@ const Product = () => {
 
 	useEffect(() => {
 		loadProduct();
-	}, [page, size, q]);
+	}, [page, size]);
 
 	const handleSearch = (event) => {
 		event.preventDefault();
@@ -44,6 +46,31 @@ const Product = () => {
 
 	const handlePrevPage = () => {
 		setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));
+	};
+
+	const addToCart = (product) => {
+		let cart = cookie.load("cart") || null;
+		if (cart === null) {
+			cart = {};
+		}
+
+		if (product.id in cart) {
+			cart[product.id]["quantity"]++;
+		} else {
+			cart[product.id] = {
+				id: product.id,
+				name: product.name,
+				description: product.description,
+				price: product.price,
+				quantity: 1,
+			};
+		}
+
+		cookie.save("cart", cart);
+
+		dispatch({
+			type: "update",
+		});
 	};
 
 	if (loading) {
@@ -102,7 +129,9 @@ const Product = () => {
 								<button className="card-product__button--detail">
 									Xem chi tiết
 								</button>
-								<button className="card-product__button--order">
+								<button
+									className="card-product__button--order"
+									onClick={() => addToCart(product)}>
 									Đặt hàng
 								</button>
 							</div>

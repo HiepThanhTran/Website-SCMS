@@ -58,3 +58,9 @@ input {
 button {
 	height: 40px;
 }
+
+.swal2-confirm.swal2-styled {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #fff !important;
+}
