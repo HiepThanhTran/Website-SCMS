@@ -24,7 +24,12 @@ const Profile = () => {
         avatar: user?.avatar || ""
     });
 
-    console.log(profile);
+    const change = (evt, field) => {
+        setProfile((current) => {
+            return { ...current, [field]: evt.target.value };
+        });
+    };
+
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -43,14 +48,14 @@ const Profile = () => {
             if (res.status === 200) {
                 Swal.fire({
                     title: "Xác thực thành công",
-                    text: "Tài khoản của bạn đã được xác thực.",
+                    text: "Tài khoản của bạn đã được xác nhận.",
                     icon: "success",
                     confirmButtonText: "Đóng",
                     customClass: {
                         confirmButton: 'swal2-confirm'
                     }
                 });
-                dispatch({ type: "update", payload: { ...user, isConfirmed: true } });
+                dispatch({ type: "update", payload: { ...user, isConfirm: true } });
             }
         } catch (err) {
             const errorResponse = err.response?.data;
@@ -72,9 +77,55 @@ const Profile = () => {
         }
     };
 
-    const handleUpdateProfile = (e) => {
-        try {
+    const handleUpdateProfile = async (e) => {
+        e.preventDefault();
 
+        const formData = new FormData();
+        formData.append("email", profile.email);
+        formData.append("username", profile.username);
+
+        if (profile.password) {
+            if (profile.password !== confirmPassword) {
+                Swal.fire({
+                    title: "Lỗi",
+                    text: "Mật khẩu xác nhận không khớp!",
+                    icon: "error",
+                    confirmButtonText: "Đóng",
+                    customClass: {
+                        confirmButton: 'swal2-confirm'
+                    }
+                });
+                return;
+            }
+            formData.append("password", profile.password);
+        }
+
+        if (typeof profile.avatar !== "string") {
+            formData.append("avatar", profile.avatar);
+        }
+
+        try {
+            setLoading(true);
+            const res = await authApi().post(endpoints.updateProfile, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            if (res.status === 200) {
+                Swal.fire({
+                    title: "Cập nhật thành công",
+                    text: "Hồ sơ của bạn đã được cập nhật. Bạn sẽ được đăng xuất ngay bây giờ.",
+                    icon: "success",
+                    confirmButtonText: "Đóng",
+                    customClass: {
+                        confirmButton: 'swal2-confirm'
+                    }
+                }).then(() => {
+                    dispatch({ type: "logout" });
+                    nav("/login");
+                });
+            }
         } catch (err) {
             const errorResponse = err.response?.data;
             const errorMessage = errorResponse && Array.isArray(errorResponse) && errorResponse.length > 0
@@ -90,6 +141,8 @@ const Profile = () => {
                     confirmButton: 'swal2-confirm'
                 }
             });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -131,7 +184,7 @@ const Profile = () => {
                             <h3 className="text-white p-3 product-content__title">Thông tin chung</h3>
                         </div>
 
-                        {!user.isConfirmed && (
+                        {!user.isConfirm && (
                             <Button
                                 className="mb-3"
                                 variant="success"
@@ -154,7 +207,7 @@ const Profile = () => {
                                 <Form.Control
                                     type="email"
                                     value={profile.email}
-                                    readOnly
+                                    onChange={(e) => change(e, "email")}
                                 />
                             </Form.Group>
 
@@ -164,7 +217,7 @@ const Profile = () => {
                                     type="text"
                                     name="username"
                                     value={profile.username}
-                                    readOnly
+                                    onChange={(e) => change(e, "username")}
                                 />
                             </Form.Group>
 
@@ -177,6 +230,7 @@ const Profile = () => {
                                             placeholder="Mật khẩu"
                                             name="password"
                                             value={profile.password}
+                                            onChange={(e) => change(e, "password")}
                                         />
                                         <Button
                                             variant="link"
@@ -195,6 +249,7 @@ const Profile = () => {
                                             type={showConfirmPassword ? "text" : "password"}
                                             placeholder="Xác nhận mật khẩu"
                                             value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
                                         />
                                         <Button
                                             variant="link"
@@ -217,7 +272,7 @@ const Profile = () => {
                             </Form.Group>
 
                             <Form.Group className="mb-3">
-                                <Form.Label>Xác thực tài khoản</Form.Label>
+                                <Form.Label>Trạng thái</Form.Label>
                                 <Form.Control
                                     type="text"
                                     value={user?.isConfirmed ? "Đã xác thực" : "Chưa xác thực"}
