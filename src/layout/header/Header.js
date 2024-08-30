@@ -86,9 +86,9 @@ const Header = () => {
 									<NavLink className="dropdown-item" to={getProfileLink()}>Cá nhân</NavLink>
 									<button className="dropdown-item" onClick={logout}>Đăng xuất</button>
 								</div>
-								{/* <NavLink className="nav-link text-danger" to="/cart">
+								<NavLink className="nav-link text-danger" to="/cart">
 									&#128722;<Badge className="bg-danger">{cartCounter}</Badge>
-								</NavLink> */}
+								</NavLink>
 							</div>
 						)}
 					</Nav>

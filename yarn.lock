@@ -6839,6 +6839,11 @@ mkdirp@~0.5.1:
   dependencies:
     minimist "^1.2.6"
 
+moment@^2.30.1:
+  version "2.30.1"
+  resolved "https://registry.npmjs.org/moment/-/moment-2.30.1.tgz"
+  integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
+
 ms@^2.1.1, ms@2.1.3:
   version "2.1.3"
   resolved "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz"
@@ -9834,11 +9839,13 @@ webpack-sources@^3.2.3:
   version "0.1.0"
   resolved "file:"
   dependencies:
+    "@lottiefiles/react-lottie-player" "^3.5.4"
     "@testing-library/jest-dom" "^5.14.1"
     "@testing-library/react" "^13.0.0"
     "@testing-library/user-event" "^13.2.1"
     axios "^1.7.4"
     bootstrap "^5.3.3"
+    lottie-web "^5.12.2"
     react "^18.3.1"
     react-bootstrap "^2.10.4"
     react-cookies "^0.1.1"

@@ -1,7 +1,7 @@
 import axios from "axios";
 import cookie from "react-cookies";
 
-const SERVER_CONTEXT = "/SCMS";
+const SERVER_CONTEXT = "/harmony";
 const SERVER = "http://localhost:8080";
 
 export const endpoints = {
