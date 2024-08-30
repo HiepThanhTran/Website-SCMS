@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { MyUserContext } from "../../App";
 import { authApi, endpoints } from "../../configs/APIs";
+import { type } from "@testing-library/user-event/dist/type";
 
 const Profile = () => {
     const [user, dispatch] = useContext(MyUserContext);
@@ -122,7 +123,9 @@ const Profile = () => {
                         confirmButton: 'swal2-confirm'
                     }
                 }).then(() => {
-                    dispatch({ type: "logout" });
+                    dispatch({ 
+                        type: "logout",
+                     });
                     nav("/login");
                 });
             }
