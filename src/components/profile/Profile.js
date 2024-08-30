@@ -1,18 +1,18 @@
 import "./Profile.css";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { MyUserContext } from "../../App";
 import { authApi, endpoints } from "../../configs/APIs";
-import { type } from "@testing-library/user-event/dist/type";
+import Loading from "../../layout/loading/Loading";
 
 const Profile = () => {
     const [user, dispatch] = useContext(MyUserContext);
     const [previewImage, setPreviewImage] = useState(null);
     const nav = useNavigate();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true); // Set initial loading state to true
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -24,6 +24,13 @@ const Profile = () => {
         confirm: user?.isConfirm,
         avatar: user?.avatar || ""
     });
+
+    useEffect(() => {
+        // Simulate a delay for loading state
+        setTimeout(() => {
+            setLoading(false);
+        }, 500); // Adjust the timeout as needed
+    }, []);
 
     const change = (evt, field) => {
         setProfile((current) => {
@@ -123,9 +130,9 @@ const Profile = () => {
                         confirmButton: 'swal2-confirm'
                     }
                 }).then(() => {
-                    dispatch({ 
+                    dispatch({
                         type: "logout",
-                     });
+                    });
                     nav("/login");
                 });
             }
@@ -148,6 +155,10 @@ const Profile = () => {
             setLoading(false);
         }
     };
+
+    if (loading) {
+        return <Loading />;
+    }
 
     return (
         <Container className="profile-container">
@@ -263,40 +274,40 @@ const Profile = () => {
                                         </Button>
                                     </Form.Group>
                                 </Col>
+
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Vai trò</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        value={profile.role}
+                                        disabled
+                                    />
+                                </Form.Group>
+
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Trạng thái</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        value={user?.isConfirmed ? "Đã xác thực" : "Chưa xác thực"}
+                                        disabled
+                                    />
+                                </Form.Group>
+
+                                <div className="text-center">
+                                    <Button
+                                        variant="primary"
+                                        onClick={handleUpdateProfile}
+                                        style={{
+                                            backgroundColor: 'var(--primary-color)',
+                                            border: 'none',
+                                            color: 'white',
+                                            fontWeight: 500
+                                        }}
+                                    >
+                                        Cập nhật hồ sơ
+                                    </Button>
+                                </div>
                             </Row>
-
-                            <Form.Group className="mb-3">
-                                <Form.Label>Vai trò</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    value={profile.role}
-                                    disabled
-                                />
-                            </Form.Group>
-
-                            <Form.Group className="mb-3">
-                                <Form.Label>Trạng thái</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    value={user?.isConfirmed ? "Đã xác thực" : "Chưa xác thực"}
-                                    disabled
-                                />
-                            </Form.Group>
-
-                            <div className="text-center">
-                                <Button
-                                    variant="primary"
-                                    onClick={handleUpdateProfile}
-                                    style={{
-                                        backgroundColor: 'var(--primary-color)',
-                                        border: 'none',
-                                        color: 'white',
-                                        fontWeight: 500
-                                    }}
-                                >
-                                    Cập nhật hồ sơ
-                                </Button>
-                            </div>
                         </Form>
                     </Col>
                 </Row>
