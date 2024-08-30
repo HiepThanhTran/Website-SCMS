@@ -1,11 +1,30 @@
 import { useContext } from "react";
-import { Container, Nav, Navbar } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
-import { MyUserContext } from "../../App";
+import { Badge, Container, Nav, Navbar } from "react-bootstrap";
+import { NavLink, useNavigate } from "react-router-dom";
+import { MyCartContext, MyUserContext } from "../../App";
 import "./Header.css";
 
 const Header = () => {
-	const [user] = useContext(MyUserContext);
+	const [user, dispatch] = useContext(MyUserContext);
+	const navigate = useNavigate();
+	const [cartCounter] = useContext(MyCartContext);
+	const logout = () => {
+		dispatch({
+			type: "logout",
+		});
+		navigate("/");
+	};
+
+	const getProfileLink = () => {
+		switch (user?.role) {
+			case "Khách hàng":
+				return "/profilecustomer";
+			case "Nhà cung cấp":
+				return "/profilesupplier";
+			case "Nhà vận chuyển":
+				return "/profileshipper";
+		}
+	};
 
 	return (
 		<Navbar expand="lg" className="navbar-custom fixed-top">
@@ -58,11 +77,19 @@ const Header = () => {
 								</Nav.Link>
 							</>
 						) : (
-							<>
-								<NavLink className="nav-link" to="/profile">
+							<div className="name-user-wrapper">
+								<NavLink className="nav-link name-user" to="/profile">
 									Xin chào, {user?.username || "Nguyen Van A"}
 								</NavLink>
-							</>
+								<div className="user-dropdown">
+									<NavLink className="dropdown-item" to="/profile">Thông tin chung</NavLink>
+									<NavLink className="dropdown-item" to={getProfileLink()}>Cá nhân</NavLink>
+									<button className="dropdown-item" onClick={logout}>Đăng xuất</button>
+								</div>
+								<NavLink className="nav-link text-danger" to="/cart">
+									&#128722;<Badge className="bg-danger">{cartCounter}</Badge>
+								</NavLink>
+							</div>
 						)}
 					</Nav>
 				</Navbar.Collapse>

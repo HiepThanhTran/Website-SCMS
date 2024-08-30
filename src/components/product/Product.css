@@ -1,5 +1,6 @@
 .product {
     margin: 100px 0 50px 0;
+    position: relative;
 }
 
 .product__title {
@@ -47,6 +48,11 @@
     overflow: hidden;
     max-width: 100%;
     width: 100%;
+}
+
+.card-product:hover {
+    border: 1px solid var(--primary-color);
+    cursor: pointer;
 }
 
 .card-product__image img {
@@ -128,4 +134,24 @@
 .btn-page:focus {
     outline: none;
     box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25);
+}
+
+.product__search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-input{
+    padding: 0 20px 0 20px;
+}
+
+.product__search--input {
+    flex: 1;
+}
+
+.product__search--category {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
 }

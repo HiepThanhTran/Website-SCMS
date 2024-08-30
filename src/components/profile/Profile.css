@@ -1,0 +1,29 @@
+/* Profile All */
+.profile-container {
+    height: 100%;
+    margin: 120px 0 50px 0;
+}
+
+.product-content__title {
+    background-color: var(--primary-color);
+    margin-bottom: 20px;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+
+.btn-confirm {
+    margin: 20px 0;
+}
+
+.password-toggle-profile {
+    color: var(--primary-color);
+    position: absolute;
+    top: 68%;
+    right: 10px;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+/* Profile Customer */
+
+
