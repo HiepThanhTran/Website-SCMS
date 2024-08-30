@@ -6,10 +6,12 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import Loading from "../../layout/loading/Loading";
 import { useNavigate } from "react-router-dom";
+import { MyUserContext } from "../../App";
+import { useContext } from "react";
 
 const Profile = () => {
     const navigate = useNavigate();
-
+    const [user, dispatch] = useContext(MyUserContext);
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [avatar, setAvatar] = useState(null);
@@ -53,21 +55,58 @@ const Profile = () => {
     const handleUpdateProfile = async () => {
         try {
             const formData = new FormData();
-            formData.append("email", email);
-            formData.append("username", username);
-            formData.append("role", role);
+    
+            if (email) {
+                formData.append("email", email);
+            }
+            if (username) {
+                formData.append("username", username);
+            }
+            if (role) {
+                formData.append("role", role);
+            }
             formData.append("confirm", confirm);
-
+    
+            if (password !== "" || confirmPassword !== "") {
+                if (password.length < 8) {
+                    Swal.fire({
+                        title: "Lỗi",
+                        text: "Mật khẩu phải có ít nhất 8 ký tự!",
+                        icon: "error",
+                        confirmButtonText: "Đóng",
+                        customClass: {
+                            confirmButton: 'swal2-confirm'
+                        }
+                    });
+                    return;
+                }
+    
+                if (password !== confirmPassword) {
+                    Swal.fire({
+                        title: "Lỗi",
+                        text: "Mật khẩu và xác nhận mật khẩu không khớp!",
+                        icon: "error",
+                        confirmButtonText: "Đóng",
+                        customClass: {
+                            confirmButton: 'swal2-confirm'
+                        }
+                    });
+                    return;
+                }
+                formData.append("password", password);
+            }
+    
+            // Xử lý avatar: chỉ thêm nếu có thay đổi
             if (avatar instanceof File) {
                 formData.append("avatar", avatar);
             }
-
+    
             const res = await authApi().post(endpoints.updateProfile, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             });
-
+    
             if (res.status === 200) {
                 Swal.fire({
                     title: "Cập nhật thành công!",
@@ -78,14 +117,19 @@ const Profile = () => {
                         confirmButton: 'swal2-confirm'
                     }
                 }).then(() => {
+                    dispatch({ type: "update", payload: res.data });
                     navigate('/');
                 });
             }
         } catch (err) {
-            console.error(err);
+            const errorResponse = err.response?.data;
+            const errorMessage = errorResponse && Array.isArray(errorResponse) && errorResponse.length > 0
+                ? errorResponse[0].message
+                : "Có lỗi xảy ra, vui lòng thử lại.";
+            
             Swal.fire({
                 title: "Cập nhật thất bại",
-                text: "Đã xảy ra lỗi khi cập nhật hồ sơ.",
+                text: errorMessage,
                 icon: "error",
                 confirmButtonText: "Đóng",
                 customClass: {
@@ -94,8 +138,9 @@ const Profile = () => {
             });
         }
     };
-
-
+    
+    
+    
     const handleConfirmAccount = async () => {
         if (password !== confirmPassword) {
             Swal.fire({
@@ -201,7 +246,7 @@ const Profile = () => {
                                         fontWeight: 500
                                     }}
                                 >
-                                    Xác thực tài khoản
+                                    Xác nhận tài khoản
                                 </Button>
                             )}
 

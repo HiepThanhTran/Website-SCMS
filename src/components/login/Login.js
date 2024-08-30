@@ -15,7 +15,7 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [q] = useSearchParams();
     const nav = useNavigate();
-
+    
     useEffect(() => {
         if (cookie.load("token") && user !== null) {
             nav("/");
@@ -40,7 +40,6 @@ const Login = () => {
                 payload: currentUser.data,
             });
 
-            // Hiển thị thông báo thành công
             Swal.fire({
                 title: "Đăng nhập thành công",
                 text: "Chúc mừng bạn đã đăng nhập thành công.",
@@ -50,7 +49,6 @@ const Login = () => {
                     confirmButton: 'swal2-confirm'
                 }
             }).then(() => {
-                // Điều hướng người dùng đến trang tiếp theo
                 let next = q.get("next") || "/";
                 nav(next);
             });

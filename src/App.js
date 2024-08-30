@@ -1,5 +1,8 @@
 import "bootstrap";
 import Profile from "./components/profile/Profile";
+import ProfileCustomer from "./components/profile/ProfileCustomer";
+import ProfileSupplier from "./components/profile/ProfileSupplier";
+import ProfileShipper from "./components/profile/ProfileShipper";
 import Product from "./components/product/Product";
 import Cart from "./components/cart/Cart";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -29,14 +32,13 @@ function App() {
 		cookie.load("cartCounter") || 0
 	);
 
-	// Theo dõi sự thay đổi của cartCounter và lưu nó vào cookie
 	useEffect(() => {
 		cookie.save("cartCounter", cartCounter);
 	}, [cartCounter]);
 
 	return (
-		<MyUserContext.Provider value={[user, dispatch]}>
-			<BrowserRouter>
+		<BrowserRouter>
+			<MyUserContext.Provider value={[user, dispatch]}>
 				<MyCartContext.Provider value={[cartCounter, cartDispatch]}>
 					<Header />
 					<Routes>
@@ -44,13 +46,17 @@ function App() {
 						<Route path="/login" element={<Login />} />
 						<Route path="/register" element={<Register />} />
 						<Route path="/profile" element={<Profile />} />
+						<Route path="/profilecustomer" element={<ProfileCustomer />} />
+						<Route path="/profilesupplier" element={<ProfileSupplier />} />
+						<Route path="/profileshipper" element={<ProfileShipper />} />
 						<Route path="/product" element={<Product />} />
 						<Route path="/cart" element={<Cart />} />
 					</Routes>
 					<ConditionalFooter />
 				</MyCartContext.Provider>
-			</BrowserRouter>
-		</MyUserContext.Provider>
+			</MyUserContext.Provider>
+
+		</BrowserRouter>
 	);
 }
 

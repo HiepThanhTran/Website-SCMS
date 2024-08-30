@@ -15,6 +15,17 @@ const Header = () => {
 		navigate("/");
 	};
 
+	const getProfileLink = () => {
+		switch (user?.role) {
+			case "Khách hàng":
+				return "/profilecustomer";
+			case "Nhà cung cấp":
+				return "/profilesupplier";
+			case "Nhà vận chuyển":
+				return "/profileshipper";
+		}
+	};
+
 	return (
 		<Navbar expand="lg" className="navbar-custom fixed-top">
 			<Container>
@@ -72,12 +83,12 @@ const Header = () => {
 								</NavLink>
 								<div className="user-dropdown">
 									<NavLink className="dropdown-item" to="/profile">Thông tin chung</NavLink>
-									<NavLink className="dropdown-item" to="/account">Cá nhân</NavLink>
+									<NavLink className="dropdown-item" to={getProfileLink()}>Cá nhân</NavLink>
 									<button className="dropdown-item" onClick={logout}>Đăng xuất</button>
 								</div>
-								<NavLink className="nav-link text-danger" to="/cart">
+								{/* <NavLink className="nav-link text-danger" to="/cart">
 									&#128722;<Badge className="bg-danger">{cartCounter}</Badge>
-								</NavLink>
+								</NavLink> */}
 							</div>
 						)}
 					</Nav>

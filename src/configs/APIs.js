@@ -10,7 +10,8 @@ export const endpoints = {
 	confirm: `${SERVER_CONTEXT}/api/users/confirm`,
 	profile: `${SERVER_CONTEXT}/api/users/profile`,
 	updateProfile: `${SERVER_CONTEXT}/api/users/profile/update`,
-	
+	// Supplier
+	profileSupplier: `${SERVER_CONTEXT}/api/suppliers/profile`,
 	products: `${SERVER_CONTEXT}/api/products`,
 	categories: `${SERVER_CONTEXT}/api/categories`,
 	tags: `${SERVER_CONTEXT}/api/tags`,
