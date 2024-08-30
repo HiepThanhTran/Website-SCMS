@@ -12,7 +12,7 @@ const Profile = () => {
     const [user, dispatch] = useContext(MyUserContext);
     const [previewImage, setPreviewImage] = useState(null);
     const nav = useNavigate();
-    const [loading, setLoading] = useState(true); // Set initial loading state to true
+    const [loading, setLoading] = useState(true);
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -26,10 +26,9 @@ const Profile = () => {
     });
 
     useEffect(() => {
-        // Simulate a delay for loading state
         setTimeout(() => {
             setLoading(false);
-        }, 500); // Adjust the timeout as needed
+        }, 500);
     }, []);
 
     const change = (evt, field) => {

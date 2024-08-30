@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import Spinner from "react-bootstrap/Spinner";
 import APIs, { endpoints } from "../../configs/APIs";
 import productDefaultImage from "../../images/Product/product_default.jpg";
 import "./Product.css";
@@ -15,29 +14,27 @@ const Product = () => {
 	const [, dispatch] = useContext(MyCartContext);
 
 	const loadProduct = async () => {
-		setLoading(true);
 		try {
 			let params = new URLSearchParams({
 				page: page,
 				size: size,
+				search: q
 			}).toString();
 
 			let res = await APIs.get(`${endpoints.products}?${params}`);
 			setProducts(res.data);
 		} catch (error) {
-			console.error("Failed to fetch products:", error);
-		} finally {
-			setLoading(false);
+			console.error(error);
 		}
 	};
 
 	useEffect(() => {
 		loadProduct();
-	}, [page, size]);
+	}, [page, size, q]);
 
 	const handleSearch = (event) => {
 		event.preventDefault();
-		setQ(event.target.value);
+		setQ(event.target.value); // Cập nhật từ khóa tìm kiếm
 	};
 
 	const handleNextPage = () => {
@@ -73,14 +70,6 @@ const Product = () => {
 		});
 	};
 
-	if (loading) {
-		return (
-			<div className="text-center">
-				<Spinner animation="border" />
-			</div>
-		);
-	}
-
 	return (
 		<div className="container product">
 			<div className="product__title">
@@ -93,8 +82,8 @@ const Product = () => {
 					type="text"
 					className="product__search--input"
 					placeholder="Tìm kiếm sản phẩm..."
-					value={q}
 					onChange={handleSearch}
+					value={q}
 				/>
 			</div>
 
