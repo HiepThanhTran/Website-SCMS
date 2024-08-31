@@ -78,17 +78,25 @@ const Header = () => {
 							</>
 						) : (
 							<div className="name-user-wrapper">
-								<NavLink className="nav-link name-user" to="/profile">
-									Xin chào, {user?.username || "Nguyen Van A"}
-								</NavLink>
-								<div className="user-dropdown">
-									<NavLink className="dropdown-item" to="/profile">Thông tin chung</NavLink>
-									<NavLink className="dropdown-item" to={getProfileLink()}>Cá nhân</NavLink>
-									<button className="dropdown-item" onClick={logout}>Đăng xuất</button>
+								<div className="name-user-container">
+									<NavLink className="nav-link name-user" to="/profile">
+										Xin chào, {user?.username || "Nguyen Van A"}
+
+										<div className="user-dropdown">
+											<NavLink className="dropdown-item" to="/profile">Thông tin chung</NavLink>
+											<NavLink className="dropdown-item" to={getProfileLink()}>Cá nhân</NavLink>
+											<button className="dropdown-item" onClick={logout}>Đăng xuất</button>
+										</div>
+									</NavLink>
 								</div>
-								<NavLink className="nav-link text-danger" to="/cart">
-									&#128722;<Badge className="bg-danger">{cartCounter}</Badge>
-								</NavLink>
+
+								<div className="cart-user">
+									<NavLink className="nav-link text-danger user-cart" to="/cart">
+										<i class='bx bxs-cart-alt user-cart__icon'>
+											<span className="user-cart__quantity">{cartCounter}</span>
+										</i>
+									</NavLink>
+								</div>
 							</div>
 						)}
 					</Nav>
