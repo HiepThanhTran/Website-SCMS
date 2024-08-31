@@ -22,6 +22,7 @@ const LogoutAction = () => {
 };
 
 const UpdateUserAction = (payload) => {
+	cookie.save("user", payload);
 	return {
 		type: UPDATE_USER,
 		payload: payload,

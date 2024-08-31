@@ -1,335 +1,322 @@
-import { useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import cookie from "react-cookies";
-import { useNavigate } from "react-router-dom";
-import APIs, { endpoints } from "../../configs/APIs"; // Giả định APIs đã được thiết lập
+import { useMemo, useState } from 'react';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import APIs, { endpoints } from '../../configs/APIs';
+import { roles, rolesName, statusCode } from '../../utils/Constatns';
+import _ from 'lodash';
 
 const Register = () => {
-	const [email, setEmail] = useState("");
-	const [username, setUsername] = useState("");
-	const [password, setPassword] = useState("");
-	const [confirmPassword, setConfirmPassword] = useState("");
-	const [userRole, setUserRole] = useState("ROLE_CUSTOMER");
-	const [firstName, setFirstName] = useState("");
-	const [middleName, setMiddleName] = useState("");
-	const [lastName, setLastName] = useState("");
-	const [name, setName] = useState("");
-	const [address, setAddress] = useState("");
-	const [phone, setPhone] = useState("");
-	const [contactInfo, setContactInfo] = useState("");
-	const [error, setError] = useState({});
+   const [user, setUser] = useState({ userRole: roles.CUSTOMER });
+   const [errors, setErrors] = useState({});
+   const [q] = useSearchParams();
+   const nav = useNavigate();
 
-	const nav = useNavigate();
+   const requiredFields = useMemo(() => {
+      return [
+         { key: 'userRole', message: 'Vai trò người dùng không được bỏ trống' },
+         { key: 'email', message: 'Email không được bỏ trống' },
+         { key: 'username', message: 'Tên đăng nhập không được bỏ trống' },
+         { key: 'password', message: 'Mật khẩu không được bỏ trống' },
+      ];
+   }, []);
+   const customerFields = useMemo(() => {
+      return [
+         { key: 'firstName', message: 'Họ không được bỏ trống' },
+         { key: 'middleName', message: 'Tên đệm không được bỏ trống' },
+         { key: 'lastName', message: 'Tên không được bỏ trống' },
+      ];
+   }, []);
+   const supplierAndShipperFields = useMemo(
+      () => (name) => {
+         return [
+            { key: 'name', message: `Tên ${name} không được bỏ trống` },
+            { key: 'contactInfo', message: 'Thông tin liên hệ không được bỏ trống' },
+         ];
+      },
+      [],
+   );
+   const customerAndSupplierFields = useMemo(() => {
+      return [
+         { key: 'address', message: 'Địa chỉ không được bỏ trống' },
+         { key: 'phone', message: 'Số điện thoại không được bỏ trống' },
+      ];
+   }, []);
 
-	const register = async (evt) => {
-		evt.preventDefault();
+   const register = async (e) => {
+      e.preventDefault();
 
-		try {
-			const messageError = {};
-			if (!firstName.trim()) {
-				messageError.firstName = "Họ không được bỏ trống";
-			}
-			if (!middleName.trim()) {
-				messageError.middleName = "Tên đệm không được bỏ trống";
-			}
-			if (!lastName.trim()) {
-				messageError.lastName = "Tên không được bỏ trống";
-			}
-			if (!email.trim()) {
-				messageError.email = "Email không được bỏ trống";
-			}
-			if (!username.trim()) {
-				messageError.username = "Tên đăng nhập không được bỏ trống";
-			}
-			if (!password.trim()) {
-				messageError.password = "Mật khẩu không được bỏ trống";
-			}
-			if (!address.trim()) {
-				messageError.address = "Địa chỉ không được bỏ trống";
-			}
-			if (!phone.trim()) {
-				messageError.phone = "Số điện thoại không được bỏ trống";
-			}
-			if (confirmPassword !== password) {
-				messageError.match = "Mật khẩu không trùng khớp";
-			}
-			if (userRole === "ROLE_SUPPLIER") {
-				if (!name.trim()) {
-					messageError.name = "Tên nhà cung cấp không được bỏ trống";
-				}
-				if (!contactInfo.trim()) {
-					messageError.contactInfo =
-						"Thông tin liên hệ không được bỏ trống";
-				}
-			}
-			setError(messageError);
+      const messageError = {};
 
-			if (Object.keys(messageError).length > 0) {
-				return;
-			}
-			const res = await APIs.post(endpoints.register, {
-				email,
-				username,
-				password,
-				userRole,
-				firstName,
-				middleName,
-				lastName,
-				name,
-				address,
-				phone,
-				contactInfo,
-			});
+      validateFields(requiredFields, messageError);
 
-			cookie.save("token", res.data.token);
-			cookie.save("user", res.data.user);
+      if (user.password !== user.confirm) {
+         messageError.match = 'Mật khẩu không trùng khớp';
+      }
 
-			nav("/"); // Điều hướng về trang chủ hoặc trang cần thiết sau khi đăng ký thành công
-		} catch (err) {
-			console.error(err);
-		}
-	};
+      switch (user.userRole) {
+         case roles.CUSTOMER:
+            validateFields([...customerFields, ...customerAndSupplierFields], messageError);
+            break;
+         case roles.SUPPLIER:
+            validateFields(
+               [...customerAndSupplierFields, ...supplierAndShipperFields(rolesName.ROLE_SUPPLIER.toLowerCase())],
+               messageError,
+            );
+            break;
+         case roles.SHIPPER:
+            validateFields(supplierAndShipperFields(rolesName.ROLE_SHIPPER.toLowerCase()), messageError);
+            break;
+         default:
+            messageError.userRole = 'Vai trò người dùng không hợp lệ';
+            break;
+      }
 
-	return (
-		<>
-			<h2 style={{ color: "#009970" }} className="text-center mt-3">
-				ĐĂNG KÝ NGƯỜI DÙNG
-			</h2>
-			<Container>
-				<Form onSubmit={register}>
-					<Row>
-						<Col md={4}>
-							<Form.Group className="mb-3">
-								<Form.Label>
-									Họ (<span className="text-danger">*</span>)
-								</Form.Label>
-								<Form.Control
-									value={firstName}
-									onChange={(e) =>
-										setFirstName(e.target.value)
-									}
-									type="text"
-									placeholder="Họ"
-								/>
-								{error.firstName && (
-									<span className="text-danger">
-										{error.firstName}
-									</span>
-								)}
-							</Form.Group>
-						</Col>
-						<Col md={4}>
-							<Form.Group className="mb-3">
-								<Form.Label>
-									Tên đệm (
-									<span className="text-danger">*</span>)
-								</Form.Label>
-								<Form.Control
-									value={middleName}
-									onChange={(e) =>
-										setMiddleName(e.target.value)
-									}
-									type="text"
-									placeholder="Tên đệm"
-								/>
-								{error.middleName && (
-									<span className="text-danger">
-										{error.middleName}
-									</span>
-								)}
-							</Form.Group>
-						</Col>
-						<Col md={4}>
-							<Form.Group className="mb-3">
-								<Form.Label>
-									Tên (<span className="text-danger">*</span>)
-								</Form.Label>
-								<Form.Control
-									value={lastName}
-									onChange={(e) =>
-										setLastName(e.target.value)
-									}
-									type="text"
-									placeholder="Tên"
-								/>
-								{error.lastName && (
-									<span className="text-danger">
-										{error.lastName}
-									</span>
-								)}
-							</Form.Group>
-						</Col>
-					</Row>
-					<Row>
-						<Col md={6}>
-							<Form.Group className="mb-3">
-								<Form.Label>
-									Email (
-									<span className="text-danger">*</span>)
-								</Form.Label>
-								<Form.Control
-									value={email}
-									onChange={(e) => setEmail(e.target.value)}
-									type="email"
-									placeholder="Email"
-								/>
-								{error.email && (
-									<span className="text-danger">
-										{error.email}
-									</span>
-								)}
-							</Form.Group>
-						</Col>
-						<Col md={6}>
-							<Form.Group className="mb-3">
-								<Form.Label>
-									Vai trò người dùng (
-									<span className="text-danger">*</span>)
-								</Form.Label>
-								<Form.Select
-									value={userRole}
-									onChange={(e) =>
-										setUserRole(e.target.value)
-									}>
-									<option value="ROLE_CUSTOMER">
-										Khách hàng
-									</option>
-									<option value="ROLE_SUPPLIER">
-										Nhà cung cấp
-									</option>
-									{/* <option value="ROLE_DISTRIBUTOR">Nhà phân phối</option>
-                  <option value="ROLE_MANUFACTURER">Nhà sản xuất</option> */}
-									<option value="ROLE_SHIPPER">
-										Người giao hàng
-									</option>
-								</Form.Select>
-							</Form.Group>
-						</Col>
-					</Row>
+      if (Object.keys(messageError).length > 0) {
+         setErrors(messageError);
+         return;
+      }
 
-					<Form.Group className="mb-3">
-						<Form.Label>
-							Tên đăng nhập (
-							<span className="text-danger">*</span>)
-						</Form.Label>
-						<Form.Control
-							value={username}
-							onChange={(e) => setUsername(e.target.value)}
-							type="text"
-							placeholder="Tên đăng nhập"
-						/>
-						{error.username && (
-							<span className="text-danger">
-								{error.username}
-							</span>
-						)}
-					</Form.Group>
-					<Form.Group className="mb-3">
-						<Form.Label>
-							Mật khẩu (<span className="text-danger">*</span>)
-						</Form.Label>
-						<Form.Control
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							type="password"
-							placeholder="Mật khẩu"
-						/>
-						{error.password && (
-							<span className="text-danger">
-								{error.password}
-							</span>
-						)}
-					</Form.Group>
-					<Form.Group className="mb-3">
-						<Form.Label>
-							Xác nhận mật khẩu(
-							<span className="text-danger">*</span>):
-						</Form.Label>
-						<Form.Control
-							type="password"
-							onChange={(e) => setConfirmPassword(e.target.value)}
-							placeholder="Xác nhận mật khẩu..."
-						/>
-						{error.match && (
-							<span className="text-danger">{error.match}</span>
-						)}
-					</Form.Group>
-					{userRole === "ROLE_SUPPLIER" && (
-						<Form.Group className="mb-3">
-							<Form.Label>
-								Tên nhà cung cấp(
-								<span className="text-danger">*</span>)
-							</Form.Label>
-							<Form.Control
-								value={name}
-								onChange={(e) => setName(e.target.value)}
-								type="text"
-								placeholder="Tên nhà cung cấp"
-							/>
-							{error.name && (
-								<span className="text-danger">
-									{error.name}
-								</span>
-							)}
-						</Form.Group>
-					)}
-					<Form.Group className="mb-3">
-						<Form.Label>
-							Địa chỉ(<span className="text-danger">*</span>)
-						</Form.Label>
-						<Form.Control
-							value={address}
-							onChange={(e) => setAddress(e.target.value)}
-							type="text"
-							placeholder="Địa chỉ"
-						/>
-						{error.address && (
-							<span className="text-danger">{error.address}</span>
-						)}
-					</Form.Group>
-					<Form.Group className="mb-3">
-						<Form.Label>
-							Số điện thoại(<span className="text-danger">*</span>
-							)
-						</Form.Label>
-						<Form.Control
-							value={phone}
-							onChange={(e) => setPhone(e.target.value)}
-							type="text"
-							placeholder="Số điện thoại"
-						/>
-						{error.phone && (
-							<span className="text-danger">{error.phone}</span>
-						)}
-					</Form.Group>
-					{userRole === "ROLE_SUPPLIER" && (
-						<Form.Group className="mb-3">
-							<Form.Label>
-								Thông tin liên hệ(
-								<span className="text-danger">*</span>)
-							</Form.Label>
-							<Form.Control
-								value={contactInfo}
-								onChange={(e) => setContactInfo(e.target.value)}
-								type="text"
-								placeholder="Thông tin liên hệ"
-							/>
-							{error.contactInfo && (
-								<span className="text-danger">
-									{error.contactInfo}
-								</span>
-							)}
-						</Form.Group>
-					)}
-					<Form.Group className="mb-3">
-						<Button variant="primary" type="submit">
-							Đăng ký
-						</Button>
-					</Form.Group>
-				</Form>
-			</Container>
-		</>
-	);
+      try {
+         const userWithoutConfirm = _.omit(user, ['confirm']);
+         const res = await APIs.post(endpoints.register, userWithoutConfirm);
+
+         if (res.status === statusCode.HTTP_201_CREATED) {
+            Swal.fire({
+               title: 'Đăng ký tài khoản thành công',
+               text: 'Chúc mừng bạn đã đăng ký tài khoản thành công.',
+               icon: 'success',
+               confirmButtonText: 'Xong',
+               customClass: {
+                  confirmButton: 'swal2-confirm',
+               },
+            }).then(() => {
+               let next = q.get('next') || '/';
+               nav(next);
+            });
+         }
+      } catch (error) {
+         Swal.fire({
+            title: 'Đăng ký tài khoản thất bại',
+            text:
+               error?.response?.data.map((data) => data.message).join('\n') ||
+               'Hệ thống đang bận, vui lòng thử lại sau',
+            icon: 'error',
+            confirmButtonText: 'Đóng',
+            customClass: {
+               confirmButton: 'swal2-confirm',
+            },
+         });
+         console.error(error);
+         console.error(error?.response);
+      }
+   };
+
+   const processUpdateUser = (field, value) => {
+      setUser({ ...user, [field]: value });
+   };
+
+   const validateFields = (fields, messageError) => {
+      fields.forEach((field) => {
+         if (!user[field.key] || !user[field.key].trim()) {
+            messageError[field.key] = field.message;
+         }
+      });
+   };
+
+   return (
+      <>
+         <h2 style={{ color: '#009970', marginTop: '6rem' }} className="text-center">
+            ĐĂNG KÝ NGƯỜI DÙNG
+         </h2>
+         <Container>
+            <Form onSubmit={register}>
+               <Row>
+                  <Col md={6}>
+                     <Form.Group className="mb-3">
+                        <Form.Label>
+                           Vai trò (<span className="text-danger">*</span>)
+                        </Form.Label>
+                        <Form.Select
+                           style={{ padding: 12 }}
+                           value={user.userRole}
+                           onChange={(e) => {
+                              setErrors({});
+                              processUpdateUser('userRole', e.target.value);
+                           }}
+                        >
+                           <option value="">--- Chọn vai trò ---</option>
+                           {Object.entries(rolesName).map(([key, value]) => (
+                              <option key={key} value={key} selected={key === roles.CUSTOMER}>
+                                 {value}
+                              </option>
+                           ))}
+                        </Form.Select>
+                        {errors.userRole && <span className="text-danger">{errors.userRole}</span>}
+                     </Form.Group>
+                     <Form.Group className="mb-3">
+                        <Form.Label>
+                           Email (<span className="text-danger">*</span>)
+                        </Form.Label>
+                        <Form.Control
+                           value={user.email}
+                           onChange={(e) => processUpdateUser('email', e.target.value)}
+                           type="email"
+                           placeholder="Email"
+                        />
+                        {errors.email && <span className="text-danger">{errors.email}</span>}
+                     </Form.Group>
+                     <Form.Group className="mb-3">
+                        <Form.Label>
+                           Tên đăng nhập (<span className="text-danger">*</span>)
+                        </Form.Label>
+                        <Form.Control
+                           value={user.username}
+                           onChange={(e) => processUpdateUser('username', e.target.value)}
+                           type="text"
+                           placeholder="Tên đăng nhập"
+                        />
+                        {errors.username && <span className="text-danger">{errors.username}</span>}
+                     </Form.Group>
+                     <Form.Group className="mb-3">
+                        <Form.Label>
+                           Mật khẩu (<span className="text-danger">*</span>)
+                        </Form.Label>
+                        <Form.Control
+                           value={user.password}
+                           onChange={(e) => processUpdateUser('password', e.target.value)}
+                           type="password"
+                           placeholder="Mật khẩu"
+                        />
+                        {errors.password && <span className="text-danger">{errors.password}</span>}
+                     </Form.Group>
+                     <Form.Group className="mb-3">
+                        <Form.Label>
+                           Xác nhận mật khẩu(
+                           <span className="text-danger">*</span>):
+                        </Form.Label>
+                        <Form.Control
+                           type="password"
+                           value={user.confirm}
+                           onChange={(e) => processUpdateUser('confirm', e.target.value)}
+                           placeholder="Xác nhận mật khẩu..."
+                        />
+                        {errors.match && <span className="text-danger">{errors.match}</span>}
+                     </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                     {user.userRole === roles.CUSTOMER && (
+                        <>
+                           <Form.Group className="mb-3">
+                              <Form.Label>
+                                 Họ (<span className="text-danger">*</span>)
+                              </Form.Label>
+                              <Form.Control
+                                 value={user.firstName}
+                                 onChange={(e) => processUpdateUser('firstName', e.target.value)}
+                                 type="text"
+                                 placeholder="Họ"
+                              />
+                              {errors.firstName && <span className="text-danger">{errors.firstName}</span>}
+                           </Form.Group>
+                           <Form.Group className="mb-3">
+                              <Form.Label>
+                                 Tên đệm (<span className="text-danger">*</span>)
+                              </Form.Label>
+                              <Form.Control
+                                 value={user.middleName}
+                                 onChange={(e) => processUpdateUser('middleName', e.target.value)}
+                                 type="text"
+                                 placeholder="Tên đệm"
+                              />
+                              {errors.middleName && <span className="text-danger">{errors.middleName}</span>}
+                           </Form.Group>
+                           <Form.Group className="mb-3">
+                              <Form.Label>
+                                 Tên (<span className="text-danger">*</span>)
+                              </Form.Label>
+                              <Form.Control
+                                 value={user.lastName}
+                                 onChange={(e) => processUpdateUser('lastName', e.target.value)}
+                                 type="text"
+                                 placeholder="Tên"
+                              />
+                              {errors.lastName && <span className="text-danger">{errors.lastName}</span>}
+                           </Form.Group>
+                        </>
+                     )}
+
+                     {(user.userRole === roles.SUPPLIER || user.userRole === roles.SHIPPER) && (
+                        <>
+                           <Form.Group className="mb-3">
+                              <Form.Label>
+                                 {`Tên ${rolesName[user.userRole].toLowerCase()}`}(
+                                 <span className="text-danger">*</span>)
+                              </Form.Label>
+                              <Form.Control
+                                 value={user.name}
+                                 onChange={(e) => processUpdateUser('name', e.target.value)}
+                                 type="text"
+                                 placeholder={`Tên ${rolesName[user.userRole].toLowerCase()}`}
+                              />
+                              {errors.name && <span className="text-danger">{errors.name}</span>}
+                           </Form.Group>
+                           <Form.Group className="mb-3">
+                              <Form.Label>
+                                 Thông tin liên hệ(
+                                 <span className="text-danger">*</span>)
+                              </Form.Label>
+                              <Form.Control
+                                 value={user.contactInfo}
+                                 onChange={(e) => processUpdateUser('contactInfo', e.target.value)}
+                                 type="text"
+                                 placeholder="Thông tin liên hệ"
+                              />
+                              {errors.contactInfo && <span className="text-danger">{errors.contactInfo}</span>}
+                           </Form.Group>
+                        </>
+                     )}
+
+                     {(user.userRole === roles.CUSTOMER || user.userRole === roles.SUPPLIER) && (
+                        <>
+                           <Form.Group className="mb-3">
+                              <Form.Label>
+                                 Địa chỉ(<span className="text-danger">*</span>)
+                              </Form.Label>
+                              <Form.Control
+                                 value={user.address}
+                                 onChange={(e) => processUpdateUser('address', e.target.value)}
+                                 type="text"
+                                 placeholder="Địa chỉ"
+                              />
+                              {errors.address && <span className="text-danger">{errors.address}</span>}
+                           </Form.Group>
+                           <Form.Group className="mb-3">
+                              <Form.Label>
+                                 Số điện thoại(<span className="text-danger">*</span>)
+                              </Form.Label>
+                              <Form.Control
+                                 value={user.phone}
+                                 onChange={(e) => processUpdateUser('phone', e.target.value)}
+                                 type="text"
+                                 placeholder="Số điện thoại"
+                              />
+                              {errors.phone && <span className="text-danger">{errors.phone}</span>}
+                           </Form.Group>
+                        </>
+                     )}
+                  </Col>
+               </Row>
+
+               <Form.Group className="mb-3 d-flex justify-content-center">
+                  <Button style={{ width: '10rem', background: 'var(--primary-color)' }} variant="primary" type="submit">
+                     Đăng ký
+                  </Button>
+               </Form.Group>
+            </Form>
+         </Container>
+      </>
+   );
 };
 
 export default Register;
