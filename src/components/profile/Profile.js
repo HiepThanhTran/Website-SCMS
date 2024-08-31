@@ -168,12 +168,16 @@ const Profile = () => {
                   <div className="d-flex flex-column align-items-center justify-content-center">
                      <img
                         className="rounded-circle shadow"
-                        src={profile?.avatar || previewAvatar || defaultImage.USER_AVATAR}
+                        src={previewAvatar || user?.data?.avatar || defaultImage.USER_AVATAR}
                         alt="Avatar người dùng"
                         style={{
                            width: 190,
                            height: 190,
                            objectFit: 'cover',
+                        }}
+                        onError={(e) => {
+                           console.error("Error loading image", e.target.src);
+                           e.target.src = defaultImage.USER_AVATAR;
                         }}
                      />
                      <label htmlFor="avatar" type="button" className="btn btn-secondary mt-3">

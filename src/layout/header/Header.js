@@ -13,6 +13,8 @@ const Header = () => {
    const [cartCounter] = useContext(MyCartContext);
    const navigate = useNavigate();
 
+   console.log(user);
+
    const logout = () => {
       Swal.fire({
          title: 'Xác nhận đăng xuất',
@@ -83,22 +85,30 @@ const Header = () => {
                      </>
                   ) : (
                      <div className="name-user-wrapper">
-                        <NavLink className="nav-link name-user" to="/profile">
-                           Xin chào, {user?.data?.username || 'Nguyen Van A'}
-                        </NavLink>
-                        <div className="user-dropdown p-2">
-                           <NavLink className="dropdown-item" to="/profile">
-                              Tài khoản
+                        <div className='name-user-container'>
+                           <NavLink className="nav-link name-user" to="/profile">
+                              Xin chào, {user?.data?.username || 'Nguyen Van A'}
+
+                              <div className="user-dropdown p-2">
+                                 <NavLink className="dropdown-item" to="/profile">
+                                    Tài khoản
+                                 </NavLink>
+                                 <NavLink className="dropdown-item" to={getProfileLink()}>
+                                    Hồ sơ cá nhân
+                                 </NavLink>
+                                 <button className="dropdown-item" onClick={logout}>
+                                    Đăng xuất
+                                 </button>
+                              </div>
                            </NavLink>
-                           <NavLink className="dropdown-item" to={getProfileLink()}>
-                              Hồ sơ cá nhân
+                        </div>
+
+                        <div className="cart-user">
+                           <NavLink className="nav-link text-danger user-cart" to="/cart">
+                              <i className='bx bxs-cart-alt user-cart__icon'>
+                                 <span className="user-cart__quantity">{cartCounter}</span>
+                              </i>
                            </NavLink>
-                           <NavLink className="dropdown-item" to="/cart">
-                              Giỏ hàng &#128722;<Badge className="bg-danger">{cartCounter}</Badge>
-                           </NavLink>
-                           <button className="dropdown-item" onClick={logout}>
-                              Đăng xuất
-                           </button>
                         </div>
                      </div>
                   )}

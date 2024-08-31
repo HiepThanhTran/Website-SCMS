@@ -17,8 +17,9 @@
     width: 3rem;
     height: 3rem;
     border-width: 0.3em;
-    border-color: var(--primary-color);
-    color: var(--primary-color);
+    border-color: var(--primary-color) transparent transparent transparent;
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
     animation: spinner-border 1.5s linear infinite;
 }
 

@@ -7,8 +7,6 @@
 .product-content__title {
     background-color: var(--primary-color);
     margin-bottom: 20px;
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
 }
 
 .btn-confirm {
@@ -23,7 +21,6 @@
     transform: translateY(-50%);
     z-index: 1;
 }
-
 /* Profile Customer */
 
 

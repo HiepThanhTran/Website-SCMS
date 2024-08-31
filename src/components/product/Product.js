@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState, useCallback } from "react";
 import APIs, { endpoints } from "../../configs/APIs";
-import productDefaultImage from "../../images/Product/product_default.jpg";
+import { defaultImage} from '../../utils/Constatns';
 import "./Product.css";
 import cookie from "react-cookies";
-import Swal from "sweetalert2"; // Import SweetAlert2
+import Swal from "sweetalert2";
 import { MyCartContext } from "../../App";
 
 const Product = () => {
@@ -16,7 +16,6 @@ const Product = () => {
 	const [selectedCategory, setSelectedCategory] = useState("");
 	const [, dispatch] = useContext(MyCartContext);
 
-    // Kiểm tra xác thực người dùng (giả sử có một cookie 'isAuthenticated' để kiểm tra)
 	const isAuthenticated = cookie.load("isAuthenticated");
 
    const loadCategories = useCallback(async () => {
