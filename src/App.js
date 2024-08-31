@@ -20,6 +20,20 @@ import { UserProvider } from './store/contexts/UserContext';
 
 export const MyCartContext = createContext();
 
+export const routeUrl = {
+   HOME: '/',
+   LOGIN: '/login',
+   REGISTER: '/register',
+   PROFILE: '/profile',
+   PROFILE_CUSTOMER: '/profile/customer',
+   PROFILE_SUPPLIER: '/profile/supplier',
+   PROFILE_SHIPPER: '/profile/shipper',
+   PROFILE_DISTRIBUTOR: '/profile/distributor',
+   PROFILE_MANUFACTURER: '/profile/manufacturer',
+   PRODUCT: '/product',
+   CART: '/cart',
+};
+
 function App() {
    const [cartCounter, cartDispatch] = useReducer(MyCartReducer, cookie.load('cartCounter') || 0);
 
@@ -33,15 +47,15 @@ function App() {
             <BrowserRouter>
                <Header />
                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/profile/customer" element={<ProfileCustomer />} />
-                  <Route path="/profile/supplier" element={<ProfileSupplier />} />
-                  <Route path="/profile/shipper" element={<ProfileShipper />} />
-                  <Route path="/product" element={<Product />} />
-                  <Route path="/cart" element={<Cart />} />
+                  <Route path={routeUrl.LOGIN} element={<Login />} />
+                  <Route path={routeUrl.REGISTER} element={<Register />} />
+                  <Route path={routeUrl.PROFILE} element={<Profile />} />
+                  <Route path={routeUrl.PROFILE_CUSTOMER} element={<ProfileCustomer />} />
+                  <Route path={routeUrl.PROFILE_SUPPLIER} element={<ProfileSupplier />} />
+                  <Route path={routeUrl.PROFILE_SHIPPER} element={<ProfileShipper />} />
+                  <Route path={routeUrl.PRODUCT} element={<Product />} />
+                  <Route path={routeUrl.HOME} element={<Home />} />
+                  <Route path={routeUrl.CART} element={<Cart />} />
                </Routes>
                <ConditionalFooter />
             </BrowserRouter>

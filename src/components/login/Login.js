@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import cookie from 'react-cookies';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import APIs, { authAPI, endpoints } from '../../configs/APIs';
 import { LoginAction } from '../../store/actions/UserAction';
@@ -17,12 +17,6 @@ const Login = () => {
    const [showPassword, setShowPassword] = useState(false);
    const [q] = useSearchParams();
    const nav = useNavigate();
-
-   useEffect(() => {
-      if (cookie.load('token') && user?.data !== null) {
-         nav('/');
-      }
-   }, [nav, user]);
 
    const login = async (e) => {
       e.preventDefault();
@@ -76,11 +70,6 @@ const Login = () => {
          console.error(error?.response);
       }
    };
-
-   if (user?.data !== null) {
-      let next = q.get('next') || '/';
-      return <Navigate to={next} />;
-   }
 
    return (
       <div className="login-page">

@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { Badge, Container, Nav, Navbar } from 'react-bootstrap';
+import { Container, Nav, Navbar } from 'react-bootstrap';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { MyCartContext } from '../../App';
+import { MyCartContext, routeUrl } from '../../App';
 import { LogoutAction } from '../../store/actions/UserAction';
 import { useUser } from '../../store/contexts/UserContext';
 import { roles } from '../../utils/Constatns';
@@ -38,17 +38,17 @@ const Header = () => {
    const getProfileLink = () => {
       switch (user?.data?.role) {
          case roles.CUSTOMER:
-            return '/profile/customer';
+            return routeUrl.PROFILE_CUSTOMER;
          case roles.SUPPLIER:
-            return '/profile/supplier';
+            return routeUrl.PROFILE_SUPPLIER;
          case roles.DISTRIBUTOR:
-            return null;
+            return routeUrl.PROFILE_DISTRIBUTOR;
          case roles.MANUFACTURER:
-            return null;
+            return routeUrl.PROFILE_MANUFACTURER;
          case roles.SHIPPER:
-            return '/profile/shipper';
+            return routeUrl.PROFILE_SHIPPER;
          default:
-            return null;
+            return routeUrl.HOME;
       }
    };
 
@@ -85,10 +85,9 @@ const Header = () => {
                      </>
                   ) : (
                      <div className="name-user-wrapper">
-                        <div className='name-user-container'>
+                        <div className="name-user-container">
                            <NavLink className="nav-link name-user" to="/profile">
                               Xin chào, {user?.data?.username || 'Nguyen Van A'}
-
                               <div className="user-dropdown p-2">
                                  <NavLink className="dropdown-item" to="/profile">
                                     Tài khoản
@@ -105,7 +104,7 @@ const Header = () => {
 
                         <div className="cart-user">
                            <NavLink className="nav-link text-danger user-cart" to="/cart">
-                              <i className='bx bxs-cart-alt user-cart__icon'>
+                              <i className="bx bxs-cart-alt user-cart__icon">
                                  <span className="user-cart__quantity">{cartCounter}</span>
                               </i>
                            </NavLink>

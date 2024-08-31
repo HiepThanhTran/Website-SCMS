@@ -68,7 +68,7 @@ const Register = () => {
             validateFields(supplierAndShipperFields(rolesName.ROLE_SHIPPER.toLowerCase()), messageError);
             break;
          default:
-            messageError.userRole = 'Vai trò người dùng không hợp lệ';
+            messageError.userRole = 'Chưa hỗ trợ vai trò người dùng này!';
             break;
       }
 
@@ -91,7 +91,7 @@ const Register = () => {
                   confirmButton: 'swal2-confirm',
                },
             }).then(() => {
-               let next = q.get('next') || '/';
+               let next = q.get('next') || '/login';
                nav(next);
             });
          }
