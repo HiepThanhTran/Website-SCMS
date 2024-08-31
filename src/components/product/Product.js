@@ -1,19 +1,23 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import cookie from 'react-cookies';
-import { MyCartContext } from '../../App';
-import APIs, { endpoints } from '../../configs/APIs';
-import { defaultImage } from '../../utils/Constatns';
-import './Product.css';
+import React, { useContext, useEffect, useState, useCallback } from "react";
+import APIs, { endpoints } from "../../configs/APIs";
+import productDefaultImage from "../../images/Product/product_default.jpg";
+import "./Product.css";
+import cookie from "react-cookies";
+import Swal from "sweetalert2"; // Import SweetAlert2
+import { MyCartContext } from "../../App";
 
 const Product = () => {
-   const [products, setProducts] = useState([]);
-   const [categories, setCategories] = useState([]);
-   const [page, setPage] = useState(1);
-   const [size, setSize] = useState(8);
-   const [loading, setLoading] = useState(true);
-   const [name, setName] = useState('');
-   const [selectedCategory, setSelectedCategory] = useState('');
-   const [, dispatch] = useContext(MyCartContext);
+	const [products, setProducts] = useState([]);
+	const [categories, setCategories] = useState([]);
+	const [page, setPage] = useState(1);
+	const [size, setSize] = useState(8);
+	const [loading, setLoading] = useState(true);
+	const [name, setName] = useState("");
+	const [selectedCategory, setSelectedCategory] = useState("");
+	const [, dispatch] = useContext(MyCartContext);
+
+    // Kiểm tra xác thực người dùng (giả sử có một cookie 'isAuthenticated' để kiểm tra)
+	const isAuthenticated = cookie.load("isAuthenticated");
 
    const loadCategories = useCallback(async () => {
       try {
@@ -34,24 +38,24 @@ const Product = () => {
             categoryId: selectedCategory || '',
          }).toString();
 
-         const res = await APIs.get(`${endpoints.products}?${params}`);
-         setProducts(res.data);
-      } catch (error) {
-         console.error('Failed to load products:', error);
-      } finally {
-         setLoading(false);
-      }
-   }, [page, size, name, selectedCategory]);
+			const res = await APIs.get(`${endpoints.products}?${params}`);
+			setProducts(res.data);
+		} catch (error) {
+			console.error("Failed to load products:", error);
+		} finally {
+			setLoading(false);
+		}
+	}, [page, size, name, selectedCategory]);
 
    useEffect(() => {
       loadCategories();
       loadProduct();
    }, [loadProduct, loadCategories]);
 
-   const handleSearch = useCallback((event) => {
-      setName(event.target.value);
-      setPage(1);
-   }, []);
+	const handleSearch = useCallback((event) => {
+		setName(event.target.value);
+		setPage(1);
+	}, []);
 
    const handleCategoryChange = (event) => {
       setSelectedCategory(event.target.value);
@@ -66,8 +70,21 @@ const Product = () => {
       setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));
    };
 
-   const addToCart = (product) => {
-      let cart = cookie.load('cart') || {};
+	const addToCart = (product) => {
+		if (!isAuthenticated) {
+			Swal.fire({
+				title: "Xác thực tài khoản",
+				text: "Vui lòng xác thực tài khoản để thêm sản phẩm vào giỏ hàng.",
+				icon: "warning",
+				confirmButtonText: "Đóng",
+				customClass: {
+					confirmButton: 'swal2-confirm'
+				}
+			});
+			return;
+		}
+
+		let cart = cookie.load("cart") || {};
 
       if (cart[product.id]) {
          cart[product.id].quantity++;
@@ -81,10 +98,9 @@ const Product = () => {
          };
       }
 
-      cookie.save('cart', cart);
-
-      dispatch({ type: 'update' });
-   };
+		cookie.save("cart", cart);
+		dispatch({ type: "update" });
+	};
 
    return (
       <div className="container product">
