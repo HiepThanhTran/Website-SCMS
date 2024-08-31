@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import { statusCode } from '../../utils/Constatns';
 import { UpdateUserAction } from '../../store/actions/UserAction';
 import Loading from '../../layout/loading/Loading';
+import moment from 'moment';
 
 const ProfileCustomer = () => {
    const [user, dispatch] = useUser();
@@ -38,7 +39,7 @@ const ProfileCustomer = () => {
          formData.append('gender', profileCustomer?.gender);
       }
       if (profileCustomer?.dateOfBirth !== user?.profile?.dateOfBirth) {
-         formData.append('dateOfBirth', profileCustomer?.dateOfBirth);
+         formData.append('dateOfBirth', moment(profileCustomer?.dateOfBirth).format('DD-MM-YYYY'));
       }
 
       setLoading(true);
