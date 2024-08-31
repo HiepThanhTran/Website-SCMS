@@ -126,10 +126,10 @@ const Register = () => {
 
    return (
       <>
-         <h2 style={{ color: '#009970', marginTop: '6rem' }} className="text-center">
+         <h2 style={{ color: 'var(--primary-color)', marginTop: '6rem', marginBottom: '2rem' }} className="text-center">
             ĐĂNG KÝ NGƯỜI DÙNG
          </h2>
-         <Container>
+         <Container className="shadow-lg p-3 mb-3 bg-body rounded gap-3">
             <Form onSubmit={register}>
                <Row>
                   <Col md={6}>
