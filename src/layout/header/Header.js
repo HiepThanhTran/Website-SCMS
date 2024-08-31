@@ -2,12 +2,14 @@ import { useContext } from "react";
 import { Badge, Container, Nav, Navbar } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
 import { MyCartContext, MyUserContext } from "../../App";
+import Swal from "sweetalert2";
 import "./Header.css";
 
 const Header = () => {
 	const [user, dispatch] = useContext(MyUserContext);
 	const navigate = useNavigate();
 	const [cartCounter] = useContext(MyCartContext);
+
 	const logout = () => {
 		dispatch({
 			type: "logout",
@@ -23,8 +25,26 @@ const Header = () => {
 				return "/profilesupplier";
 			case "Nhà vận chuyển":
 				return "/profileshipper";
+			default:
+				return "/profile";
 		}
 	};
+
+	// Hàm hiển thị thông báo khi người dùng chưa xác nhận tài khoản
+	const showAlert = () => {
+		Swal.fire({
+			title: "Tài khoản chưa xác nhận",
+			text: "Vui lòng xác nhận tài khoản để tiếp tục.",
+			icon: "warning",
+			confirmButtonText: "Đóng",
+			customClass: {
+				confirmButton: 'swal2-confirm'
+			}
+		});
+	};
+
+	// Hàm kiểm tra nếu tài khoản đã xác nhận
+	const isConfirmed = user?.isConfirm;
 
 	return (
 		<Navbar expand="lg" className="navbar-custom fixed-top">
@@ -55,7 +75,8 @@ const Header = () => {
 						<Nav.Link
 							as={NavLink}
 							to="/order-details"
-							className="navbar-custom__menu--item">
+							className="navbar-custom__menu--item"
+							onClick={isConfirmed ? undefined : (e) => { e.preventDefault(); showAlert(); }}>
 							Chi tiết đơn hàng
 						</Nav.Link>
 					</Nav>
@@ -81,7 +102,6 @@ const Header = () => {
 								<div className="name-user-container">
 									<NavLink className="nav-link name-user" to="/profile">
 										Xin chào, {user?.username || "Nguyen Van A"}
-
 										<div className="user-dropdown">
 											<NavLink className="dropdown-item" to="/profile">Thông tin chung</NavLink>
 											<NavLink className="dropdown-item" to={getProfileLink()}>Cá nhân</NavLink>
@@ -91,8 +111,11 @@ const Header = () => {
 								</div>
 
 								<div className="cart-user">
-									<NavLink className="nav-link text-danger user-cart" to="/cart">
-										<i class='bx bxs-cart-alt user-cart__icon'>
+									<NavLink
+										className="nav-link text-danger user-cart"
+										to="/cart"
+										onClick={isConfirmed ? undefined : (e) => { e.preventDefault(); showAlert(); }}>
+										<i className='bx bxs-cart-alt user-cart__icon'>
 											<span className="user-cart__quantity">{cartCounter}</span>
 										</i>
 									</NavLink>

@@ -3,6 +3,7 @@ import APIs, { endpoints } from "../../configs/APIs";
 import productDefaultImage from "../../images/Product/product_default.jpg";
 import "./Product.css";
 import cookie from "react-cookies";
+import Swal from "sweetalert2"; // Import SweetAlert2
 import { MyCartContext } from "../../App";
 
 const Product = () => {
@@ -14,6 +15,9 @@ const Product = () => {
 	const [name, setName] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("");
 	const [, dispatch] = useContext(MyCartContext);
+
+    // Kiểm tra xác thực người dùng (giả sử có một cookie 'isAuthenticated' để kiểm tra)
+	const isAuthenticated = cookie.load("isAuthenticated");
 
 	const loadCategories = useCallback(async () => {
 		try {
@@ -43,19 +47,15 @@ const Product = () => {
 		}
 	}, [page, size, name, selectedCategory]);
 
-
 	useEffect(() => {
 		loadCategories();
 		loadProduct();
 	}, [loadProduct, loadCategories]);
 
-	const handleSearch = useCallback(
-		(event) => {
-			setName(event.target.value);
-			setPage(1);
-		},
-		[]
-	);
+	const handleSearch = useCallback((event) => {
+		setName(event.target.value);
+		setPage(1);
+	}, []);
 
 	const handleCategoryChange = (event) => {
 		setSelectedCategory(event.target.value);
@@ -71,6 +71,19 @@ const Product = () => {
 	};
 
 	const addToCart = (product) => {
+		if (!isAuthenticated) {
+			Swal.fire({
+				title: "Xác thực tài khoản",
+				text: "Vui lòng xác thực tài khoản để thêm sản phẩm vào giỏ hàng.",
+				icon: "warning",
+				confirmButtonText: "Đóng",
+				customClass: {
+					confirmButton: 'swal2-confirm'
+				}
+			});
+			return;
+		}
+
 		let cart = cookie.load("cart") || {};
 
 		if (cart[product.id]) {
@@ -86,7 +99,6 @@ const Product = () => {
 		}
 
 		cookie.save("cart", cart);
-
 		dispatch({ type: "update" });
 	};
 
