@@ -11,7 +11,7 @@ const ProductDetail = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
-    const [, dispatch] = useContext(MyCartContext); // Use dispatch from context
+    const [, dispatch] = useContext(MyCartContext);
 
     useEffect(() => {
         const loadProductDetail = async () => {
@@ -43,21 +43,20 @@ const ProductDetail = () => {
             console.log("Thêm sản phẩm vào giỏ hàng thành công:", response.data);
             alert("Sản phẩm đã được thêm vào giỏ hàng!");
 
-            // Update cart in cookies
             let cart = cookie.load("cart") || {};
             if (cart[id]) {
-                cart[id].quantity += quantity; // Update quantity if product exists
+                cart[id].quantity += quantity;
             } else {
                 cart[id] = {
-                    id: product.id,
+                    image: product.image,
                     name: product.name,
                     description: product.description,
                     price: product.price,
-                    quantity: quantity, // Add new product with the specified quantity
+                    quantity: quantity,
                 };
             }
             cookie.save("cart", cart);
-            dispatch({ type: "update" }); // Dispatch update to the context
+            dispatch({ type: "update" });
 
         } catch (error) {
             console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);

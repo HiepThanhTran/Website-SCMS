@@ -1,3 +1,37 @@
-.cart-container{
-    margin: 100px auto 50px auto
+.cart-container {
+    height: 100%;
+    margin: 120px auto 50px auto;
+}
+
+.cart-card {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    width: 100%;
+}
+
+.cart-card__image img {
+    max-width: 100%;
+    height: auto;
+}
+
+.cart-card__content {
+    padding-left: 15px;
+}
+
+.cart-card__content__name {
+    font-size: 1.25rem;
+    margin-bottom: 5px;
+}
+
+.cart-card__content__description {
+    color: #666;
+}
+
+.cart-card__content__quantity {
+    font-weight: bold;
 }

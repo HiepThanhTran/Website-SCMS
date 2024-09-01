@@ -80,7 +80,7 @@ const Product = () => {
         cart[product.id].quantity++;
     } else {
         cart[product.id] = {
-            id: product.id,
+            image: product.image,
             name: product.name,
             description: product.description,
             price: product.price,
@@ -89,6 +89,7 @@ const Product = () => {
     }
 
     cookie.save("cart", cart);
+    console.info("cart", cart);
     dispatch({ type: "update" });
   };
 

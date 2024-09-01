@@ -12,6 +12,7 @@ const ProfileCustomer = () => {
    const [profileCustomer, setProfileCustomer] = useState(user?.profile);
    const [loading, setLoading] = useState(false);
 
+   console.log(profileCustomer);
    const processUpdateProfileCustomer = (field, value) => {
       setProfileCustomer({ ...profileCustomer, [field]: value });
    };
