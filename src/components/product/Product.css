@@ -53,13 +53,13 @@
     color: var(--primary-color);
 }
 
-.product-car__button {
+.product-card__button {
     display: flex;
     justify-content: flex-end;
     margin: 0 10px 10px 0;
 }
 
-.product-car__button button {
+.product-card__button button {
     display: flex;
     align-items: center;
     justify-content: center;

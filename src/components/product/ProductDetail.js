@@ -1,16 +1,17 @@
-import { Container, Row, Col, Form } from "react-bootstrap";
-import { useState, useEffect } from "react";
-import cookie from "react-cookies";
+import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
-import APIs, { endpoints } from '../../configs/APIs';
+import APIs, { authAPI, endpoints } from '../../configs/APIs';
 import { defaultImage } from '../../utils/Constatns';
-import { useUser } from '../../store/contexts/UserContext';
+import cookie from "react-cookies";
+import { MyCartContext } from "../../App";
 import "./Product.css";
 
 const ProductDetail = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
+    const [, dispatch] = useContext(MyCartContext); // Use dispatch from context
 
     useEffect(() => {
         const loadProductDetail = async () => {
@@ -32,6 +33,42 @@ const ProductDetail = () => {
         }
     };
 
+    const handleAddToCart = async () => {
+        try {
+            const response = await authAPI().post(endpoints.addProductToCart, {
+                productId: id,
+                quantity: quantity
+            });
+
+            console.log("Thêm sản phẩm vào giỏ hàng thành công:", response.data);
+            alert("Sản phẩm đã được thêm vào giỏ hàng!");
+
+            // Update cart in cookies
+            let cart = cookie.load("cart") || {};
+            if (cart[id]) {
+                cart[id].quantity += quantity; // Update quantity if product exists
+            } else {
+                cart[id] = {
+                    id: product.id,
+                    name: product.name,
+                    description: product.description,
+                    price: product.price,
+                    quantity: quantity, // Add new product with the specified quantity
+                };
+            }
+            cookie.save("cart", cart);
+            dispatch({ type: "update" }); // Dispatch update to the context
+
+        } catch (error) {
+            console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
+            alert("Có lỗi xảy ra, vui lòng thử lại.");
+        }
+    };
+
+    if (!product) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <Container className="product-detail-container">
             <div className="shadow-lg p-3 mb-3 bg-body rounded gap-3">
@@ -43,7 +80,7 @@ const ProductDetail = () => {
                                     <div className="product-detail__image">
                                         <img
                                             src={product.image || defaultImage.PRODUCT_IMAGE}
-                                            alt={product.name || "Product Image"}
+                                            alt={product.name || "Hình ảnh sản phẩm"}
                                             className="img-fluid"
                                         />
                                     </div>
@@ -64,9 +101,15 @@ const ProductDetail = () => {
                                                     name="lastName"
                                                     value={quantity}
                                                     onChange={handleQuantityChange}
-                                                    style={{ width: "200px" }}
+                                                    style={{ width: "150px", textAlign: "center" }}
                                                 />
                                             </Form.Group>
+                                        </div>
+
+                                        <div className="product-detail__button">
+                                            <Button onClick={handleAddToCart}>
+                                                Đặt hàng
+                                            </Button>
                                         </div>
                                     </div>
                                 </Col>

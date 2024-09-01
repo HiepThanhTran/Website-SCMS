@@ -1,14 +1,14 @@
 import { Container, Row, Col } from "react-bootstrap";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import APIs, { endpoints } from '../../configs/APIs';
 import { defaultImage, statusCode } from '../../utils/Constatns';
-import { useUser } from '../../store/contexts/UserContext';
+import { MyCartContext } from "../../App";
 import cookie from "react-cookies";
 import "./Product.css";
 
 const Product = () => {
-  const [user, dispatch] = useUser();
+  const [, dispatch] = useContext(MyCartContext);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [page, setPage] = useState(1);
@@ -89,7 +89,7 @@ const Product = () => {
 
     cookie.save("cart", cart);
     dispatch({ type: "update" });
-};
+  };
 
   return (
     <Container className="product-container">
@@ -130,17 +130,25 @@ const Product = () => {
                   value={name}
                 />
               </div>
-              {products.map((product, index) => (
-                <Col sm={3} key={index} className="mb-4">
-                  <div className="product-card" onClick={() => handleProductClick(product.id)}>
-                    <div className="product-card__image">
+              {products.map((product) => (
+                <Col sm={3} key={product.id} className="mb-4">
+                  <div className="product-card">
+                    <div 
+                      className="product-card__image" 
+                      onClick={() => handleProductClick(product.id)}
+                      style={{ cursor: "pointer" }}
+                    >
                       <img
                         src={product.image ? product.image : defaultImage.PRODUCT_IMAGE}
                         alt={product.name || "Ảnh sản phẩm"}
                       />
                     </div>
 
-                    <div className="product-card__content">
+                    <div 
+                      className="product-card__content"
+                      onClick={() => handleProductClick(product.id)}
+                      style={{ cursor: "pointer" }}
+                    >
                       <h1 className="product-card__content--title">{product.name}</h1>
                       <p className="product-card__content--des">
                         Mô tả: {product.description}
@@ -148,8 +156,11 @@ const Product = () => {
                       <span>Giá: {product.price} VNĐ</span>
                     </div>
 
-                    <div className="product-car__button">
-                      <button onClick={() => addToCart(product)}>
+                    <div className="product-card__button">
+                      <button onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart(product);
+                      }}>
                         <i className='bx bxs-cart-add'></i>
                       </button>
                     </div>
