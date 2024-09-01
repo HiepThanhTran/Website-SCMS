@@ -7,6 +7,7 @@ export const UserContext = createContext(null);
 export const initialUser = {
    data: null,
    profile: null,
+   cart: {},
 };
 
 export const UserProvider = ({ children }) => {

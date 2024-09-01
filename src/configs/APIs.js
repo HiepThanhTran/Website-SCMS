@@ -33,8 +33,8 @@ export const endpoints = {
 
    shippers: `${SERVER_CONTEXT}/api/shippers`,
    getShipper: (shipperId) => `${SERVER_CONTEXT}/api/shippers/${shipperId}`,
-   profileShipper: `${SERVER_CONTEXT}/api/Shippers/profile`,
-   updateProfileShipper: `${SERVER_CONTEXT}/api/Shippers/profile/update`,
+   profileShipper: `${SERVER_CONTEXT}/api/shippers/profile`,
+   updateProfileShipper: `${SERVER_CONTEXT}/api/shippers/profile/update`,
 
    products: `${SERVER_CONTEXT}/api/products`,
    getProduct: (productId) => `${SERVER_CONTEXT}/api/products/${productId}`,

@@ -49,6 +49,9 @@ const Login = () => {
                throw new Error('Invalid');
          }
 
+         const cart = await authAPI.get(endpoints.getCart);
+         payload = { ...payload, cart };
+
          dispatch(LoginAction(payload));
          cookie.save('user', payload);
 

@@ -5,15 +5,12 @@ import Swal from 'sweetalert2';
 import { MyCartContext, routeUrl } from '../../App';
 import { LogoutAction } from '../../store/actions/UserAction';
 import { useUser } from '../../store/contexts/UserContext';
-import { roles } from '../../utils/Constatns';
 import './Header.css';
 
 const Header = () => {
    const [user, dispatch] = useUser();
    const [cartCounter] = useContext(MyCartContext);
    const navigate = useNavigate();
-
-   console.log(user);
 
    const logout = () => {
       Swal.fire({
@@ -33,23 +30,6 @@ const Header = () => {
             navigate('/');
          }
       });
-   };
-
-   const getProfileLink = () => {
-      switch (user?.data?.role) {
-         case roles.CUSTOMER:
-            return routeUrl.PROFILE_CUSTOMER;
-         case roles.SUPPLIER:
-            return routeUrl.PROFILE_SUPPLIER;
-         case roles.DISTRIBUTOR:
-            return routeUrl.PROFILE_DISTRIBUTOR;
-         case roles.MANUFACTURER:
-            return routeUrl.PROFILE_MANUFACTURER;
-         case roles.SHIPPER:
-            return routeUrl.PROFILE_SHIPPER;
-         default:
-            return routeUrl.HOME;
-      }
    };
 
    return (
@@ -92,7 +72,7 @@ const Header = () => {
                                  <NavLink className="dropdown-item" to={routeUrl.ACCOUNT(user?.data?.username)}>
                                     Tài khoản
                                  </NavLink>
-                                 <NavLink className="dropdown-item" to={getProfileLink()}>
+                                 <NavLink className="dropdown-item" to={routeUrl.PROFILE(user?.data?.username)}>
                                     Hồ sơ cá nhân
                                  </NavLink>
                                  <button className="dropdown-item" onClick={logout}>
