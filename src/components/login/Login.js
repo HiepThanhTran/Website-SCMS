@@ -11,7 +11,7 @@ import { roles } from '../../utils/Constatns';
 import './Login.css';
 
 const Login = () => {
-   const [user, dispatch] = useUser();
+   const [, dispatch] = useUser();
    const [username, setUsername] = useState('');
    const [password, setPassword] = useState('');
    const [showPassword, setShowPassword] = useState(false);
@@ -81,7 +81,7 @@ const Login = () => {
                      value={username}
                      onChange={(e) => setUsername(e.target.value)}
                      type="text"
-                     placeholder="Tên đăng nhập"
+                     placeholder="Nhập tên đăng nhập..."
                      required
                   />
                </Form.Group>
@@ -90,7 +90,7 @@ const Login = () => {
                      value={password}
                      onChange={(e) => setPassword(e.target.value)}
                      type={showPassword ? 'text' : 'password'}
-                     placeholder="Mật khẩu"
+                     placeholder="Nhập mật khẩu..."
                      required
                   />
                   <Button variant="link" className="password-toggle" onClick={() => setShowPassword(!showPassword)}>

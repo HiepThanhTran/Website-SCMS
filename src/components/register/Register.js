@@ -1,10 +1,10 @@
+import _ from 'lodash';
 import { useMemo, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import APIs, { endpoints } from '../../configs/APIs';
 import { roles, rolesName, statusCode } from '../../utils/Constatns';
-import _ from 'lodash';
 
 const Register = () => {
    const [user, setUser] = useState({ userRole: roles.CUSTOMER });
@@ -68,8 +68,8 @@ const Register = () => {
             validateFields(supplierAndShipperFields(rolesName.ROLE_SHIPPER.toLowerCase()), messageError);
             break;
          default:
-            messageError.userRole = 'Chưa hỗ trợ vai trò người dùng này!';
-            break;
+            setErrors({ userRole: 'Chưa hỗ trợ vai trò người dùng này!' });
+            return;
       }
 
       if (Object.keys(messageError).length > 0) {
@@ -162,7 +162,7 @@ const Register = () => {
                            value={user.email}
                            onChange={(e) => processUpdateUser('email', e.target.value)}
                            type="email"
-                           placeholder="Email"
+                           placeholder="Nhập địa chỉ email..."
                         />
                         {errors.email && <span className="text-danger">{errors.email}</span>}
                      </Form.Group>
@@ -174,7 +174,7 @@ const Register = () => {
                            value={user.username}
                            onChange={(e) => processUpdateUser('username', e.target.value)}
                            type="text"
-                           placeholder="Tên đăng nhập"
+                           placeholder="Nhập tên đăng nhập..."
                         />
                         {errors.username && <span className="text-danger">{errors.username}</span>}
                      </Form.Group>
@@ -186,7 +186,7 @@ const Register = () => {
                            value={user.password}
                            onChange={(e) => processUpdateUser('password', e.target.value)}
                            type="password"
-                           placeholder="Mật khẩu"
+                           placeholder="Nhập mật khẩu..."
                         />
                         {errors.password && <span className="text-danger">{errors.password}</span>}
                      </Form.Group>
@@ -199,7 +199,7 @@ const Register = () => {
                            type="password"
                            value={user.confirm}
                            onChange={(e) => processUpdateUser('confirm', e.target.value)}
-                           placeholder="Xác nhận mật khẩu..."
+                           placeholder="Xác nhận mật khẩu"
                         />
                         {errors.match && <span className="text-danger">{errors.match}</span>}
                      </Form.Group>
@@ -215,7 +215,7 @@ const Register = () => {
                                  value={user.firstName}
                                  onChange={(e) => processUpdateUser('firstName', e.target.value)}
                                  type="text"
-                                 placeholder="Họ"
+                                 placeholder="Nhập họ..."
                               />
                               {errors.firstName && <span className="text-danger">{errors.firstName}</span>}
                            </Form.Group>
@@ -227,7 +227,7 @@ const Register = () => {
                                  value={user.middleName}
                                  onChange={(e) => processUpdateUser('middleName', e.target.value)}
                                  type="text"
-                                 placeholder="Tên đệm"
+                                 placeholder="Nhập tên đệm..."
                               />
                               {errors.middleName && <span className="text-danger">{errors.middleName}</span>}
                            </Form.Group>
@@ -239,7 +239,7 @@ const Register = () => {
                                  value={user.lastName}
                                  onChange={(e) => processUpdateUser('lastName', e.target.value)}
                                  type="text"
-                                 placeholder="Tên"
+                                 placeholder="Nhập tên..."
                               />
                               {errors.lastName && <span className="text-danger">{errors.lastName}</span>}
                            </Form.Group>
@@ -257,7 +257,7 @@ const Register = () => {
                                  value={user.name}
                                  onChange={(e) => processUpdateUser('name', e.target.value)}
                                  type="text"
-                                 placeholder={`Tên ${rolesName[user.userRole].toLowerCase()}`}
+                                 placeholder={`Nhập tên ${rolesName[user.userRole].toLowerCase()}...`}
                               />
                               {errors.name && <span className="text-danger">{errors.name}</span>}
                            </Form.Group>
@@ -270,7 +270,7 @@ const Register = () => {
                                  value={user.contactInfo}
                                  onChange={(e) => processUpdateUser('contactInfo', e.target.value)}
                                  type="text"
-                                 placeholder="Thông tin liên hệ"
+                                 placeholder="Nhập thông tin liên hệ..."
                               />
                               {errors.contactInfo && <span className="text-danger">{errors.contactInfo}</span>}
                            </Form.Group>
@@ -287,7 +287,7 @@ const Register = () => {
                                  value={user.address}
                                  onChange={(e) => processUpdateUser('address', e.target.value)}
                                  type="text"
-                                 placeholder="Địa chỉ"
+                                 placeholder="Nhập địa chỉ..."
                               />
                               {errors.address && <span className="text-danger">{errors.address}</span>}
                            </Form.Group>
@@ -299,7 +299,7 @@ const Register = () => {
                                  value={user.phone}
                                  onChange={(e) => processUpdateUser('phone', e.target.value)}
                                  type="text"
-                                 placeholder="Số điện thoại"
+                                 placeholder="Nhập số điện thoại..."
                               />
                               {errors.phone && <span className="text-danger">{errors.phone}</span>}
                            </Form.Group>
@@ -309,7 +309,11 @@ const Register = () => {
                </Row>
 
                <Form.Group className="mb-3 d-flex justify-content-center">
-                  <Button style={{ width: '10rem', background: 'var(--primary-color)' }} variant="primary" type="submit">
+                  <Button
+                     style={{ width: '10rem', background: 'var(--primary-color)' }}
+                     variant="primary"
+                     type="submit"
+                  >
                      Đăng ký
                   </Button>
                </Form.Group>

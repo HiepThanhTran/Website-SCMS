@@ -140,7 +140,9 @@ const Product = () => {
                         <div className="card-product__content">
                            <h1 className="card-product__content--title">Tên sản phẩm: {product.name}</h1>
                            <p className="card-product__content--description">Mô tả: {product.description}</p>
-                           <span className="card-product__content--price">Giá: {product.price} VNĐ</span>
+                           <span className="card-product__content--price">
+                              Giá: {product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                           </span>
                         </div>
 
                         <div className="card-product__button">

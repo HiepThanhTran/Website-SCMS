@@ -24,7 +24,8 @@ export const routeUrl = {
    HOME: '/',
    LOGIN: '/login',
    REGISTER: '/register',
-   PROFILE: '/profile',
+   ACCOUNT: (username) => `/users/${username}`,
+   PROFILE: (username) => `/users/${username}/profile`,
    PROFILE_CUSTOMER: '/profile/customer',
    PROFILE_SUPPLIER: '/profile/supplier',
    PROFILE_SHIPPER: '/profile/shipper',
@@ -49,7 +50,7 @@ function App() {
                <Routes>
                   <Route path={routeUrl.LOGIN} element={<Login />} />
                   <Route path={routeUrl.REGISTER} element={<Register />} />
-                  <Route path={routeUrl.PROFILE} element={<Profile />} />
+                  <Route path={routeUrl.ACCOUNT(':username')} element={<Profile />} />
                   <Route path={routeUrl.PROFILE_CUSTOMER} element={<ProfileCustomer />} />
                   <Route path={routeUrl.PROFILE_SUPPLIER} element={<ProfileSupplier />} />
                   <Route path={routeUrl.PROFILE_SHIPPER} element={<ProfileShipper />} />
@@ -66,7 +67,7 @@ function App() {
 
 function ConditionalFooter() {
    const location = useLocation();
-   const hideFooter = location.pathname === '/login';
+   const hideFooter = location.pathname === routeUrl.LOGIN || location.pathname === routeUrl.REGISTER;
 
    return hideFooter ? null : <Footer />;
 }

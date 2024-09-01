@@ -176,7 +176,7 @@ const Profile = () => {
                            objectFit: 'cover',
                         }}
                         onError={(e) => {
-                           console.error("Error loading image", e.target.src);
+                           console.error('Error loading image', e.target.src);
                            e.target.src = defaultImage.USER_AVATAR;
                         }}
                      />
@@ -221,16 +221,18 @@ const Profile = () => {
                         <Form.Control
                            type="email"
                            value={profile?.email}
+                           placeholder="Nhập địa chỉ email..."
                            onChange={(e) => processUpdateProfile('email', e.target.value)}
                         />
                      </Form.Group>
 
                      <Form.Group className="mb-3">
-                        <Form.Label>Username</Form.Label>
+                        <Form.Label>Tên tài khoản</Form.Label>
                         <Form.Control
                            type="text"
                            name="username"
                            value={profile?.username}
+                           placeholder="Nhập tên tài khoản..."
                            onChange={(e) => processUpdateProfile('username', e.target.value)}
                         />
                      </Form.Group>
@@ -241,9 +243,9 @@ const Profile = () => {
                               <Form.Label>Mật khẩu mới</Form.Label>
                               <Form.Control
                                  type={showPassword ? 'text' : 'password'}
-                                 placeholder="Mật khẩu"
                                  name="password"
                                  value={profile?.password}
+                                 placeholder="Nhập mật khẩu..."
                                  onChange={(e) => processUpdateProfile('password', e.target.value)}
                               />
                               <Button

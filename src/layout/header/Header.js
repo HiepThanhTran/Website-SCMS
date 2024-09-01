@@ -86,10 +86,10 @@ const Header = () => {
                   ) : (
                      <div className="name-user-wrapper">
                         <div className="name-user-container">
-                           <NavLink className="nav-link name-user" to="/profile">
-                              Xin chào, {user?.data?.username || 'Nguyen Van A'}
+                           <div style={{ cursor: 'pointer' }} className="nav-link name-user">
+                              Xin chào, {user?.data?.username || 'USERNAME TEST'}
                               <div className="user-dropdown p-2">
-                                 <NavLink className="dropdown-item" to="/profile">
+                                 <NavLink className="dropdown-item" to={routeUrl.ACCOUNT(user?.data?.username)}>
                                     Tài khoản
                                  </NavLink>
                                  <NavLink className="dropdown-item" to={getProfileLink()}>
@@ -99,7 +99,7 @@ const Header = () => {
                                     Đăng xuất
                                  </button>
                               </div>
-                           </NavLink>
+                           </div>
                         </div>
 
                         <div className="cart-user">
