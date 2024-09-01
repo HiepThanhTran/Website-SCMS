@@ -6,13 +6,12 @@ import Swal from 'sweetalert2';
 import { statusCode } from '../../utils/Constatns';
 import { UpdateUserAction } from '../../store/actions/UserAction';
 import Loading from '../../layout/loading/Loading';
-import moment from 'moment';
-import { format } from 'date-fns';
 
 const ProfileCustomer = () => {
    const [user, dispatch] = useUser();
    const [profileCustomer, setProfileCustomer] = useState(user?.profile);
    const [loading, setLoading] = useState(false);
+
    const processUpdateProfileCustomer = (field, value) => {
       setProfileCustomer({ ...profileCustomer, [field]: value });
    };
@@ -40,7 +39,7 @@ const ProfileCustomer = () => {
          formData.append('gender', profileCustomer?.gender);
       }
       if (profileCustomer?.dateOfBirth !== user?.profile?.dateOfBirth) {
-         formData.append('dateOfBirth',profileCustomer?.dateOfBirth);
+         formData.append('dateOfBirth', profileCustomer?.dateOfBirth);
       }
 
       setLoading(true);
@@ -105,7 +104,7 @@ const ProfileCustomer = () => {
                            <Form.Control
                               type="text"
                               name="lastName"
-                              value={profileCustomer?.lastName}
+                              value={profileCustomer?.lastName || ''}
                               onChange={(e) => processUpdateProfileCustomer('lastName', e.target.value)}
                            />
                         </Form.Group>
@@ -117,7 +116,7 @@ const ProfileCustomer = () => {
                            <Form.Control
                               type="text"
                               name="middleName"
-                              value={profileCustomer?.middleName}
+                              value={profileCustomer?.middleName || ''}
                               onChange={(e) => processUpdateProfileCustomer('middleName', e.target.value)}
                            />
                         </Form.Group>
@@ -129,7 +128,7 @@ const ProfileCustomer = () => {
                            <Form.Control
                               type="text"
                               name="firstName"
-                              value={profileCustomer?.firstName}
+                              value={profileCustomer?.firstName || ''}
                               onChange={(e) => processUpdateProfileCustomer('firstName', e.target.value)}
                            />
                         </Form.Group>
@@ -141,7 +140,7 @@ const ProfileCustomer = () => {
                      <Form.Control
                         type="text"
                         name="address"
-                        value={profileCustomer?.address}
+                        value={profileCustomer?.address || ''}
                         onChange={(e) => processUpdateProfileCustomer('address', e.target.value)}
                      />
                   </Form.Group>
@@ -153,7 +152,7 @@ const ProfileCustomer = () => {
                            <Form.Control
                               type="tel"
                               name="phone"
-                              value={profileCustomer?.phone}
+                              value={profileCustomer?.phone || ''}
                               onChange={(e) => processUpdateProfileCustomer('phone', e.target.value)}
                            />
                         </Form.Group>
@@ -164,11 +163,11 @@ const ProfileCustomer = () => {
                            <Form.Label>Giới tính</Form.Label>
                            <Form.Select
                               name="gender"
-                              value={profileCustomer?.gender ? 'true' : 'false'}
-                              onChange={(e) => processUpdateProfileCustomer('gender', e.target.value === 'true')}
+                              value={profileCustomer?.gender ? '1' : '0'}
+                              onChange={(e) => processUpdateProfileCustomer('gender', e.target.value === '1')}
                            >
-                              <option value="true">Nam</option>
-                              <option value="false">Nữ</option>
+                              <option value="1">Nữ</option>
+                              <option value="0">Nam</option>
                            </Form.Select>
                         </Form.Group>
                      </Col>
@@ -178,7 +177,6 @@ const ProfileCustomer = () => {
                            <Form.Label>Ngày sinh</Form.Label>
                            <Form.Control
                               type="date"
-                              name="dateOfBirth"
                               value={profileCustomer?.dateOfBirth}
                               onChange={(e) => processUpdateProfileCustomer('dateOfBirth', e.target.value)}
                            />
