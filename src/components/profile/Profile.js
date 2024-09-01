@@ -17,9 +17,7 @@ const Profile = () => {
    const [confirmPassword, setConfirmPassword] = useState('');
    const [loading, setLoading] = useState(false);
    const [showPassword, setShowPassword] = useState(false);
-
    const navigate = useNavigate();
-
    const handleConfirmAccount = async () => {
       setLoading(true);
       try {
@@ -71,6 +69,7 @@ const Profile = () => {
       const formData = new FormData();
       if (profile?.email !== user?.data?.email) {
          formData.append('email', profile?.email);
+         console.log(formData);
       }
       if (profile?.username !== user?.data?.username) {
          formData.append('username', profile?.username);
@@ -301,8 +300,8 @@ const Profile = () => {
 
                         <div className="text-center">
                            <Button
-                              variant="primary"
                               onClick={handleUpdateProfile}
+                              variant="primary"
                               style={{
                                  backgroundColor: 'var(--primary-color)',
                                  border: 'none',

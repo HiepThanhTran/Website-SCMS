@@ -1,172 +1,189 @@
-import React, { useContext, useEffect, useState, useCallback } from "react";
-import APIs, { endpoints } from "../../configs/APIs";
-import { defaultImage} from '../../utils/Constatns';
-import "./Product.css";
-import cookie from "react-cookies";
-import Swal from "sweetalert2";
+import { Container, Row, Col } from "react-bootstrap";
+import { useState, useEffect, useCallback, useContext } from "react";
+import { useNavigate } from 'react-router-dom';
+import APIs, { endpoints } from '../../configs/APIs';
+import { defaultImage, statusCode } from '../../utils/Constatns';
 import { MyCartContext } from "../../App";
+import Loading from '../../layout/loading/Loading';
+import cookie from "react-cookies";
+import "./Product.css";
 
 const Product = () => {
-	const [products, setProducts] = useState([]);
-	const [categories, setCategories] = useState([]);
-	const [page, setPage] = useState(1);
-	const [size, setSize] = useState(8);
-	const [loading, setLoading] = useState(true);
-	const [name, setName] = useState("");
-	const [selectedCategory, setSelectedCategory] = useState("");
-	const [, dispatch] = useContext(MyCartContext);
+  const [, dispatch] = useContext(MyCartContext);
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [page, setPage] = useState(1);
+  const [size, setSize] = useState(8);
+  const [name, setName] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const navigate = useNavigate();
 
-	const isAuthenticated = cookie.load("isAuthenticated");
+  const loadProduct = async () => {
+    try {
+      const params = new URLSearchParams({
+        page: page,
+        size: size,
+        name: name,
+        categoryId: selectedCategory 
+      });
 
-   const loadCategories = useCallback(async () => {
-      try {
-         const res = await APIs.get(endpoints.categories);
-         setCategories(res.data);
-      } catch (error) {
-         console.error(error);
-      }
-   }, []);
+      const res = await APIs.get(`${endpoints.products}?${params}`);
+      setProducts(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-   const loadProduct = useCallback(async () => {
-      setLoading(true);
-      try {
-         const params = new URLSearchParams({
-            page,
-            size,
-            name: name || '',
-            categoryId: selectedCategory || '',
-         }).toString();
+  const loadCategories = async () => {
+    try {
+      const res = await APIs.get(endpoints.categories);
+      setCategories(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-			const res = await APIs.get(`${endpoints.products}?${params}`);
-			setProducts(res.data);
-		} catch (error) {
-			console.error("Failed to load products:", error);
-		} finally {
-			setLoading(false);
-		}
-	}, [page, size, name, selectedCategory]);
+  useEffect(() => {
+    loadProduct();
+  }, [page, size, name, selectedCategory]);
 
-   useEffect(() => {
-      loadCategories();
-      loadProduct();
-   }, [loadProduct, loadCategories]);
+  useEffect(() => {
+    loadCategories();
+  }, []);
 
-	const handleSearch = useCallback((event) => {
-		setName(event.target.value);
-		setPage(1);
-	}, []);
+  const handleSearch = useCallback((event) => {
+    setName(event.target.value);
+    setPage(1);
+  }, []);
 
-   const handleCategoryChange = (event) => {
-      setSelectedCategory(event.target.value);
-      setPage(1);
-   };
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+    setPage(1);
+  };
 
-   const handleNextPage = () => {
-      setPage((prevPage) => prevPage + 1);
-   };
+  const handleNextPage = () => {
+    setPage((prevPage) => prevPage + 1);
+  };
 
-   const handlePrevPage = () => {
-      setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));
-   };
+  const handlePrevPage = () => {
+    setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));
+  };
 
-	const addToCart = (product) => {
-		if (!isAuthenticated) {
-			Swal.fire({
-				title: "Xác thực tài khoản",
-				text: "Vui lòng xác thực tài khoản để thêm sản phẩm vào giỏ hàng.",
-				icon: "warning",
-				confirmButtonText: "Đóng",
-				customClass: {
-					confirmButton: 'swal2-confirm'
-				}
-			});
-			return;
-		}
+  const handleProductClick = (productId) => {
+    navigate(`/product/${productId}`);
+  };
 
-		let cart = cookie.load("cart") || {};
+  const addToCart = (product) => {
+    let cart = cookie.load("cart") || {};
 
-      if (cart[product.id]) {
-         cart[product.id].quantity++;
-      } else {
-         cart[product.id] = {
-            id: product.id,
+    if (cart[product.id]) {
+        cart[product.id].quantity++;
+    } else {
+        cart[product.id] = {
+            image: product.image,
             name: product.name,
             description: product.description,
             price: product.price,
             quantity: 1,
-         };
-      }
+        };
+    }
 
-		cookie.save("cart", cart);
-		dispatch({ type: "update" });
-	};
+    cookie.save("cart", cart);
+    console.info("cart", cart);
+    dispatch({ type: "update" });
+  };
 
-   return (
-      <div className="container product">
-         <div className="product__title">
-            <h1 className="product__title--main">Danh sách sản phẩm</h1>
-            <span></span>
-         </div>
-
-         <div className="product__search">
-            <input
-               type="text"
-               className="product__search--input"
-               placeholder="Tìm kiếm sản phẩm..."
-               onChange={handleSearch}
-               value={name}
-            />
-            <select className="product__search--category" onChange={handleCategoryChange} value={selectedCategory}>
-               <option value="">Tất cả danh mục</option>
-               {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                     {category.name}
-                  </option>
-               ))}
-            </select>
-         </div>
-
-         {loading ? (
-            <div>Loading...</div>
-         ) : (
-            <div className="row">
-               {products.map((product) => (
-                  <div key={product.id} className="col-3 mb-4">
-                     <div className="card-product">
-                        <div className="card-product__image">
-                           <img src={product.image || defaultImage.PRODUCT_IMAGE} alt={product.name} />
-                        </div>
-
-                        <div className="card-product__content">
-                           <h1 className="card-product__content--title">Tên sản phẩm: {product.name}</h1>
-                           <p className="card-product__content--description">Mô tả: {product.description}</p>
-                           <span className="card-product__content--price">
-                              Giá: {product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-                           </span>
-                        </div>
-
-                        <div className="card-product__button">
-                           <button className="card-product__button--detail">Xem chi tiết</button>
-                           <button className="card-product__button--order" onClick={() => addToCart(product)}>
-                              Đặt hàng
-                           </button>
-                        </div>
-                     </div>
-                  </div>
-               ))}
+  return (
+    <Container className="product-container">
+      <div className="shadow-lg p-3 mb-3 bg-body rounded gap-3">
+        <Row>
+          <Col sm={3}>
+            <div className="title-filter">
+              <h3 className="title-filter">Bộ lọc nâng cao</h3>
             </div>
-         )}
 
-         <div className="text-center">
-            <button className="btn-page me-2" onClick={handlePrevPage} disabled={page === 1}>
-               <i className="bx bxs-left-arrow"></i>
-            </button>
-            <button className="btn-page" onClick={handleNextPage} disabled={products.length < size}>
-               <i className="bx bxs-right-arrow"></i>
-            </button>
-         </div>
+            <div className="filter-category">
+              <div className="filter-category__title">
+                <i className='bx bxs-category'></i>
+                <h3 className="filter-category__title--main">Danh mục</h3>
+              </div>
+
+              <div className="filter-category__dropdown mt-4">
+                <select className="product__search--category" onChange={handleCategoryChange} value={selectedCategory}>
+                  <option value="">Tất cả danh mục</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </Col>
+
+          <Col sm={9}>
+            <Row>
+              <div className="product__search">
+                <input
+                  type="text"
+                  className="product__search--input"
+                  placeholder="Nhập tên sản phẩm..."
+                  onChange={handleSearch}
+                  value={name}
+                />
+              </div>
+              {products.map((product) => (
+                <Col sm={3} key={product.id} className="mb-4">
+                  <div className="product-card">
+                    <div 
+                      className="product-card__image" 
+                      onClick={() => handleProductClick(product.id)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <img
+                        src={product.image ? product.image : defaultImage.PRODUCT_IMAGE}
+                        alt={product.name || "Ảnh sản phẩm"}
+                      />
+                    </div>
+
+                    <div 
+                      className="product-card__content"
+                      onClick={() => handleProductClick(product.id)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <h1 className="product-card__content--title">{product.name}</h1>
+                      <p className="product-card__content--des">
+                        Mô tả: {product.description}
+                      </p>
+                      <span>Giá: {product.price} VNĐ</span>
+                    </div>
+
+                    <div className="product-card__button">
+                      <button onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart(product);
+                      }}>
+                        <i className='bx bxs-cart-add'></i>
+                      </button>
+                    </div>
+                  </div>
+                </Col>
+              ))}
+
+              <div className="text-center mt-4">
+                <button className="btn-page me-2 me-3" onClick={handlePrevPage} disabled={page === 1}>
+                  <i className="bx bxs-left-arrow"></i>
+                </button>
+                <button className="btn-page" onClick={handleNextPage} disabled={products.length < size}>
+                  <i className="bx bxs-right-arrow"></i>
+                </button>
+              </div>
+            </Row>
+          </Col>
+        </Row>
       </div>
-   );
+    </Container>
+  );
 };
 
 export default Product;

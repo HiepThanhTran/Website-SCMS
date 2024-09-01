@@ -8,6 +8,7 @@ import Cart from './components/cart/Cart';
 import Home from './components/home/Home';
 import Login from './components/login/Login';
 import Product from './components/product/Product';
+import ProductDetail from './components/product/ProductDetail';
 import Profile from './components/profile/Profile';
 import ProfileCustomer from './components/profile/ProfileCustomer';
 import ProfileShipper from './components/profile/ProfileShipper';
@@ -24,7 +25,7 @@ export const routeUrl = {
    HOME: '/',
    LOGIN: '/login',
    REGISTER: '/register',
-   ACCOUNT: (username) => `/users/${username}`,
+   USER: (username) => `/users/${username}`,
    PROFILE: (username) => `/users/${username}/profile`,
    PROFILE_CUSTOMER: '/profile/customer',
    PROFILE_SUPPLIER: '/profile/supplier',
@@ -32,6 +33,7 @@ export const routeUrl = {
    PROFILE_DISTRIBUTOR: '/profile/distributor',
    PROFILE_MANUFACTURER: '/profile/manufacturer',
    PRODUCT: '/product',
+   PRODUCT_DETAIL: (productId) => `/product/${productId}`,
    CART: '/cart',
 };
 
@@ -48,14 +50,15 @@ function App() {
             <BrowserRouter>
                <Header />
                <Routes>
+                  <Route path={routeUrl.HOME} element={<Home />} />
                   <Route path={routeUrl.LOGIN} element={<Login />} />
                   <Route path={routeUrl.REGISTER} element={<Register />} />
-                  <Route path={routeUrl.ACCOUNT(':username')} element={<Profile />} />
+                  <Route path={routeUrl.USER(':username')} element={<Profile />} />
                   <Route path={routeUrl.PROFILE_CUSTOMER} element={<ProfileCustomer />} />
                   <Route path={routeUrl.PROFILE_SUPPLIER} element={<ProfileSupplier />} />
                   <Route path={routeUrl.PROFILE_SHIPPER} element={<ProfileShipper />} />
                   <Route path={routeUrl.PRODUCT} element={<Product />} />
-                  <Route path={routeUrl.HOME} element={<Home />} />
+                  <Route path={routeUrl.PRODUCT_DETAIL(':productId')} element={<ProductDetail />} />
                   <Route path={routeUrl.CART} element={<Cart />} />
                </Routes>
                <ConditionalFooter />
