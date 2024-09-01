@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import APIs, { endpoints } from '../../configs/APIs';
 import { defaultImage, statusCode } from '../../utils/Constatns';
 import { MyCartContext } from "../../App";
+import Loading from '../../layout/loading/Loading';
 import cookie from "react-cookies";
 import "./Product.css";
 

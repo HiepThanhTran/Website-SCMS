@@ -182,6 +182,7 @@ const ProfileCustomer = () => {
                            />
                         </Form.Group>
                      </Col>
+
                   </Row>
 
                   <div className="text-center mt-3">
