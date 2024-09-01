@@ -133,27 +133,28 @@
     box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25);
 }
 
-.filter-category__title {
+.filter__title {
     display: flex;
     align-items: center;
 }
 
-.filter-category__title i {
+.filter__title i {
     font-size: 1.25rem;
     margin-right: 10px;
     color: var(--text-color);
     font-weight: 600;
 }
 
-.filter-category__title--main {
+.filter__title--main {
     margin-bottom: 0;
     font-size: 1.25rem;
     color: var(--text-color);
     font-weight: 600;
 }
 
-.product__search--category {
+.product__search--all {
     height: 40px;
+    width: 250px;
     border: 1px solid var(--primary-color);
     border-radius: 5px;
     background-color: var(--background-white);
@@ -179,30 +180,58 @@
     border-radius: 16px;
 }
 
-.product-detail__content{
+.product-detail__content {
     margin-left: 40px;
 }
 
-.product-detail__content--name{
+.product-detail__content--name {
     font-size: 2rem;
     font-weight: 600;
     color: var(--text-color);
 }
 
-.product-detail__content--description{
+.product-detail__content--description {
     font-size: 1.25rem;
     font-weight: 500;
 }
 
-.product-detail__content--price{
+.product-detail__content--price {
     font-size: 1.25rem;
-    font-weight:600;
+    font-weight: 600;
     color: var(--primary-color);
 }
 
-.product-detail__quantity--title{
+.product-detail__quantity--title {
     font-size: 1.25rem;
-    font-weight:600;
+    font-weight: 600;
     color: var(--text-color);
     margin-bottom: 20px;
+}
+
+/* Filer */
+.filter__tag--dropdown {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 1rem;
+    width: 250px;
+}
+
+.tag-item {
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.tag-item:hover {
+    background-color: var(--primary-color-hover);
+}
+
+.tag-item.selected {
+    background-color: var(--primary-color-hover);
 }

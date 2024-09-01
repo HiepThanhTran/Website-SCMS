@@ -1,8 +1,8 @@
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Form } from "react-bootstrap";
 import { useState, useEffect, useCallback, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import APIs, { endpoints } from '../../configs/APIs';
-import { defaultImage, statusCode } from '../../utils/Constatns';
+import { defaultImage } from '../../utils/Constatns';
 import { MyCartContext } from "../../App";
 import Loading from '../../layout/loading/Loading';
 import cookie from "react-cookies";
@@ -12,10 +12,14 @@ const Product = () => {
   const [, dispatch] = useContext(MyCartContext);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [units, setUnits] = useState([]);
+  const [tags, setTags] = useState([]);
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(8);
   const [name, setName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedTag, setSelectedTag] = useState("");
+  const [selectedUnit, setSelectedUnit] = useState("");
   const navigate = useNavigate();
 
   const loadProduct = async () => {
@@ -24,7 +28,8 @@ const Product = () => {
         page: page,
         size: size,
         name: name,
-        categoryId: selectedCategory 
+        categoryId: selectedCategory,
+        tagId: selectedTag
       });
 
       const res = await APIs.get(`${endpoints.products}?${params}`);
@@ -43,12 +48,38 @@ const Product = () => {
     }
   };
 
+  const loadUnits = async () => {
+    try {
+      const res = await APIs.get(endpoints.units);
+      setUnits(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const loadTags = async () => {
+    try {
+      const res = await APIs.get(endpoints.tags);
+      setTags(res.data);
+    } catch (err) {
+      console.error("Error loading tags:", err);
+    }
+  };
+
   useEffect(() => {
     loadProduct();
-  }, [page, size, name, selectedCategory]);
+  }, [page, size, name, selectedCategory, selectedTag]);
 
   useEffect(() => {
     loadCategories();
+  }, []);
+
+  useEffect(() => {
+    loadUnits();
+  }, []);
+
+  useEffect(() => {
+    loadTags();
   }, []);
 
   const handleSearch = useCallback((event) => {
@@ -58,6 +89,16 @@ const Product = () => {
 
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
+    setPage(1);
+  };
+
+  const handleUnitChange = (event) => {
+    setSelectedUnit(event.target.value);
+    setPage(1);
+  };
+
+  const handleTagChange = (event) => {
+    setSelectedTag(event.target.value);
     setPage(1);
   };
 
@@ -77,19 +118,18 @@ const Product = () => {
     let cart = cookie.load("cart") || {};
 
     if (cart[product.id]) {
-        cart[product.id].quantity++;
+      cart[product.id].quantity++;
     } else {
-        cart[product.id] = {
-            image: product.image,
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            quantity: 1,
-        };
+      cart[product.id] = {
+        image: product.image,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        quantity: 1,
+      };
     }
 
     cookie.save("cart", cart);
-    console.info("cart", cart);
     dispatch({ type: "update" });
   };
 
@@ -102,21 +142,72 @@ const Product = () => {
               <h3 className="title-filter">Bộ lọc nâng cao</h3>
             </div>
 
-            <div className="filter-category">
-              <div className="filter-category__title">
+            <div className="filter">
+              <div className="filter__title">
                 <i className='bx bxs-category'></i>
-                <h3 className="filter-category__title--main">Danh mục</h3>
+                <h3 className="filter__title--main">Danh mục</h3>
               </div>
 
               <div className="filter-category__dropdown mt-4">
-                <select className="product__search--category" onChange={handleCategoryChange} value={selectedCategory}>
+                <select className="product__search--all" onChange={handleCategoryChange} value={selectedCategory}>
                   <option value="">Tất cả danh mục</option>
                   {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
+                    <option key={category.id} value={category.id} className="short-option">
                       {category.name}
                     </option>
                   ))}
                 </select>
+              </div>
+            </div>
+
+            <div className="filter mt-4">
+              <div className="filter__title">
+                <i class='bx bxs-package'></i>
+                <h3 className="filter__title--main">Đơn vị</h3>
+              </div>
+
+              <div className="filter__dropdown mt-4">
+                <select className="product__search--all" onChange={handleUnitChange} value={selectedUnit}>
+                  <option value="">Tất cả đơn vị</option>
+                  {units.map((unit) => (
+                    <option key={unit.id} value={unit.id}>
+                      {unit.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="filter mt-4">
+              <div className="filter__title">
+                <i className='bx bx-money'></i>
+                <h3 className="filter__title--main">Giá</h3>
+              </div>
+
+              <Form.Group className="mb-3 mt-3" style={{ width: "250px" }}>
+                <Form.Label>Từ</Form.Label>
+                <Form.Control type="text" />
+              </Form.Group>
+
+              <Form.Group className="mb-3" style={{ width: "250px" }}>
+                <Form.Label>Đến</Form.Label>
+                <Form.Control type="text" />
+              </Form.Group>
+            </div>
+
+
+            <div className="filter mt-4">
+              <div className="filter__title">
+                <i className='bx bxs-purchase-tag'></i>
+                <h3 className="filter__title--main">Nhãn</h3>
+              </div>
+
+              <div className="filter__tag--dropdown mt-4">
+                {tags.map((tag) => (
+                  <div className="tag-item">
+                    <span className="">{tag.name}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </Col>
@@ -135,8 +226,8 @@ const Product = () => {
               {products.map((product) => (
                 <Col sm={3} key={product.id} className="mb-4">
                   <div className="product-card">
-                    <div 
-                      className="product-card__image" 
+                    <div
+                      className="product-card__image"
                       onClick={() => handleProductClick(product.id)}
                       style={{ cursor: "pointer" }}
                     >
@@ -146,7 +237,7 @@ const Product = () => {
                       />
                     </div>
 
-                    <div 
+                    <div
                       className="product-card__content"
                       onClick={() => handleProductClick(product.id)}
                       style={{ cursor: "pointer" }}

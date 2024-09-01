@@ -12,7 +12,7 @@ const ProfileCustomer = () => {
    const [user, dispatch] = useUser();
    const [profileCustomer, setProfileCustomer] = useState(user?.profile);
    const [loading, setLoading] = useState(false);
-   console.log(profileCustomer);
+
    const processUpdateProfileCustomer = (field, value) => {
       setProfileCustomer({ ...profileCustomer, [field]: value });
    };
@@ -174,7 +174,6 @@ const ProfileCustomer = () => {
                      </Col>
 
                      <Col sm={4}>
-                        
                         <Form.Group className="mb-3">
                            <Form.Label>Ngày sinh</Form.Label>
                            <Form.Control
@@ -184,7 +183,6 @@ const ProfileCustomer = () => {
                            />
                         </Form.Group>
                      </Col>
-
                   </Row>
 
                   <div className="text-center mt-3">
