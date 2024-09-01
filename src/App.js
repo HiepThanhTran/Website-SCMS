@@ -12,6 +12,7 @@ import Profile from './components/profile/Profile';
 import ProfileCustomer from './components/profile/ProfileCustomer';
 import ProfileShipper from './components/profile/ProfileShipper';
 import ProfileSupplier from './components/profile/ProfileSupplier';
+import ProductDetail from './components/product/ProductDetail';
 import Register from './components/register/Register';
 import Footer from './layout/footer/Footer';
 import Header from './layout/header/Header';
@@ -41,6 +42,7 @@ function App() {
                   <Route path="/profile/supplier" element={<ProfileSupplier />} />
                   <Route path="/profile/shipper" element={<ProfileShipper />} />
                   <Route path="/product" element={<Product />} />
+                  <Route path="/product/:id" element={<ProductDetail />} />
                   <Route path="/cart" element={<Cart />} />
                </Routes>
                <ConditionalFooter />
