@@ -81,7 +81,7 @@ const Header = () => {
                                  <NavLink className="dropdown-item" to="/list-order">
                                     Đơn hàng
                                  </NavLink>
-                                 <button className="dropdown-item" onClick={logout}>
+                                 <button className="dropdown-item" onClick={handleLogout}>
                                     Đăng xuất
                                  </button>
                               </div>

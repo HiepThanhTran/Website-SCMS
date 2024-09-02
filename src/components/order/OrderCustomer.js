@@ -41,7 +41,7 @@ const OrderCustomer = () => {
     return (
         <Container className='order-container'>
             {loading ? (
-                <Loading /> // Hiển thị component Loading khi đang tải
+                <Loading />
             ) : (
                 <>
                     <div className='shadow-lg p-3 mb-3 bg-body rounded gap-3'>
