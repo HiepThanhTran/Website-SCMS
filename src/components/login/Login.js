@@ -1,40 +1,38 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import cookie from 'react-cookies';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import APIs, { authAPI, endpoints } from '../../configs/APIs';
-import { LoginAction } from '../../store/actions/UserAction';
 import { useUser } from '../../store/contexts/UserContext';
+import { LOGIN } from '../../store/reducers/UserReducer';
 import { roles } from '../../utils/Constatns';
 import './Login.css';
+import { useCart } from '../../store/contexts/CartContext';
+import { UPDATE_CART } from '../../store/reducers/CartReducer';
 
 const Login = () => {
-   const [user, dispatch] = useUser();
+   const [, userDispatch] = useUser();
+   const [, cartDispatch] = useCart();
    const [username, setUsername] = useState('');
    const [password, setPassword] = useState('');
    const [showPassword, setShowPassword] = useState(false);
+
    const [q] = useSearchParams();
-   const nav = useNavigate();
+   const navigate = useNavigate();
 
-   useEffect(() => {
-      if (cookie.load('token') && user?.data !== null) {
-         nav('/');
-      }
-   }, [nav, user]);
-
-   const login = async (e) => {
+   const handleLogin = async (e) => {
       e.preventDefault();
 
       try {
-         const res = await APIs.post(endpoints.login, { username, password });
-         cookie.save('token', res.data);
+         const token = await APIs.post(endpoints.login, { username, password });
+         cookie.save('token', token.data);
 
-         const currentUser = await authAPI().get(endpoints.profileUser);
-         let payload = { data: currentUser.data };
+         const user = await authAPI().get(endpoints.profileUser);
+         let payload = { data: user.data };
 
-         switch (currentUser?.data?.role) {
+         switch (user?.data?.role) {
             case roles.CUSTOMER:
                const profileCustomer = await authAPI().get(endpoints.profileCustomer);
                payload = { ...payload, profile: profileCustomer.data };
@@ -55,11 +53,21 @@ const Login = () => {
                throw new Error('Invalid');
          }
 
-         dispatch(LoginAction(payload));
+         const cart = await authAPI().get(endpoints.getCart);
+         cartDispatch({
+            type: UPDATE_CART,
+            payload: cart.data,
+         })
+         cookie.save('cart', cart.data);
+
+         userDispatch({
+            type: LOGIN,
+            payload: payload,
+         });
          cookie.save('user', payload);
 
          let next = q.get('next') || '/';
-         nav(next);
+         navigate(next);
       } catch (error) {
          Swal.fire({
             title: 'Đăng nhập thất bại',
@@ -77,22 +85,17 @@ const Login = () => {
       }
    };
 
-   if (user?.data !== null) {
-      let next = q.get('next') || '/';
-      return <Navigate to={next} />;
-   }
-
    return (
       <div className="login-page">
          <div className="login-container">
             <h2 className="text-center mb-3 login-title">Đăng nhập</h2>
-            <Form onSubmit={login} className="login-form">
+            <Form onSubmit={handleLogin} className="login-form">
                <Form.Group className="mb-3">
                   <Form.Control
                      value={username}
                      onChange={(e) => setUsername(e.target.value)}
                      type="text"
-                     placeholder="Tên đăng nhập"
+                     placeholder="Nhập tên đăng nhập..."
                      required
                   />
                </Form.Group>
@@ -101,7 +104,7 @@ const Login = () => {
                      value={password}
                      onChange={(e) => setPassword(e.target.value)}
                      type={showPassword ? 'text' : 'password'}
-                     placeholder="Mật khẩu"
+                     placeholder="Nhập mật khẩu..."
                      required
                   />
                   <Button variant="link" className="password-toggle" onClick={() => setShowPassword(!showPassword)}>

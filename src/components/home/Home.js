@@ -7,7 +7,6 @@ import './Home.css';
 const Home = () => {
    return (
       <>
-         {/* Carousel */}
          <Carousel>
             <Carousel.Item>
                <img className="d-block w-100 height-img" src={carousel_1} alt="First slide" />
@@ -34,7 +33,6 @@ const Home = () => {
             </Carousel.Item>
          </Carousel>
 
-         {/* Principles */}
          <Container className="container p-5 content-container">
             <div className="content__subject">
                <h1 className="content__subject__title text-center">Tầm nhìn và sứ mệnh</h1>
@@ -75,7 +73,6 @@ const Home = () => {
             </Row>
          </Container>
 
-         {/* Core values */}
          <Container className="container p-5 content-container">
             <div className="content__subject">
                <h1 className="content__subject__title text-center">Giá trị cốt lõi</h1>

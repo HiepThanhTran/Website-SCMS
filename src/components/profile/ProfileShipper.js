@@ -1,13 +1,6 @@
-import { useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import { useUser } from '../../store/contexts/UserContext';
-import { authAPI, endpoints } from '../../configs/APIs';
-import Swal from 'sweetalert2';
-import { statusCode } from '../../utils/Constatns';
-import { UpdateUserAction } from '../../store/actions/UserAction';
-import Loading from '../../layout/loading/Loading';
 
-const ProfileShipper = () => {
+const ProfileShipper = ({ profile, updateFunc, processFunc }) => {
    return (
       <Container className="profile-container">
          <div className="shadow-lg p-3 mb-3 bg-body rounded gap-3">
@@ -23,6 +16,8 @@ const ProfileShipper = () => {
                            <Form.Control
                               type="text"
                               name="name"
+                              value={profile?.name}
+                              onChange={(e) => processFunc('name', e.target.value)}
                            />
                         </Form.Group>
                      </Col>
@@ -30,11 +25,7 @@ const ProfileShipper = () => {
                      <Col sm={6}>
                         <Form.Group className="mb-3">
                            <Form.Label>Rating</Form.Label>
-                           <Form.Control
-                              type="tel"
-                              name="phone"
-                              disabled
-                           />
+                           <Form.Control type="tel" name="phone" disabled value={profile?.rating} />
                         </Form.Group>
                      </Col>
                   </Row>
@@ -44,6 +35,8 @@ const ProfileShipper = () => {
                      <Form.Control
                         type="tel"
                         name="contactInfo"
+                        value={profile?.contactInfo}
+                        onChange={(e) => processFunc('contactInfo', e.target.value)}
                      />
                   </Form.Group>
 
@@ -56,6 +49,7 @@ const ProfileShipper = () => {
                            color: 'white',
                            fontWeight: 500,
                         }}
+                        onClick={updateFunc}
                      >
                         Cập nhật hồ sơ
                      </Button>
