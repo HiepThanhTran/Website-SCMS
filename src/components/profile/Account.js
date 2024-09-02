@@ -4,9 +4,8 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { authAPI, endpoints } from '../../configs/APIs';
-import Loading from '../../layout/loading/Loading';
-import { LogoutAction, UpdateUserAction } from '../../store/actions/UserAction';
 import { useUser } from '../../store/contexts/UserContext';
+import { LOGOUT, UPDATE_USER } from '../../store/reducers/UserReducer';
 import { defaultImage, rolesName, statusCode } from '../../utils/Constatns';
 import './Profile.css';
 
@@ -20,8 +19,18 @@ const Account = () => {
 
    const navigate = useNavigate();
 
-   const handleConfirmAccount = async () => {
-      setLoading(true);
+   const handleConfirmAccount = async (e) => {
+      e.preventDefault();
+
+      Swal.fire({
+         title: 'Đang cập nhật...',
+         text: 'Vui lòng đợi một chút.',
+         allowOutsideClick: false,
+         onOpen: () => {
+            Swal.showLoading();
+         },
+      });
+
       try {
          const res = await authAPI().post(endpoints.confirm);
 
@@ -35,33 +44,26 @@ const Account = () => {
                   confirmButton: 'swal2-confirm',
                },
             }).then(() => {
-               dispatch(
-                  UpdateUserAction({
+               dispatch({
+                  type: UPDATE_USER,
+                  payload: {
                      data: {
                         ...user?.data,
                         isConfirm: true,
                      },
                      profile: user?.profile,
-                  }),
-               );
+                  },
+               });
             });
          }
       } catch (error) {
-         Swal.fire({
-            title: 'Xác thực thất bại',
-            text:
-               error?.response?.data.map((data) => data.message).join('\n') ||
-               'Hệ thống đang bận, vui lòng thử lại sau',
-            icon: 'error',
-            confirmButtonText: 'Đóng',
-            customClass: {
-               confirmButton: 'swal2-confirm',
-            },
-         });
+         Swal.showValidationMessage(
+            `Xác thực thất bại: ${
+               error?.response?.data.map((data) => data.message).join('\n') || 'Hệ thống đang bận, vui lòng thử lại sau'
+            }`,
+         );
          console.error(error);
          console.error(error?.response);
-      } finally {
-         setLoading(false);
       }
    };
 
@@ -72,19 +74,20 @@ const Account = () => {
    const handleUpdateAccount = async (e) => {
       e.preventDefault();
 
+      Swal.fire({
+         title: 'Đang cập nhật...',
+         text: 'Vui lòng đợi một chút.',
+         allowOutsideClick: false,
+         onOpen: () => {
+            Swal.showLoading();
+         },
+      });
+
       const formData = new FormData();
 
       if (profile?.oldPassword && profile?.newPassword) {
          if (profile?.newPassword !== confirmPassword) {
-            Swal.fire({
-               title: 'Lỗi',
-               text: 'Mật khẩu xác nhận không khớp!',
-               icon: 'error',
-               confirmButtonText: 'Đóng',
-               customClass: {
-                  confirmButton: 'swal2-confirm',
-               },
-            });
+            Swal.showValidationMessage('Mật khẩu xác nhận không khớp!');
             return;
          }
 
@@ -119,34 +122,27 @@ const Account = () => {
                },
             }).then(() => {
                if (profile?.username !== user?.data?.username || profile?.password) {
-                  dispatch(LogoutAction());
+                  dispatch({ type: LOGOUT });
                   navigate('/');
                } else {
-                  dispatch(
-                     UpdateUserAction({
+                  dispatch({
+                     type: UPDATE_USER,
+                     payload: {
                         data: res.data,
                         profile: user?.profile,
-                     }),
-                  );
+                     },
+                  });
                }
             });
          }
       } catch (error) {
-         Swal.fire({
-            title: 'Cập nhật thất bại',
-            text:
-               error?.response?.data.map((data) => data.message).join('\n') ||
-               'Hệ thống đang bận, vui lòng thử lại sau',
-            icon: 'error',
-            confirmButtonText: 'Đóng',
-            customClass: {
-               confirmButton: 'swal2-confirm',
-            },
-         });
+         Swal.showValidationMessage(
+            `Cập nhật thất bại: ${
+               error?.response?.data.map((data) => data.message).join('\n') || 'Hệ thống đang bận, vui lòng thử lại sau'
+            }`,
+         );
          console.error(error);
          console.error(error?.response);
-      } finally {
-         setLoading(false);
       }
    };
 
@@ -157,10 +153,6 @@ const Account = () => {
          processUpdateProfile('avatar', file);
       }
    };
-
-   if (loading) {
-      return <Loading />;
-   }
 
    return (
       <Container className="profile-container">

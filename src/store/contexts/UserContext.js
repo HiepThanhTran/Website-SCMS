@@ -1,13 +1,12 @@
 import { createContext, useContext, useReducer } from 'react';
 import cookie from 'react-cookies';
-import { userReducer } from '../reducers/UserReducer';
+import userReducer from '../reducers/UserReducer';
 
 export const UserContext = createContext(null);
 
 export const initialUser = {
    data: null,
    profile: null,
-   cart: {},
 };
 
 export const UserProvider = ({ children }) => {

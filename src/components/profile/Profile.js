@@ -2,9 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { authAPI, endpoints } from '../../configs/APIs';
-import Loading from '../../layout/loading/Loading';
-import { UpdateUserAction } from '../../store/actions/UserAction';
 import { useUser } from '../../store/contexts/UserContext';
+import { UPDATE_USER } from '../../store/reducers/UserReducer';
 import { roles, statusCode } from '../../utils/Constatns';
 import Home from '../home/Home';
 import ProfileCustomer from './ProfileCustomer';
@@ -14,7 +13,6 @@ import ProfileSupplier from './ProfileSupplier';
 const Profile = () => {
    const [user, dispatch] = useUser();
    const [profile, setProfile] = useState(user?.profile);
-   const [loading, setLoading] = useState(false);
 
    const navigate = useNavigate();
 
@@ -24,6 +22,15 @@ const Profile = () => {
 
    const handleUpdateProfile = async (e) => {
       e.preventDefault();
+
+      Swal.fire({
+         title: 'Đang cập nhật...',
+         text: 'Vui lòng đợi một chút.',
+         allowOutsideClick: false,
+         onOpen: () => {
+            Swal.showLoading();
+         },
+      });
 
       const formData = new FormData();
       if (profile?.lastName !== user?.profile?.lastName) {
@@ -54,7 +61,6 @@ const Profile = () => {
          formData.append('contactInfo', profile?.contactInfo);
       }
 
-      setLoading(true);
       try {
          let res = null;
          switch (user?.data?.role) {
@@ -85,6 +91,8 @@ const Profile = () => {
          }
 
          if (res.status === statusCode.HTTP_200_OK) {
+            console.log(user?.data);
+            console.log(res.data);
             Swal.fire({
                title: 'Cập nhật thành công',
                text: 'Hồ sơ của bạn đã được cập nhật.',
@@ -94,36 +102,25 @@ const Profile = () => {
                   confirmButton: 'swal2-confirm',
                },
             }).then(() => {
-               dispatch(
-                  UpdateUserAction({
+               dispatch({
+                  type: UPDATE_USER,
+                  payload: {
                      data: user?.data,
                      profile: res.data,
-                  }),
-               );
+                  },
+               });
             });
          }
       } catch (error) {
-         Swal.fire({
-            title: 'Cập nhật thất bại',
-            text:
-               error?.response?.data.map((data) => data.message).join('\n') ||
-               'Hệ thống đang bận, vui lòng thử lại sau',
-            icon: 'error',
-            confirmButtonText: 'Đóng',
-            customClass: {
-               confirmButton: 'swal2-confirm',
-            },
-         });
+         Swal.showValidationMessage(
+            `Cập nhật thất bại: ${
+               error?.response?.data.map((data) => data.message).join('\n') || 'Hệ thống đang bận, vui lòng thử lại sau'
+            }`,
+         );
          console.error(error);
          console.error(error?.response);
-      } finally {
-         setLoading(false);
       }
    };
-
-   if (loading) {
-      return <Loading />;
-   }
 
    switch (user?.data?.role) {
       case roles.CUSTOMER:

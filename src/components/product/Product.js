@@ -1,87 +1,135 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
-import { Col, Container, Row } from 'react-bootstrap';
-import cookie from 'react-cookies';
+import { useCallback, useEffect, useState } from 'react';
+import { Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { MyCartContext } from '../../App';
-import APIs, { endpoints } from '../../configs/APIs';
+import { routeUrl } from '../../App';
+import APIs, { authAPI, endpoints } from '../../configs/APIs';
+import { useCart } from '../../store/contexts/CartContext';
+import { UPDATE_CART } from '../../store/reducers/CartReducer';
 import { defaultImage } from '../../utils/Constatns';
 import './Product.css';
 
 const Product = () => {
-   const [, dispatch] = useContext(MyCartContext);
+   const [cart, dispatch] = useCart();
    const [products, setProducts] = useState([]);
    const [categories, setCategories] = useState([]);
+   const [units, setUnits] = useState([]);
+   const [tags, setTags] = useState([]);
+
+   const [isUpdatingCart, setIsUpdatingCart] = useState(false);
    const [page, setPage] = useState(1);
-   const [size, setSize] = useState(8);
+   const [size] = useState(12);
    const [name, setName] = useState('');
+   const [fromPrice, setFromPrice] = useState('');
+   const [toPrice, setToPrice] = useState('');
    const [category, setCategory] = useState('');
+   const [unit, setUnit] = useState('');
+   const [tagIds, setTagIds] = useState('');
 
    const navigate = useNavigate();
 
-   const loadProduct = useCallback(async () => {
+   const loadProducts = useCallback(async () => {
       try {
          const res = await APIs.get(endpoints.products, {
-            params: { page, size, name, category },
+            params: { page, size, name, fromPrice, toPrice, category, unit, tags: tagIds },
          });
-         setProducts(res.data);
-      } catch (err) {
-         console.error(err);
-      }
-   }, [page, size, name, category]);
 
-   const loadCategories = async () => {
+         setProducts(res.data);
+      } catch (error) {
+         console.error('Error loading products:', error);
+      }
+   }, [page, size, name, fromPrice, toPrice, category, unit, tagIds]);
+
+   const loadCategories = useCallback(async () => {
       try {
          const res = await APIs.get(endpoints.categories);
+
          setCategories(res.data);
-      } catch (err) {
-         console.error(err);
+      } catch (error) {
+         console.error('Error loading categories:', error);
       }
-   };
+   }, []);
+
+   const loadUnits = useCallback(async () => {
+      try {
+         const res = await APIs.get(endpoints.units);
+
+         setUnits(res.data);
+      } catch (error) {
+         console.error('Error loading units:', error);
+      }
+   }, []);
+
+   const loadTags = useCallback(async () => {
+      try {
+         const res = await APIs.get(endpoints.tags);
+
+         setTags(res.data);
+      } catch (error) {
+         console.error('Error loading tags:', error);
+      }
+   }, []);
+
+   useEffect(() => {
+      loadProducts();
+   }, [loadProducts]);
 
    useEffect(() => {
       loadCategories();
-   }, []);
+      loadUnits();
+      loadTags();
+   }, [loadCategories, loadUnits, loadTags]);
 
-   useEffect(() => {
-      loadProduct();
-   }, [loadProduct]);
-
-   const handleSearch = useCallback((event) => {
-      setName(event.target.value);
+   const handleEventChange = useCallback((event, callback) => {
+      callback(event.target.value);
       setPage(1);
    }, []);
 
-   const handleCategoryChange = useCallback((event) => {
-      setCategory(event.target.value);
-      setPage(1);
-   }, []);
-
-   const handleNextPage = () => setPage((prevPage) => prevPage + 1);;
-
-   const handlePrevPage = () => setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));;
-
-   const handleProductClick = (productId) => {
-      navigate(`/product/${productId}`);
+   const handleTagChange = (event) => {
+      const options = event.target.options;
+      const selectedValues = [];
+      for (let i = 0; i < options.length; i++) {
+         if (options[i].selected) {
+            selectedValues.push(options[i].value);
+         }
+      }
+      setTagIds(selectedValues.join(','));
    };
 
-   const addToCart = (product) => {
-      let cart = cookie.load('cart') || {};
+   const handleRemoveTag = (tagId) => {
+      setTagIds((prevTags) => prevTags.filter((id) => id !== tagId.toString()));
+   };
 
-      if (cart[product.id]) {
-         cart[product.id].quantity++;
+   const handleNextPage = () => setPage((prevPage) => prevPage + 1);
+
+   const handlePrevPage = () => setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));
+
+   const addProductToCart = async (product) => {
+      if (isUpdatingCart) return;
+
+      setIsUpdatingCart(true);
+
+      const newCart = { ...cart };
+
+      if (newCart[product.id]) {
+         newCart[product.id].quantity++;
+         newCart[product.id].unitPrice += product.price;
       } else {
-         cart[product.id] = {
-            image: product.image,
-            name: product.name,
-            description: product.description,
-            price: product.price,
+         newCart[product.id] = {
             quantity: 1,
+            unitPrice: product.price,
+            product: product,
          };
       }
 
-      cookie.save('cart', cart);
-      console.info('cart', cart);
-      dispatch({ type: 'update' });
+      dispatch({ type: UPDATE_CART, payload: newCart });
+
+      try {
+         await authAPI().post(endpoints.addProductToCart, { productId: product.id, quantity: 1 });
+      } catch (error) {
+         console.error('Thêm sản phẩm vào giỏ hàng thất bại:', error);
+      } finally {
+         setIsUpdatingCart(false);
+      }
    };
 
    return (
@@ -93,25 +141,89 @@ const Product = () => {
                      <h3 className="title-filter">Bộ lọc nâng cao</h3>
                   </div>
 
-                  <div className="filter-category">
-                     <div className="filter-category__title">
+                  <div className="filter">
+                     <div className="filter__title">
                         <i className="bx bxs-category"></i>
-                        <h3 className="filter-category__title--main">Danh mục</h3>
+                        <h3 className="filter__title--main">Danh mục</h3>
                      </div>
 
                      <div className="filter-category__dropdown mt-4">
                         <select
-                           className="product__search--category"
-                           onChange={handleCategoryChange}
+                           className="product__search--all"
                            value={category}
+                           onChange={(e) => handleEventChange(e, setCategory)}
                         >
                            <option value="">Tất cả danh mục</option>
                            {categories.map((category) => (
-                              <option key={category.id} value={category.id}>
+                              <option key={category.id} value={category.id} className="short-option">
                                  {category.name}
                               </option>
                            ))}
                         </select>
+                     </div>
+                  </div>
+
+                  <div className="filter mt-4">
+                     <div className="filter__title">
+                        <i class="bx bxs-package"></i>
+                        <h3 className="filter__title--main">Đơn vị</h3>
+                     </div>
+
+                     <div className="filter__dropdown mt-4">
+                        <select
+                           className="product__search--all"
+                           value={unit}
+                           onChange={(e) => handleEventChange(e, setUnit)}
+                        >
+                           <option value="">Tất cả đơn vị</option>
+                           {units.map((unit) => (
+                              <option key={unit.id} value={unit.id}>
+                                 {unit.name}
+                              </option>
+                           ))}
+                        </select>
+                     </div>
+                  </div>
+
+                  <div className="filter mt-4">
+                     <div className="filter__title">
+                        <i className="bx bx-money"></i>
+                        <h3 className="filter__title--main">Giá</h3>
+                     </div>
+
+                     <Form.Group className="mb-3 mt-3" style={{ width: '250px' }}>
+                        <Form.Label>Từ</Form.Label>
+                        <Form.Control
+                           type="text"
+                           value={fromPrice}
+                           placeholder="Nhập giá..."
+                           onChange={(e) => handleEventChange(e, setFromPrice)}
+                        />
+                     </Form.Group>
+
+                     <Form.Group className="mb-3" style={{ width: '250px' }}>
+                        <Form.Label>Đến</Form.Label>
+                        <Form.Control
+                           type="text"
+                           value={toPrice}
+                           placeholder="Nhập giá..."
+                           onChange={(e) => handleEventChange(e, setToPrice)}
+                        />
+                     </Form.Group>
+                  </div>
+
+                  <div className="filter mt-4">
+                     <div className="filter__title">
+                        <i className="bx bxs-purchase-tag"></i>
+                        <h3 className="filter__title--main">Nhãn</h3>
+                     </div>
+
+                     <div className="filter__tag--dropdown mt-4">
+                        {tags.map((tag) => (
+                           <div key={tag.id} className="tag-item">
+                              <span className="">{tag.name}</span>
+                           </div>
+                        ))}
                      </div>
                   </div>
                </Col>
@@ -123,59 +235,72 @@ const Product = () => {
                            type="text"
                            className="product__search--input"
                            placeholder="Nhập tên sản phẩm..."
-                           onChange={handleSearch}
+                           onChange={(e) => handleEventChange(e, setName)}
                            value={name}
                         />
                      </div>
-                     {products.map((product) => (
-                        <Col sm={3} key={product?.id} className="mb-4">
-                           <div className="product-card">
-                              <div
-                                 className="product-card__image"
-                                 onClick={() => handleProductClick(product.id)}
-                                 style={{ cursor: 'pointer' }}
-                              >
-                                 <img
-                                    src={product?.image ?? defaultImage.PRODUCT_IMAGE}
-                                    alt={product?.name || 'Ảnh sản phẩm'}
-                                 />
-                              </div>
+                     {products.length > 0 ? (
+                        <>
+                           <div className="row">
+                              {products.map((product) => (
+                                 <Col sm={3} key={product.id} className="mb-4">
+                                    <div className="product-card">
+                                       <div
+                                          className="product-card__image"
+                                          style={{ cursor: 'pointer' }}
+                                          onClick={() => navigate(routeUrl.PRODUCT_DETAILS(product.id))}
+                                       >
+                                          <img
+                                             src={product.image ? product.image : defaultImage.PRODUCT_IMAGE}
+                                             alt={product.name || 'Ảnh sản phẩm'}
+                                          />
+                                       </div>
 
-                              <div
-                                 className="product-card__content"
-                                 onClick={() => handleProductClick(product?.id)}
-                                 style={{ cursor: 'pointer' }}
-                              >
-                                 <h1 className="product-card__content--title">{product?.name}</h1>
-                                 <p className="product-card__content--des">Mô tả: {product?.description}</p>
-                                 <span>
-                                    Giá:{' '}
-                                    {product?.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-                                 </span>
-                              </div>
+                                       <div
+                                          className="product-card__content"
+                                          style={{ cursor: 'pointer' }}
+                                          onClick={() => navigate(routeUrl.PRODUCT_DETAILS(product.id))}
+                                       >
+                                          <h1 className="product-card__content--title">{product.name}</h1>
+                                          <p className="product-card__content--des">Mô tả: {product.description}</p>
+                                          <span>
+                                             Giá:{' '}
+                                             {product.price.toLocaleString('vi-VN', {
+                                                style: 'currency',
+                                                currency: 'VND',
+                                             })}
+                                          </span>
+                                       </div>
 
-                              <div className="product-card__button">
-                                 <button
-                                    onClick={(e) => {
-                                       e.stopPropagation();
-                                       addToCart(product);
-                                    }}
-                                 >
-                                    <i className="bx bxs-cart-add"></i>
-                                 </button>
-                              </div>
+                                       <div className="product-card__button">
+                                          <button
+                                             onClick={(e) => {
+                                                e.stopPropagation();
+                                                addProductToCart(product);
+                                             }}
+                                          >
+                                             <i className="bx bxs-cart-add"></i>
+                                          </button>
+                                       </div>
+                                    </div>
+                                 </Col>
+                              ))}
                            </div>
-                        </Col>
-                     ))}
 
-                     <div className="text-center mt-4">
-                        <button className="btn-page me-2 me-3" onClick={handlePrevPage} disabled={page === 1}>
-                           <i className="bx bxs-left-arrow"></i>
-                        </button>
-                        <button className="btn-page" onClick={handleNextPage} disabled={products.length < size}>
-                           <i className="bx bxs-right-arrow"></i>
-                        </button>
-                     </div>
+                           <div className="text-center mt-4">
+                              <button className="btn-page me-2 me-3" onClick={handlePrevPage} disabled={page === 1}>
+                                 <i className="bx bxs-left-arrow"></i>
+                              </button>
+                              <button className="btn-page" onClick={handleNextPage} disabled={products.length < size}>
+                                 <i className="bx bxs-right-arrow"></i>
+                              </button>
+                           </div>
+                        </>
+                     ) : (
+                        <div className="text-center mt-4">
+                           <p>Không có sản phẩm nào</p>
+                        </div>
+                     )}
                   </Row>
                </Col>
             </Row>

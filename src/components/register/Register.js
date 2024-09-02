@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import APIs, { endpoints } from '../../configs/APIs';
 import { roles, rolesName, statusCode } from '../../utils/Constatns';
+import { routeUrl } from '../../App';
 
 const Register = () => {
    const [user, setUser] = useState({ userRole: roles.CUSTOMER });
@@ -43,7 +44,7 @@ const Register = () => {
       ];
    }, []);
 
-   const register = async (e) => {
+   const handleRegister = async (e) => {
       e.preventDefault();
 
       const messageError = {};
@@ -91,7 +92,7 @@ const Register = () => {
                   confirmButton: 'swal2-confirm',
                },
             }).then(() => {
-               let next = q.get('next') || '/login';
+               let next = q.get('next') || routeUrl.LOGIN;
                nav(next);
             });
          }
@@ -130,7 +131,7 @@ const Register = () => {
             ĐĂNG KÝ NGƯỜI DÙNG
          </h2>
          <Container className="shadow-lg p-3 mb-3 bg-body rounded gap-3">
-            <Form onSubmit={register}>
+            <Form onSubmit={handleRegister}>
                <Row>
                   <Col md={6}>
                      <Form.Group className="mb-3">
