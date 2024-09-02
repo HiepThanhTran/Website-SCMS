@@ -48,8 +48,8 @@ const Header = () => {
                   <Nav.Link as={NavLink} to={routeUrl.PRODUCT} className="navbar-custom__menu--item">
                      Sản phẩm
                   </Nav.Link>
-                  <Nav.Link as={NavLink} to="/order-details" className="navbar-custom__menu--item">
-                     Chi tiết đơn hàng
+                  <Nav.Link as={NavLink} to="/rating" className="navbar-custom__menu--item">
+                     Đánh giá nhà cung cấp
                   </Nav.Link>
                </Nav>
 
@@ -74,6 +74,9 @@ const Header = () => {
                                  </NavLink>
                                  <NavLink className="dropdown-item" to={routeUrl.PROFILE}>
                                     Hồ sơ cá nhân
+                                 </NavLink>
+                                 <NavLink className="dropdown-item" to="/list-order">
+                                    Đơn hàng
                                  </NavLink>
                                  <button className="dropdown-item" onClick={handleLogout}>
                                     Đăng xuất

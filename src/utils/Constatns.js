@@ -12,6 +12,24 @@ export const roles = {
    SHIPPER: 'ROLE_SHIPPER',
 };
 
+export const statusOrder = {
+   PENDING: "PENDING",
+   CONFIRMED: "CONFIRMED",
+   SHIPPED: "SHIPPED",
+   DELIVERED: "DELIVERED",
+   CANCELLED: "CANCELLED",
+   RETURNED: "RETURNED"
+};
+
+export const statusOrderName = {
+   PENDING: "Đang chờ xử lý",
+   CONFIRMED: "Đã xác nhận",
+   SHIPPED: "Đã chuyển hàng",
+   DELIVERED: "Đã giao hàng",
+   CANCELLED: "Đã hủy",
+   RETURNED: "Đã hủy"
+};
+
 export const rolesName = {
    ROLE_ADMIN: 'Quản trị viên',
    ROLE_CUSTOMER: 'Khách hàng',

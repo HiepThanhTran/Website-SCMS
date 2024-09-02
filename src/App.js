@@ -3,6 +3,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import Cart from './components/cart/Cart';
+import Rating from './components/rating/Rating';
+import OrderCustomer from './components/order/OrderCustomer';
 import Home from './components/home/Home';
 import Login from './components/login/Login';
 import Product from './components/product/Product';
@@ -25,6 +27,8 @@ export const routeUrl = {
    CART: '/cart',
    PRODUCT: '/product',
    PRODUCT_DETAILS: (productId) => `/product/${productId}`,
+   ORDER: '/list-order',
+   RATING: '/rating'
 };
 
 function App() {
@@ -42,6 +46,8 @@ function App() {
                   <Route path={routeUrl.PRODUCT} element={<Product />} />
                   <Route path={routeUrl.PRODUCT_DETAILS(':productId')} element={<ProductDetails />} />
                   <Route path={routeUrl.CART} element={<Cart />} />
+                  <Route path={routeUrl.ORDER} element={<OrderCustomer />} />
+                  <Route path={routeUrl.RATING} element={<Rating />} />
                </Routes>
                <ConditionalFooter />
             </BrowserRouter>

@@ -1,36 +1,111 @@
 .cart-container {
-   height: 100%;
-   margin: 120px auto 50px auto;
+    height: 100%;
+    margin: 120px auto 50px auto;
 }
 
 .cart-card {
-   position: relative;
-   display: flex;
-   align-items: center;
-   margin-bottom: 10px;
-   background-color: #fff;
-   width: 100%;
-   padding: 32px;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    width: 100%;
 }
 
 .cart-card__image img {
-   max-width: 100%;
-   height: auto;
+    max-width: 100%;
+    height: auto;
 }
 
 .cart-card__content {
-   padding-left: 15px;
+    padding-left: 15px;
 }
 
 .cart-card__content__name {
-   font-size: 1.25rem;
-   margin-bottom: 5px;
+    font-size: 1.25rem;
+    margin-bottom: 5px;
 }
 
 .cart-card__content__description {
-   color: #666;
+    color: #666;
 }
 
 .cart-card__content__quantity {
-   font-weight: bold;
+    font-weight: bold;
+}
+
+.summary-container {
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.sumary-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    text-align: center;
+    color: var(--text-color);
+    font-weight: 600;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px; 
+    margin-bottom: 20px;
+}
+
+.summary-content {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+    padding-bottom: 10px; /* thêm padding để tạo khoảng cách */
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+}
+
+.summary-item:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0; 
+}
+
+.summary-item__title {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.summary-item__value {
+    font-size: 1.125rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.summary-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background-color: var(--primary-color);
+    border: none;
+    font-weight: 500;
+    padding: 12px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.summary-button:hover {
+    background-color: var(--primary-color-hover);
+}
+
+.summary-button:active,
+.summary-button:focus {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
 }
