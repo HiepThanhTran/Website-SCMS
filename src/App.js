@@ -5,6 +5,7 @@ import cookie from 'react-cookies';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import Cart from './components/cart/Cart';
+import OrderCustomer from './components/order/OrderCustomer';
 import Home from './components/home/Home';
 import Login from './components/login/Login';
 import Product from './components/product/Product';
@@ -44,6 +45,7 @@ function App() {
                   <Route path="/product" element={<Product />} />
                   <Route path="/product/:id" element={<ProductDetail />} />
                   <Route path="/cart" element={<Cart />} />
+                  <Route path="/list-order" element={<OrderCustomer />} />
                </Routes>
                <ConditionalFooter />
             </BrowserRouter>

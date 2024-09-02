@@ -106,7 +106,9 @@ const ProductDetail = () => {
                                         </div>
 
                                         <div className="product-detail__button">
-                                            <Button onClick={handleAddToCart}>
+                                            <Button 
+                                                onClick={handleAddToCart} 
+                                                style={{ border: "none", background: "var(--primary-color)", color: "white" }}>
                                                 Đặt hàng
                                             </Button>
                                         </div>

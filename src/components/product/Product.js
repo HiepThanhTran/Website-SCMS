@@ -1,4 +1,4 @@
-import { Container, Row, Col, Form } from "react-bootstrap";
+import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { useState, useEffect, useCallback, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import APIs, { endpoints } from '../../configs/APIs';
@@ -223,6 +223,7 @@ const Product = () => {
                   value={name}
                 />
               </div>
+
               {products.map((product) => (
                 <Col sm={3} key={product.id} className="mb-4">
                   <div className="product-card">

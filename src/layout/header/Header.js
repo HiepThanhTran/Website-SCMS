@@ -68,8 +68,9 @@ const Header = () => {
                   <Nav.Link as={NavLink} to="/product" className="navbar-custom__menu--item">
                      Đặt hàng
                   </Nav.Link>
+
                   <Nav.Link as={NavLink} to="/order-details" className="navbar-custom__menu--item">
-                     Chi tiết đơn hàng
+                     Đánh giá nhà cung cấp
                   </Nav.Link>
                </Nav>
 
@@ -95,6 +96,9 @@ const Header = () => {
                                  </NavLink>
                                  <NavLink className="dropdown-item" to={getProfileLink()}>
                                     Hồ sơ cá nhân
+                                 </NavLink>
+                                 <NavLink className="dropdown-item" to="/list-order">
+                                    Đơn hàng
                                  </NavLink>
                                  <button className="dropdown-item" onClick={logout}>
                                     Đăng xuất
