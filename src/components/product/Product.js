@@ -6,6 +6,7 @@ import APIs, { authAPI, endpoints } from '../../configs/APIs';
 import { useCart } from '../../store/contexts/CartContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';
 import { defaultImage } from '../../utils/Constatns';
+import { Chip } from '@mui/material'; // Import Chip from Material UI
 import './Product.css';
 
 const Product = () => {
@@ -23,21 +24,25 @@ const Product = () => {
    const [toPrice, setToPrice] = useState('');
    const [category, setCategory] = useState('');
    const [unit, setUnit] = useState('');
-   const [tagIds, setTagIds] = useState('');
+   const [selectedTags, setSelectedTags] = useState([]);
 
    const navigate = useNavigate();
 
    const loadProducts = useCallback(async () => {
       try {
          const res = await APIs.get(endpoints.products, {
-            params: { page, size, name, fromPrice, toPrice, category, unit, tags: tagIds },
+            params: { page, size, name, fromPrice, toPrice, category, unit, tags: selectedTags.join(',') }, // Pass selectedTags to API
          });
+
+         const uniqueProducts = Array.from(
+            new Map(res.data.map(product => [product.id, product])).values()
+         );
 
          setProducts(res.data);
       } catch (error) {
          console.error('Error loading products:', error);
       }
-   }, [page, size, name, fromPrice, toPrice, category, unit, tagIds]);
+   }, [page, size, name, fromPrice, toPrice, category, unit, selectedTags]);
 
    const loadCategories = useCallback(async () => {
       try {
@@ -84,19 +89,13 @@ const Product = () => {
       setPage(1);
    }, []);
 
-   const handleTagChange = (event) => {
-      const options = event.target.options;
-      const selectedValues = [];
-      for (let i = 0; i < options.length; i++) {
-         if (options[i].selected) {
-            selectedValues.push(options[i].value);
-         }
-      }
-      setTagIds(selectedValues.join(','));
-   };
-
-   const handleRemoveTag = (tagId) => {
-      setTagIds((prevTags) => prevTags.filter((id) => id !== tagId.toString()));
+   const handleTagChange = (tagId) => {
+      setSelectedTags((prevTags) =>
+         prevTags.includes(tagId)
+            ? prevTags.filter((id) => id !== tagId)
+            : [...prevTags, tagId]
+      );
+      setPage(1);
    };
 
    const handleNextPage = () => setPage((prevPage) => prevPage + 1);
@@ -220,9 +219,14 @@ const Product = () => {
 
                      <div className="filter__tag--dropdown mt-4">
                         {tags.map((tag) => (
-                           <div key={tag.id} className="tag-item">
-                              <span className="">{tag.name}</span>
-                           </div>
+                           <Chip
+                              key={tag.id}
+                              label={tag.name}
+                              color={selectedTags.includes(tag.id) ? 'primary' : 'default'}
+                              onClick={() => handleTagChange(tag.id)}
+                              onDelete={selectedTags.includes(tag.id) ? () => handleTagChange(tag.id) : undefined}
+                              style={{ margin: '4px' }}
+                           />
                         ))}
                      </div>
                   </div>

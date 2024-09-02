@@ -211,10 +211,15 @@
 /* Filer */
 .filter__tag--dropdown {
    display: grid;
-   grid-template-columns: repeat(2, 1fr);
+   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
    gap: 10px;
    margin-top: 1rem;
-   width: 250px;
+   width: 100%;
+}
+
+.MuiChip-root.MuiChip-filledPrimary {
+   background-color: var(--primary-color) !important;
+   color: var(--text-color-white);
 }
 
 .tag-item {
