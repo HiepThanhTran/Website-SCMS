@@ -4,13 +4,12 @@ import Swal from 'sweetalert2';
 import { routeUrl } from '../../App';
 import { useCart } from '../../store/contexts/CartContext';
 import { useUser } from '../../store/contexts/UserContext';
-import { UPDATE_CART } from '../../store/reducers/CartReducer';
 import { LOGOUT } from '../../store/reducers/UserReducer';
 import './Header.css';
 
 const Header = () => {
    const [user, userDispatch] = useUser();
-   const [cart, cartDispatch] = useCart();
+   const [cart] = useCart();
 
    const navigate = useNavigate();
 
@@ -18,19 +17,17 @@ const Header = () => {
       Swal.fire({
          title: 'Xác nhận đăng xuất',
          text: 'Bạn chắc chắn muốn đăng xuất?',
-         icon: 'warning',
+         icon: 'question',
          showCancelButton: true,
          confirmButtonText: 'Có',
          cancelButtonText: 'Không',
-         reverseButtons: true,
          customClass: {
             confirmButton: 'swal2-confirm',
          },
       }).then((result) => {
          if (result.isConfirmed) {
             userDispatch({ type: LOGOUT });
-            cartDispatch({ type: UPDATE_CART, payload: {} });
-            navigate('/');
+            navigate(routeUrl.HOME);
          }
       });
    };

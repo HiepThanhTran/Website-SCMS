@@ -19,7 +19,7 @@ const Cart = () => {
       if (Object.entries(cart).length < 1) {
          Swal.fire({
             title: 'Thông báo',
-            text: 'Chưa có sản phẩm nào trong giỏ hàng.',
+            text: 'Không có sản phẩm nào trong giỏ hàng.',
             icon: 'info',
             confirmButtonText: 'Đóng',
             customClass: {
@@ -40,11 +40,17 @@ const Cart = () => {
    }, [cart, navigate]);
 
    const updateQuantity = async (productId, action) => {
+      if (quantities[productId] + action === 0) {
+         removeProduct(productId);
+         return;
+      }
+
       Swal.fire({
          title: 'Đang cập nhật...',
          text: 'Vui lòng đợi một chút.',
          allowOutsideClick: false,
-         onOpen: () => {
+         showConfirmButton: false,
+         didOpen: () => {
             Swal.showLoading();
          },
       });
@@ -68,20 +74,27 @@ const Cart = () => {
                payload: updatedCart,
             });
 
-            Swal.fire({
-               title: 'Thành công!',
-               text: 'Số lượng sản phẩm đã được cập nhật.',
-               icon: 'success',
-               confirmButtonText: 'Đóng',
-            });
+            Swal.close();
          }
       } catch (error) {
-         Swal.showValidationMessage(`Xóa sản phẩm thất bại: ${error.message}`);
+         Swal.showValidationMessage(`Cập nhật sản phẩm thất bại: ${error.message}`);
          throw error;
       }
    };
 
    const removeProduct = (productId) => {
+      const Toast = Swal.mixin({
+         toast: true,
+         position: 'top-end',
+         showConfirmButton: false,
+         timer: 3000,
+         timerProgressBar: true,
+         didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+         },
+      });
+
       Swal.fire({
          title: 'Xác nhận xóa sản phẩm',
          text: 'Bạn chắc chắn muốn sản phẩm này ra khỏi giỏ hàng?',
@@ -89,7 +102,6 @@ const Cart = () => {
          showCancelButton: true,
          confirmButtonText: 'Có',
          cancelButtonText: 'Không',
-         reverseButtons: true,
          showLoaderOnConfirm: true,
          allowOutsideClick: () => !Swal.isLoading(),
          customClass: {
@@ -108,11 +120,10 @@ const Cart = () => {
                      payload: updatedCart,
                   });
 
-                  Swal.fire({
+                  Toast.fire({
+                     icon: 'success',
                      title: 'Thành công!',
                      text: 'Xóa sản phẩm khỏi giỏ hàng thành công.',
-                     icon: 'success',
-                     confirmButtonText: 'Đóng',
                   });
                }
             } catch (error) {
@@ -121,10 +132,6 @@ const Cart = () => {
             }
          },
       });
-   };
-
-   const processChangeQuantity = (productId, newQuantity) => {
-      setQuantities({ ...quantities, [productId]: newQuantity });
    };
 
    return (
@@ -183,9 +190,7 @@ const Cart = () => {
                                                 disabled
                                                 style={{ width: '120px' }}
                                                 type="number"
-                                                placeholder="Số lượng"
                                                 value={quantities[c?.product?.id]}
-                                                onChange={(e) => processChangeQuantity(c?.product?.id, e.target.value)}
                                              />
                                           </Form.Group>
                                           <Button

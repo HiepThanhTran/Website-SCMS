@@ -9,6 +9,7 @@ import Home from '../home/Home';
 import ProfileCustomer from './ProfileCustomer';
 import ProfileShipper from './ProfileShipper';
 import ProfileSupplier from './ProfileSupplier';
+import { routeUrl } from '../../App';
 
 const Profile = () => {
    const [user, dispatch] = useUser();
@@ -23,11 +24,24 @@ const Profile = () => {
    const handleUpdateProfile = async (e) => {
       e.preventDefault();
 
+      const Toast = Swal.mixin({
+         toast: true,
+         position: 'top-end',
+         showConfirmButton: false,
+         timer: 3000,
+         timerProgressBar: true,
+         didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+         },
+      });
+
       Swal.fire({
          title: 'Đang cập nhật...',
          text: 'Vui lòng đợi một chút.',
          allowOutsideClick: false,
-         onOpen: () => {
+         showConfirmButton: false,
+         didOpen: () => {
             Swal.showLoading();
          },
       });
@@ -75,10 +89,10 @@ const Profile = () => {
                });
                break;
             case roles.DISTRIBUTOR:
-               navigate('/');
+               navigate(routeUrl.HOME);
                break;
             case roles.MANUFACTURER:
-               navigate('/');
+               navigate(routeUrl.HOME);
                break;
             case roles.SHIPPER:
                res = await authAPI().post(endpoints.updateProfileShipper, formData, {
@@ -86,29 +100,22 @@ const Profile = () => {
                });
                break;
             default:
-               navigate('/');
+               navigate(routeUrl.HOME);
                break;
          }
 
          if (res.status === statusCode.HTTP_200_OK) {
-            console.log(user?.data);
-            console.log(res.data);
-            Swal.fire({
+            dispatch({
+               type: UPDATE_USER,
+               payload: {
+                  data: user?.data,
+                  profile: res.data,
+               },
+            });
+            Toast.fire({
+               icon: 'success',
                title: 'Cập nhật thành công',
                text: 'Hồ sơ của bạn đã được cập nhật.',
-               icon: 'success',
-               confirmButtonText: 'Đóng',
-               customClass: {
-                  confirmButton: 'swal2-confirm',
-               },
-            }).then(() => {
-               dispatch({
-                  type: UPDATE_USER,
-                  payload: {
-                     data: user?.data,
-                     profile: res.data,
-                  },
-               });
             });
          }
       } catch (error) {

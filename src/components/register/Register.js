@@ -47,12 +47,24 @@ const Register = () => {
    const handleRegister = async (e) => {
       e.preventDefault();
 
+      const Toast = Swal.mixin({
+         toast: true,
+         position: 'top-end',
+         showConfirmButton: false,
+         timer: 3000,
+         timerProgressBar: true,
+         didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+         },
+      });
+
       const messageError = {};
 
       validateFields(requiredFields, messageError);
 
       if (user.password !== user.confirm) {
-         messageError.match = 'Mật khẩu không trùng khớp';
+         messageError.match = 'Mật khẩu không khớp';
       }
 
       switch (user.userRole) {
@@ -97,16 +109,12 @@ const Register = () => {
             });
          }
       } catch (error) {
-         Swal.fire({
+         Toast.fire({
+            icon: 'error',
             title: 'Đăng ký tài khoản thất bại',
             text:
                error?.response?.data.map((data) => data.message).join('\n') ||
                'Hệ thống đang bận, vui lòng thử lại sau',
-            icon: 'error',
-            confirmButtonText: 'Đóng',
-            customClass: {
-               confirmButton: 'swal2-confirm',
-            },
          });
          console.error(error);
          console.error(error?.response);
@@ -160,6 +168,7 @@ const Register = () => {
                            Email (<span className="text-danger">*</span>)
                         </Form.Label>
                         <Form.Control
+                           autoFocus
                            value={user.email}
                            onChange={(e) => processUpdateUser('email', e.target.value)}
                            type="email"
