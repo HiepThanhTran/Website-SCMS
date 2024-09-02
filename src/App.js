@@ -27,7 +27,8 @@ export const routeUrl = {
    CART: '/cart',
    PRODUCT: '/product',
    PRODUCT_DETAILS: (productId) => `/product/${productId}`,
-   ORDER: '/order',
+   ORDER: '/list-order',
+   RATING: '/rating'
 };
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
                   <Route path={routeUrl.PRODUCT_DETAILS(':productId')} element={<ProductDetails />} />
                   <Route path={routeUrl.CART} element={<Cart />} />
                   <Route path={routeUrl.ORDER} element={<OrderCustomer />} />
+                  <Route path={routeUrl.RATING} element={<Rating />} />
                </Routes>
                <ConditionalFooter />
             </BrowserRouter>
