@@ -11,12 +11,13 @@ const RatingDetails = () => {
     const { supplierId } = useParams();
     const [supplier, setSupplier] = useState(null);
     const [ratings, setRatings] = useState([]);
-    console.log(ratings);
     const [loading, setLoading] = useState(true);
     const [visibleRatingsCount, setVisibleRatingsCount] = useState(10);
     const [showAllRatings, setShowAllRatings] = useState(false);
     const [selectedRating, setSelectedRating] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isAddRatingModalVisible, setIsAddRatingModalVisible] = useState(false);
+    const [ratingValue, setRatingValue] = useState(1);
 
     const loadSupplierDetail = useCallback(async () => {
         try {
@@ -69,6 +70,15 @@ const RatingDetails = () => {
     const handleCloseModal = () => {
         setIsModalVisible(false);
         setSelectedRating(null);
+    };
+
+    const handleShowAddRatingModal = () => setIsAddRatingModalVisible(true);
+    const handleCloseAddRatingModal = () => setIsAddRatingModalVisible(false);
+
+    const handleRatingChange = (event) => {
+        const value = Number(event.target.value);
+        // Nếu giá trị nhỏ hơn 1, đặt thành 1, nếu không giữ nguyên giá trị
+        setRatingValue(value < 1 ? 1 : value);
     };
 
     const renderStars = (rating) => {
@@ -129,6 +139,10 @@ const RatingDetails = () => {
                         <div className="rating-user">
                             <h1 className="rating-user__total">Tổng số bình luận: {ratings.length}</h1>
 
+                            <div className="add-rating-user">
+                                <i className='bx bxs-message-add' onClick={handleShowAddRatingModal}></i>
+                            </div>
+
                             <div className="rating-user__list">
                                 {ratings.slice(0, visibleRatingsCount).map((rating, index) => (
                                     <div
@@ -153,24 +167,28 @@ const RatingDetails = () => {
                             <div className="rating-user__actions d-flex justify-content-center">
                                 {ratings.length > 10 && (
                                     <>
-                                        {showAllRatings ? (
+                                        {visibleRatingsCount < ratings.length && (
                                             <Button
                                                 className="btn-rating-details"
                                                 style={{
                                                     backgroundColor: 'var(--primary-color)',
                                                     border: 'none',
-                                                    fontWeight: 500
-                                                }}
-                                                onClick={handleShowLess}>Thu gọn</Button>
-                                        ) : (
-                                            <Button
-                                                className="btn-rating-details"
-                                                style={{
-                                                    backgroundColor: 'var(--primary-color)',
-                                                    border: 'none',
-                                                    fontWeight: 500
+                                                    fontWeight: 500,
+                                                    width: '100px'
                                                 }}
                                                 onClick={handleShowMore}>Xem thêm</Button>
+                                        )}
+                                        {visibleRatingsCount > 10 && (
+                                            <Button
+                                                className="btn-rating-details"
+                                                style={{
+                                                    backgroundColor: 'var(--primary-color)',
+                                                    border: 'none',
+                                                    fontWeight: 500,
+                                                    width: '100px',
+                                                    marginLeft: '20px'
+                                                }}
+                                                onClick={handleShowLess}>Thu gọn</Button>
                                         )}
                                     </>
                                 )}
@@ -188,19 +206,19 @@ const RatingDetails = () => {
                 <Modal.Body>
                     {selectedRating && (
                         <Form>
-                            <div 
+                            <div
                                 style={{
                                     display: 'flex',
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                 }}>
-                            <img 
-                                style={{
-                                    width: '100px',
-                                    height: '100px',
-                                }}
-                                src={selectedRating.user.avatar || defaultImage.USER_AVATAR} 
-                                alt="User Avatar" />
+                                <img
+                                    style={{
+                                        width: '100px',
+                                        height: '100px',
+                                    }}
+                                    src={selectedRating.user.avatar || defaultImage.USER_AVATAR}
+                                    alt="User Avatar" />
                             </div>
                             <Form.Group className="mb-3">
                                 <Form.Label>Username</Form.Label>
@@ -248,10 +266,83 @@ const RatingDetails = () => {
                                 />
                             </Form.Group>
                         </Form>
-
                     )}
                 </Modal.Body>
             </Modal>
+
+            <Modal
+                style={{height: '520px',
+                    marginTop: '100px'
+                }}
+                show={isAddRatingModalVisible}
+                onHide={handleCloseAddRatingModal}
+                centered
+                scrollable
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Thêm đánh giá</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Tiêu chí</Form.Label>
+                            <Form.Control
+                                as="select"
+                            // Xử lý sự thay đổi giá trị tiêu chí ở đây
+                            >
+                                {Object.entries(statusRatingName).map(([key, value]) => (
+                                    <option key={key} value={key}>{value}</option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Nội dung</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                            // Xử lý sự thay đổi nội dung ở đây
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Đánh giá</Form.Label>
+                            <Form.Control
+                                type="number"
+                                min="1"
+                                max="5"
+                                value={ratingValue}
+                                onChange={handleRatingChange}
+                            />
+                        </Form.Group>
+
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Button
+                                style={{
+                                    backgroundColor: 'var(--primary-color)',
+                                    border: 'none',
+                                    fontWeight: 500,
+                                    width: '120px'
+                                }}
+                                variant="primary"
+                                onClick={() => {
+                                    // Xử lý gửi dữ liệu đánh giá ở đây
+                                    console.log("Đánh giá được gửi:", ratingValue);
+                                }}
+                            >
+                                Gửi đánh giá
+                            </Button>
+                        </div>
+                    </Form>
+                </Modal.Body>
+            </Modal>
+
         </Container>
     );
 };

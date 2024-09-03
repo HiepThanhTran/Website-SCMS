@@ -182,3 +182,19 @@
 .btn-rating-details:hover{
     background-color: var(--primary-color-hover) !important;
 }
+
+.add-rating-user{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.add-rating-user i{
+    font-size: 2rem;
+    color: var(--primary-color);
+    cursor: pointer;
+    margin-right: 70px;
+}
+
+.add-rating-user i:hover{
+    color: var(--primary-color-hover);
+}
