@@ -129,10 +129,8 @@ const RatingDetails = () => {
 
         try {
             let res = await authAPI().post(endpoints.addRatingForSupplier(supplierId), formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
-
-            console.log(res.status);
 
             if (res.status === statusCode.HTTP_200_OK) {
                 Toast.fire({
