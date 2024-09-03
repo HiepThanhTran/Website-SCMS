@@ -20,7 +20,7 @@ const ProductDetails = () => {
 
          setProduct(res.data);
       } catch (error) {
-         console.error('Error loading product details:', error);
+         console.error(error);
       }
    }, [id]);
 

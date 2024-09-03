@@ -1,13 +1,14 @@
 .rating-container {
     height: 100%;
-    margin: 120px auto 50px auto;
+    margin: 120px auto 60px auto;
 }
 
 .rating-container__title {
     text-align: center;
-    margin-bottom: 20px;
-    font-size: 24px;
-    font-weight: bold;
+    margin: 20px 0 40px 0;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text-color);
 }
 
 .supplier-card {
@@ -18,6 +19,12 @@
     border-radius: 8px;
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.supplier-card:hover{
+    border: 1px solid var(--primary-color);
+    cursor: pointer;
 }
 
 .supplier-card__item {
@@ -33,7 +40,9 @@
 }
 
 .supplier-card__item span {
-    font-size: 16px;
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: 500;
 }
 
 .shadow-lg {
