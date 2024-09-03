@@ -3,14 +3,15 @@ import { Button, Form } from 'react-bootstrap';
 import cookie from 'react-cookies';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { routeUrl } from '../../App';
 import APIs, { authAPI, endpoints } from '../../configs/APIs';
+import { useCart } from '../../store/contexts/CartContext';
 import { useUser } from '../../store/contexts/UserContext';
+import { UPDATE_CART } from '../../store/reducers/CartReducer';
 import { LOGIN } from '../../store/reducers/UserReducer';
 import { roles } from '../../utils/Constatns';
+import Toast from '../../utils/Utils';
 import './Login.css';
-import { useCart } from '../../store/contexts/CartContext';
-import { UPDATE_CART } from '../../store/reducers/CartReducer';
 
 const Login = () => {
    const [, userDispatch] = useUser();
@@ -57,7 +58,7 @@ const Login = () => {
          cartDispatch({
             type: UPDATE_CART,
             payload: cart.data,
-         })
+         });
          cookie.save('cart', cart.data);
 
          userDispatch({
@@ -66,19 +67,17 @@ const Login = () => {
          });
          cookie.save('user', payload);
 
-         let next = q.get('next') || '/';
+         let next = q.get('next') || routeUrl.HOME;
          navigate(next);
+
+         Toast.fire({ icon: 'success', title: 'Đăng nhập thành công' });
       } catch (error) {
-         Swal.fire({
+         Toast.fire({
+            icon: 'error',
             title: 'Đăng nhập thất bại',
             text:
                error?.response?.data.map((data) => data.message).join('\n') ||
                'Hệ thống đang bận, vui lòng thử lại sau',
-            icon: 'error',
-            confirmButtonText: 'Đóng',
-            customClass: {
-               confirmButton: 'swal2-confirm',
-            },
          });
          console.error(error);
          console.error(error?.response);
@@ -92,6 +91,7 @@ const Login = () => {
             <Form onSubmit={handleLogin} className="login-form">
                <Form.Group className="mb-3">
                   <Form.Control
+                     autoFocus
                      value={username}
                      onChange={(e) => setUsername(e.target.value)}
                      type="text"

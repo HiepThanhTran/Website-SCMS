@@ -3,9 +3,10 @@ import { useMemo, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { routeUrl } from '../../App';
 import APIs, { endpoints } from '../../configs/APIs';
 import { roles, rolesName, statusCode } from '../../utils/Constatns';
-import { routeUrl } from '../../App';
+import Toast from '../../utils/Utils';
 
 const Register = () => {
    const [user, setUser] = useState({ userRole: roles.CUSTOMER });
@@ -52,7 +53,7 @@ const Register = () => {
       validateFields(requiredFields, messageError);
 
       if (user.password !== user.confirm) {
-         messageError.match = 'Mật khẩu không trùng khớp';
+         messageError.match = 'Mật khẩu không khớp';
       }
 
       switch (user.userRole) {
@@ -97,16 +98,12 @@ const Register = () => {
             });
          }
       } catch (error) {
-         Swal.fire({
+         Toast.fire({
+            icon: 'error',
             title: 'Đăng ký tài khoản thất bại',
             text:
                error?.response?.data.map((data) => data.message).join('\n') ||
                'Hệ thống đang bận, vui lòng thử lại sau',
-            icon: 'error',
-            confirmButtonText: 'Đóng',
-            customClass: {
-               confirmButton: 'swal2-confirm',
-            },
          });
          console.error(error);
          console.error(error?.response);
@@ -160,6 +157,7 @@ const Register = () => {
                            Email (<span className="text-danger">*</span>)
                         </Form.Label>
                         <Form.Control
+                           autoFocus
                            value={user.email}
                            onChange={(e) => processUpdateUser('email', e.target.value)}
                            type="email"

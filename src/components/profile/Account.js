@@ -3,11 +3,13 @@ import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { routeUrl } from '../../App';
 import { authAPI, endpoints } from '../../configs/APIs';
 import { useUser } from '../../store/contexts/UserContext';
 import { LOGOUT, UPDATE_USER } from '../../store/reducers/UserReducer';
 import { defaultImage, rolesName, statusCode } from '../../utils/Constatns';
 import './Profile.css';
+import Toast from '../../utils/Utils';
 
 const Account = () => {
    const [user, dispatch] = useUser();
@@ -23,10 +25,11 @@ const Account = () => {
       e.preventDefault();
 
       Swal.fire({
-         title: 'Đang cập nhật...',
+         title: 'Đang xác thực...',
          text: 'Vui lòng đợi một chút.',
          allowOutsideClick: false,
-         onOpen: () => {
+         showConfirmButton: false,
+         didOpen: () => {
             Swal.showLoading();
          },
       });
@@ -35,25 +38,20 @@ const Account = () => {
          const res = await authAPI().post(endpoints.confirm);
 
          if (res.status === statusCode.HTTP_200_OK) {
-            Swal.fire({
+            dispatch({
+               type: UPDATE_USER,
+               payload: {
+                  data: {
+                     ...user?.data,
+                     isConfirm: true,
+                  },
+                  profile: user?.profile,
+               },
+            });
+            Toast.fire({
+               icon: 'success',
                title: 'Xác thực thành công',
                text: 'Tài khoản của bạn đã được xác nhận.',
-               icon: 'success',
-               confirmButtonText: 'Đóng',
-               customClass: {
-                  confirmButton: 'swal2-confirm',
-               },
-            }).then(() => {
-               dispatch({
-                  type: UPDATE_USER,
-                  payload: {
-                     data: {
-                        ...user?.data,
-                        isConfirm: true,
-                     },
-                     profile: user?.profile,
-                  },
-               });
             });
          }
       } catch (error) {
@@ -78,7 +76,8 @@ const Account = () => {
          title: 'Đang cập nhật...',
          text: 'Vui lòng đợi một chút.',
          allowOutsideClick: false,
-         onOpen: () => {
+         showConfirmButton: false,
+         didOpen: () => {
             Swal.showLoading();
          },
       });
@@ -112,28 +111,32 @@ const Account = () => {
          });
 
          if (res.status === statusCode.HTTP_200_OK) {
-            Swal.fire({
-               title: 'Cập nhật thành công',
-               text: 'Hồ sơ của bạn đã được cập nhật.',
-               icon: 'success',
-               confirmButtonText: 'Đóng',
-               customClass: {
-                  confirmButton: 'swal2-confirm',
-               },
-            }).then(() => {
-               if (profile?.username !== user?.data?.username || profile?.password) {
-                  dispatch({ type: LOGOUT });
-                  navigate('/');
-               } else {
-                  dispatch({
-                     type: UPDATE_USER,
-                     payload: {
-                        data: res.data,
-                        profile: user?.profile,
-                     },
-                  });
-               }
-            });
+            if (profile?.username !== user?.data?.username || profile?.password) {
+               Swal.fire({
+                  icon: 'success',
+                  title: 'Cập nhật thành công',
+                  text: 'Bạn đã cập nhật thông tin nhạy cảm, vui lòng đăng nhập lại!',
+                  confirmButtonText: 'Xong',
+               }).then((result) => {
+                  if (result.isConfirmed) {
+                     dispatch({ type: LOGOUT });
+                     navigate(routeUrl.LOGIN);
+                  }
+               });
+            } else {
+               dispatch({
+                  type: UPDATE_USER,
+                  payload: {
+                     data: res.data,
+                     profile: user?.profile,
+                  },
+               });
+               Toast.fire({
+                  icon: 'success',
+                  title: 'Cập nhật thành công',
+                  text: 'Hồ sơ của bạn đã được cập nhật.',
+               });
+            }
          }
       } catch (error) {
          Swal.showValidationMessage(

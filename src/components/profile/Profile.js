@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { routeUrl } from '../../App';
 import { authAPI, endpoints } from '../../configs/APIs';
 import { useUser } from '../../store/contexts/UserContext';
 import { UPDATE_USER } from '../../store/reducers/UserReducer';
 import { roles, statusCode } from '../../utils/Constatns';
+import Toast from '../../utils/Utils';
 import Home from '../home/Home';
 import ProfileCustomer from './ProfileCustomer';
 import ProfileShipper from './ProfileShipper';
@@ -27,7 +29,8 @@ const Profile = () => {
          title: 'Đang cập nhật...',
          text: 'Vui lòng đợi một chút.',
          allowOutsideClick: false,
-         onOpen: () => {
+         showConfirmButton: false,
+         didOpen: () => {
             Swal.showLoading();
          },
       });
@@ -75,10 +78,10 @@ const Profile = () => {
                });
                break;
             case roles.DISTRIBUTOR:
-               navigate('/');
+               navigate(routeUrl.HOME);
                break;
             case roles.MANUFACTURER:
-               navigate('/');
+               navigate(routeUrl.HOME);
                break;
             case roles.SHIPPER:
                res = await authAPI().post(endpoints.updateProfileShipper, formData, {
@@ -86,29 +89,22 @@ const Profile = () => {
                });
                break;
             default:
-               navigate('/');
+               navigate(routeUrl.HOME);
                break;
          }
 
          if (res.status === statusCode.HTTP_200_OK) {
-            console.log(user?.data);
-            console.log(res.data);
-            Swal.fire({
+            dispatch({
+               type: UPDATE_USER,
+               payload: {
+                  data: user?.data,
+                  profile: res.data,
+               },
+            });
+            Toast.fire({
+               icon: 'success',
                title: 'Cập nhật thành công',
                text: 'Hồ sơ của bạn đã được cập nhật.',
-               icon: 'success',
-               confirmButtonText: 'Đóng',
-               customClass: {
-                  confirmButton: 'swal2-confirm',
-               },
-            }).then(() => {
-               dispatch({
-                  type: UPDATE_USER,
-                  payload: {
-                     data: user?.data,
-                     profile: res.data,
-                  },
-               });
             });
          }
       } catch (error) {

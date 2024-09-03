@@ -6,7 +6,7 @@ import APIs, { authAPI, endpoints } from '../../configs/APIs';
 import { useCart } from '../../store/contexts/CartContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';
 import { defaultImage } from '../../utils/Constatns';
-import { Chip } from '@mui/material'; // Import Chip from Material UI
+import { Chip } from '@mui/material';
 import './Product.css';
 
 const Product = () => {
@@ -16,7 +16,6 @@ const Product = () => {
    const [units, setUnits] = useState([]);
    const [tags, setTags] = useState([]);
 
-   const [isUpdatingCart, setIsUpdatingCart] = useState(false);
    const [page, setPage] = useState(1);
    const [size] = useState(12);
    const [name, setName] = useState('');
@@ -31,12 +30,8 @@ const Product = () => {
    const loadProducts = useCallback(async () => {
       try {
          const res = await APIs.get(endpoints.products, {
-            params: { page, size, name, fromPrice, toPrice, category, unit, tags: selectedTags.join(',') }, // Pass selectedTags to API
+            params: { page, size, name, fromPrice, toPrice, category, unit, tags: selectedTags.join(',') },
          });
-
-         const uniqueProducts = Array.from(
-            new Map(res.data.map(product => [product.id, product])).values()
-         );
 
          setProducts(res.data);
       } catch (error) {
@@ -84,6 +79,35 @@ const Product = () => {
       loadTags();
    }, [loadCategories, loadUnits, loadTags]);
 
+   const handleNextPage = () => setPage((prevPage) => prevPage + 1);
+
+   const handlePrevPage = () => setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));
+
+   const addProductToCart = async (product) => {
+      const newCart = { ...cart };
+
+      if (newCart[product.id]) {
+         newCart[product.id].quantity++;
+      } else {
+         newCart[product.id] = {
+            quantity: 1,
+            unitPrice: product.price,
+            product: product,
+         };
+      }
+
+      dispatch({
+         type: UPDATE_CART,
+         payload: newCart,
+      });
+
+      try {
+         await authAPI().post(endpoints.addProductToCart, { productId: product.id, quantity: 1 });
+      } catch (error) {
+         console.error('Thêm sản phẩm vào giỏ hàng thất bại:', error);
+      }
+   };
+
    const handleEventChange = useCallback((event, callback) => {
       callback(event.target.value);
       setPage(1);
@@ -96,39 +120,6 @@ const Product = () => {
             : [...prevTags, tagId]
       );
       setPage(1);
-   };
-
-   const handleNextPage = () => setPage((prevPage) => prevPage + 1);
-
-   const handlePrevPage = () => setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));
-
-   const addProductToCart = async (product) => {
-      if (isUpdatingCart) return;
-
-      setIsUpdatingCart(true);
-
-      const newCart = { ...cart };
-
-      if (newCart[product.id]) {
-         newCart[product.id].quantity++;
-         newCart[product.id].unitPrice += product.price;
-      } else {
-         newCart[product.id] = {
-            quantity: 1,
-            unitPrice: product.price,
-            product: product,
-         };
-      }
-
-      dispatch({ type: UPDATE_CART, payload: newCart });
-
-      try {
-         await authAPI().post(endpoints.addProductToCart, { productId: product.id, quantity: 1 });
-      } catch (error) {
-         console.error('Thêm sản phẩm vào giỏ hàng thất bại:', error);
-      } finally {
-         setIsUpdatingCart(false);
-      }
    };
 
    return (
@@ -190,20 +181,20 @@ const Product = () => {
                         <h3 className="filter__title--main">Giá</h3>
                      </div>
 
-                     <Form.Group className="mb-3 mt-3" style={{ width: '250px' }}>
+                     <Form.Group className="mb-3 mt-3">
                         <Form.Label>Từ</Form.Label>
                         <Form.Control
-                           type="text"
+                           type="number"
                            value={fromPrice}
                            placeholder="Nhập giá..."
                            onChange={(e) => handleEventChange(e, setFromPrice)}
                         />
                      </Form.Group>
 
-                     <Form.Group className="mb-3" style={{ width: '250px' }}>
+                     <Form.Group className="mb-3">
                         <Form.Label>Đến</Form.Label>
                         <Form.Control
-                           type="text"
+                           type="number"
                            value={toPrice}
                            placeholder="Nhập giá..."
                            onChange={(e) => handleEventChange(e, setToPrice)}
