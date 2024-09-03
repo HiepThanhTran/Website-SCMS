@@ -28,7 +28,6 @@ const Profile = () => {
       Swal.fire({
          title: 'Đang cập nhật...',
          text: 'Vui lòng đợi một chút.',
-         allowOutsideClick: false,
          showConfirmButton: false,
          didOpen: () => {
             Swal.showLoading();
@@ -113,6 +112,7 @@ const Profile = () => {
                error?.response?.data.map((data) => data.message).join('\n') || 'Hệ thống đang bận, vui lòng thử lại sau'
             }`,
          );
+         Swal.hideLoading();
          console.error(error);
          console.error(error?.response);
       }
