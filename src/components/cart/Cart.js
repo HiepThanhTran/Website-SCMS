@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -7,6 +7,7 @@ import { authAPI, endpoints } from '../../configs/APIs';
 import { useCart } from '../../store/contexts/CartContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';
 import { defaultImage, statusCode } from '../../utils/Constatns';
+import Toast from '../../utils/Utils';
 import './Cart.css';
 
 const Cart = () => {
@@ -14,6 +15,19 @@ const Cart = () => {
    const [quantities, setQuantities] = useState({});
 
    const navigate = useNavigate();
+
+   const tax = 0.01;
+   const totalAmount = Object.values(cart).reduce((total, item) => total + item.quantity * item.unitPrice, 0);
+   const totalWithFee = totalAmount + totalAmount * tax;
+
+   const formattedCurrency = useCallback(
+      (data) =>
+         data.toLocaleString('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+         }),
+      [],
+   );
 
    useEffect(() => {
       if (Object.entries(cart).length < 1) {
@@ -83,18 +97,6 @@ const Cart = () => {
    };
 
    const removeProduct = (productId) => {
-      const Toast = Swal.mixin({
-         toast: true,
-         position: 'top-end',
-         showConfirmButton: false,
-         timer: 3000,
-         timerProgressBar: true,
-         didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-         },
-      });
-
       Swal.fire({
          title: 'Xác nhận xóa sản phẩm',
          text: 'Bạn chắc chắn muốn sản phẩm này ra khỏi giỏ hàng?',
@@ -139,11 +141,20 @@ const Cart = () => {
          <Row>
             <Col sm={9}>
                <div className="shadow-lg mb-3 bg-body rounded gap-3">
-                  <div style={{ height: '46px', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: '28px' }}>
-                     <h2 style={{ color: 'var(--primary-color)' }}>
+                  <div
+                     style={{
+                        height: '46px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingTop: '28px',
+                     }}
+                  >
+                     <h2>
                         Giỏ hàng của bạn - {Object.entries(cart).length} sản phẩm
                      </h2>
                   </div>
+                  <hr />
                   {Object.values(cart).map((c, index) => (
                      <>
                         <div key={index} className="cart-card mt-3">
@@ -159,10 +170,15 @@ const Cart = () => {
 
                            <Col sm={9}>
                               <div className="cart-card__content">
-                                 <Row>
-                                    <Col sm={8}>
+                                 <Row className="align-items-end">
+                                    <Col sm={4}>
                                        <h1 className="cart-card__content__name">{c?.product?.name}</h1>
                                        <p className="cart-card__content__description">{c?.product?.description}</p>
+                                    </Col>
+                                    <Col sm={4}>
+                                       <h4 style={{ color: 'var(--primary-color)' }}>
+                                          {formattedCurrency(c?.quantity * c?.unitPrice)}
+                                       </h4>
                                     </Col>
                                     <Col sm={4}>
                                        <div className="d-flex align-items-center">
@@ -187,7 +203,7 @@ const Cart = () => {
                                              </Form.Label>
                                              <Form.Control
                                                 disabled
-                                                style={{ width: '120px' }}
+                                                style={{ width: '120px', textAlign: 'center' }}
                                                 type="number"
                                                 value={quantities[c?.product?.id]}
                                              />
@@ -220,31 +236,32 @@ const Cart = () => {
             <Col sm={3}>
                <Container>
                   <div className="shadow-lg p-3 mb-3 bg-body rounded gap-3">
-                     <div className='sumary-title'>
-                        Tổng đơn hàng
-                     </div>
+                     <div className="sumary-title">Tổng đơn hàng</div>
 
-                     <div className='summary-content'>
-                        <div className='summary-item '>
-                           <h3 className='summary-item__title'>Sản phẩm</h3>
-                           <span className='summary-item__value'>1 sản phẩm</span>
+                     <div className="summary-content">
+                        <div className="summary-item ">
+                           <h3 className="summary-item__title">Tổng</h3>
+                           <span className="summary-item__value">{formattedCurrency(totalAmount)}</span>
                         </div>
-
-                        <div className='summary-item '>
-                           <h3 className='summary-item__title'>Ship</h3>
-                           <span className='summary-item__value'>Miễn phí</span>
+                        <div className="summary-item ">
+                           <h3 className="summary-item__title">Số lượng</h3>
+                           <span className="summary-item__value">
+                              {Object.values(cart).reduce((total, item) => total + item.quantity, 0)}
+                           </span>
+                        </div>
+                        <div className="summary-item ">
+                           <h3 className="summary-item__title">Thuế</h3>
+                           <span className="summary-item__value">{tax * 100} %</span>
                         </div>
                      </div>
 
-                     <div className='summary-item '>
-                        <h3 className='summary-item__title'>Tổng</h3>
-                        <span className='summary-item__value'>1.000.000 VNĐ</span>
+                     <div className="summary-item ">
+                        <h3 className="summary-item__title">Thành tiền</h3>
+                        <span className="summary-item__value">{formattedCurrency(totalWithFee)}</span>
                      </div>
 
-                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: '100%' }}>
-                        <Button className='summary-button'>
-                           Thanh toán
-                        </Button>
+                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                        <Button onClick={() => navigate("/charge")} className="summary-button">Đặt hàng</Button>
                      </div>
                   </div>
                </Container>

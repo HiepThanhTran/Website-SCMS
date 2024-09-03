@@ -7,6 +7,7 @@ import Loading from '../../layout/loading/Loading';
 import { useCart } from '../../store/contexts/CartContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';
 import { defaultImage, statusCode } from '../../utils/Constatns';
+import Toast from '../../utils/Utils';
 import './Product.css';
 
 const ProductDetails = () => {
@@ -31,18 +32,6 @@ const ProductDetails = () => {
    }, [loadProductDetails]);
 
    const addProductToCart = async () => {
-      const Toast = Swal.mixin({
-         toast: true,
-         position: 'top-end',
-         showConfirmButton: false,
-         timer: 3000,
-         timerProgressBar: true,
-         didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-         },
-      });
-
       Swal.fire({
          title: 'Đang thêm sản phẩm...',
          text: 'Vui lòng đợi một chút.',
@@ -64,7 +53,7 @@ const ProductDetails = () => {
             } else {
                newCart[product.id] = {
                   quantity: quantity,
-                  unitPrice: product.price * quantity,
+                  unitPrice: product.price,
                   product: product,
                };
             }
@@ -86,9 +75,7 @@ const ProductDetails = () => {
       }
    };
 
-   const processChangeQuantity = (action) => {
-      setQuantity(quantity + action);
-   };
+   const processChangeQuantity = (action) => setQuantity(quantity + action);
 
    if (!product) return <Loading />;
 

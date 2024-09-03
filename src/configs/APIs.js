@@ -46,6 +46,7 @@ export const endpoints = {
    getRating: (ratingId) => `${CONTEXT_PATH}/api/ratings/${ratingId}`,
 
    invoices: `${CONTEXT_PATH}/api/invoices`,
+   charge: `${CONTEXT_PATH}/api/invoices/charge`,
    orders: `${CONTEXT_PATH}/api/orders`,
    checkout: `${CONTEXT_PATH}/api/orders/checkout`,
    checkin: `${CONTEXT_PATH}/api/orders/checkin`,

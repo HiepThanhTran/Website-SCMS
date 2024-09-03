@@ -154,7 +154,7 @@
 
 .product__search--all {
    height: 40px;
-   width: 250px;
+   width: 100%;
    border: 1px solid var(--primary-color);
    border-radius: 5px;
    background-color: var(--background-white);

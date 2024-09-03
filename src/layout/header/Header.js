@@ -68,12 +68,12 @@ const Header = () => {
                         <div className="name-user-container">
                            <div style={{ cursor: 'pointer' }} className="nav-link name-user">
                               Xin chào, {user?.data?.username || 'USERNAME TEST'}
-                              <div className="user-dropdown p-2">
+                              <div className="user-dropdown p-2 w-100">
                                  <NavLink className="dropdown-item" to={routeUrl.ACCOUNT}>
                                     Tài khoản
                                  </NavLink>
                                  <NavLink className="dropdown-item" to={routeUrl.PROFILE}>
-                                    Hồ sơ cá nhân
+                                    Hồ sơ
                                  </NavLink>
                                  <NavLink className="dropdown-item" to="/list-order">
                                     Đơn hàng

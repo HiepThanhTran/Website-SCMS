@@ -6,7 +6,7 @@ import APIs, { authAPI, endpoints } from '../../configs/APIs';
 import { useCart } from '../../store/contexts/CartContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';
 import { defaultImage } from '../../utils/Constatns';
-import { Chip } from '@mui/material'; // Import Chip from Material UI
+import { Chip } from '@mui/material';
 import './Product.css';
 
 const Product = () => {
@@ -30,12 +30,8 @@ const Product = () => {
    const loadProducts = useCallback(async () => {
       try {
          const res = await APIs.get(endpoints.products, {
-            params: { page, size, name, fromPrice, toPrice, category, unit, tags: selectedTags.join(',') }, // Pass selectedTags to API
+            params: { page, size, name, fromPrice, toPrice, category, unit, tags: selectedTags.join(',') },
          });
-
-         const uniqueProducts = Array.from(
-            new Map(res.data.map(product => [product.id, product])).values()
-         );
 
          setProducts(res.data);
       } catch (error) {
@@ -185,7 +181,7 @@ const Product = () => {
                         <h3 className="filter__title--main">Giá</h3>
                      </div>
 
-                     <Form.Group className="mb-3 mt-3" style={{ width: '250px' }}>
+                     <Form.Group className="mb-3 mt-3">
                         <Form.Label>Từ</Form.Label>
                         <Form.Control
                            type="number"
@@ -195,7 +191,7 @@ const Product = () => {
                         />
                      </Form.Group>
 
-                     <Form.Group className="mb-3" style={{ width: '250px' }}>
+                     <Form.Group className="mb-3">
                         <Form.Label>Đến</Form.Label>
                         <Form.Control
                            type="number"

@@ -9,6 +9,7 @@ import { useUser } from '../../store/contexts/UserContext';
 import { LOGOUT, UPDATE_USER } from '../../store/reducers/UserReducer';
 import { defaultImage, rolesName, statusCode } from '../../utils/Constatns';
 import './Profile.css';
+import Toast from '../../utils/Utils';
 
 const Account = () => {
    const [user, dispatch] = useUser();
@@ -22,18 +23,6 @@ const Account = () => {
 
    const handleConfirmAccount = async (e) => {
       e.preventDefault();
-
-      const Toast = Swal.mixin({
-         toast: true,
-         position: 'top-end',
-         showConfirmButton: false,
-         timer: 3000,
-         timerProgressBar: true,
-         didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-         },
-      });
 
       Swal.fire({
          title: 'Đang xác thực...',
@@ -82,18 +71,6 @@ const Account = () => {
 
    const handleUpdateAccount = async (e) => {
       e.preventDefault();
-
-      const Toast = Swal.mixin({
-         toast: true,
-         position: 'top-end',
-         showConfirmButton: false,
-         timer: 3000,
-         timerProgressBar: true,
-         didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-         },
-      });
 
       Swal.fire({
          title: 'Đang cập nhật...',

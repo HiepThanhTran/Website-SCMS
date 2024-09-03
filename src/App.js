@@ -3,14 +3,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import Cart from './components/cart/Cart';
-import Rating from './components/rating/Rating';
-import OrderCustomer from './components/order/OrderCustomer';
+import Checkout from './components/cart/Checkout';
 import Home from './components/home/Home';
 import Login from './components/login/Login';
+import OrderCustomer from './components/order/OrderCustomer';
 import Product from './components/product/Product';
 import ProductDetails from './components/product/ProductDetails';
 import Account from './components/profile/Account';
 import Profile from './components/profile/Profile';
+import Rating from './components/rating/Rating';
 import Register from './components/register/Register';
 import Footer from './layout/footer/Footer';
 import Header from './layout/header/Header';
@@ -28,7 +29,7 @@ export const routeUrl = {
    PRODUCT: '/product',
    PRODUCT_DETAILS: (productId) => `/product/${productId}`,
    ORDER: '/list-order',
-   RATING: '/rating'
+   RATING: '/rating',
 };
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
                   <Route path={routeUrl.CART} element={<Cart />} />
                   <Route path={routeUrl.ORDER} element={<OrderCustomer />} />
                   <Route path={routeUrl.RATING} element={<Rating />} />
+                  <Route path="/charge" element={<Checkout />} />
                </Routes>
                <ConditionalFooter />
             </BrowserRouter>

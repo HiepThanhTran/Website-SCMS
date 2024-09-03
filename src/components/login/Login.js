@@ -3,7 +3,6 @@ import { Button, Form } from 'react-bootstrap';
 import cookie from 'react-cookies';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import { routeUrl } from '../../App';
 import APIs, { authAPI, endpoints } from '../../configs/APIs';
 import { useCart } from '../../store/contexts/CartContext';
@@ -11,6 +10,7 @@ import { useUser } from '../../store/contexts/UserContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';
 import { LOGIN } from '../../store/reducers/UserReducer';
 import { roles } from '../../utils/Constatns';
+import Toast from '../../utils/Utils';
 import './Login.css';
 
 const Login = () => {
@@ -25,18 +25,6 @@ const Login = () => {
 
    const handleLogin = async (e) => {
       e.preventDefault();
-
-      const Toast = Swal.mixin({
-         toast: true,
-         position: 'top-end',
-         showConfirmButton: false,
-         timer: 3000,
-         timerProgressBar: true,
-         didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-         },
-      });
 
       try {
          const token = await APIs.post(endpoints.login, { username, password });
@@ -82,10 +70,7 @@ const Login = () => {
          let next = q.get('next') || routeUrl.HOME;
          navigate(next);
 
-         Toast.fire({
-            icon: 'success',
-            title: 'Đăng nhập thành công',
-         });
+         Toast.fire({ icon: 'success', title: 'Đăng nhập thành công' });
       } catch (error) {
          Toast.fire({
             icon: 'error',

@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { routeUrl } from '../../App';
 import { authAPI, endpoints } from '../../configs/APIs';
 import { useUser } from '../../store/contexts/UserContext';
 import { UPDATE_USER } from '../../store/reducers/UserReducer';
 import { roles, statusCode } from '../../utils/Constatns';
+import Toast from '../../utils/Utils';
 import Home from '../home/Home';
 import ProfileCustomer from './ProfileCustomer';
 import ProfileShipper from './ProfileShipper';
 import ProfileSupplier from './ProfileSupplier';
-import { routeUrl } from '../../App';
 
 const Profile = () => {
    const [user, dispatch] = useUser();
@@ -23,18 +24,6 @@ const Profile = () => {
 
    const handleUpdateProfile = async (e) => {
       e.preventDefault();
-
-      const Toast = Swal.mixin({
-         toast: true,
-         position: 'top-end',
-         showConfirmButton: false,
-         timer: 3000,
-         timerProgressBar: true,
-         didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-         },
-      });
 
       Swal.fire({
          title: 'Đang cập nhật...',
