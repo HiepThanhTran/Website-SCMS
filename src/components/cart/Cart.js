@@ -159,58 +159,6 @@ const Cart = () => {
       setSelectedPaymentMethod(e.target.value);
    };
 
-   const handleConfirmOrder = async () => {
-      if (selectedPaymentMethod === 'online') {
-         if (!stripe || !elements) {
-            // Stripe.js has not loaded yet
-            return;
-         }
-
-         const { error, paymentMethod: method } = await stripe.createPaymentMethod({
-            type: 'card',
-            card: elements.getElement(CardElement),
-         });
-
-         if (error) {
-            Swal.fire({
-               title: 'Lỗi',
-               text: error.message,
-               icon: 'error',
-               confirmButtonText: 'Đóng',
-            });
-            return;
-         }
-
-         setPaymentMethod(method.id);
-      }
-
-      try {
-         const res = await authAPI().post(endpoints.createOrder, {
-            ...formData,
-            paymentMethodId: paymentMethod,
-            cart,
-         });
-
-         if (res.status === statusCode.HTTP_201_CREATED) {
-            Swal.fire({
-               title: 'Thành công',
-               text: 'Đơn hàng của bạn đã được đặt.',
-               icon: 'success',
-               confirmButtonText: 'Đóng',
-            }).then(() => {
-               handleCloseModal();
-            });
-         }
-      } catch (error) {
-         Swal.fire({
-            title: 'Lỗi',
-            text: `Đặt hàng thất bại: ${error.message}`,
-            icon: 'error',
-            confirmButtonText: 'Đóng',
-         });
-      }
-   };
-
    return (
       <Container fluid className="cart-container" style={Object.entries(cart).length < 1 ? { minHeight: '100vh' } : {}}>
          <Row>
@@ -425,8 +373,7 @@ const Cart = () => {
                   Hủy
                </Button>
                <Button 
-                  className="btn-confirm"
-                  onClick={handleConfirmOrder}>
+                  className="btn-confirm">
                   Xác nhận
                </Button>
             </Modal.Footer>
