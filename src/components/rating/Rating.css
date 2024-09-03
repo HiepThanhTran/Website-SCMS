@@ -1,3 +1,4 @@
+/* Rating */
 .rating-container {
     height: 100%;
     margin: 120px auto 60px auto;
@@ -22,7 +23,7 @@
     transition: all 0.3s ease;
 }
 
-.supplier-card:hover{
+.supplier-card:hover {
     border: 1px solid var(--primary-color);
     cursor: pointer;
 }
@@ -67,4 +68,113 @@
 
 .gap-3 {
     gap: 1rem;
+}
+
+/* Rating details */
+.rating-details-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    max-width: 800px;
+    height: 100%;
+    margin: 120px auto 60px auto;
+}
+
+.rating-details-card {
+    width: 400px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background-color: var(--background-white);
+    padding: 20px;
+    margin: 20px auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.rating-details-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.rating-details-card__content {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.rating-details-card__content:last-child {
+    border-bottom: none;
+}
+
+.rating-details-card__content i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-right: 15px;
+}
+
+.rating-details-card__name {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.rating-details-title {
+    font-size: 2rem;
+    color: var(--text-color);
+    font-weight: 600;
+    text-align: center;
+}
+
+.rating-user{
+    margin-left: 40px;
+}
+
+.rating-user__total{
+    font-size: 1.125rem;
+    color: var(--text-color);
+    font-weight: 500;
+    margin-top: 50px;
+}
+
+.rating-user__item{
+    display: flex;
+    border: 1px solid #ddd;
+    margin: 20px;
+    border-radius: 16px;
+    max-width: 600px;
+    padding: 10px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.rating-user__item:hover{
+    border: 1px solid var(--primary-color);
+}
+
+.rating-user__image img{
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+
+.rating-user__content{
+    margin-left: 20px;
+}
+
+.rating-user__content h1,
+.rating-user__content p{
+    font-size: 1.1rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.rating-modal-content {
+    text-align: center;
+}
+
+.rating-modal-content img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
 }
