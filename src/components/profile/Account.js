@@ -8,8 +8,8 @@ import { authAPI, endpoints } from '../../configs/APIs';
 import { useUser } from '../../store/contexts/UserContext';
 import { LOGOUT, UPDATE_USER } from '../../store/reducers/UserReducer';
 import { defaultImage, rolesName, statusCode } from '../../utils/Constatns';
-import './Profile.css';
 import Toast from '../../utils/Utils';
+import './Profile.css';
 
 const Account = () => {
    const [user, dispatch] = useUser();

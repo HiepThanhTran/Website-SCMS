@@ -12,24 +12,6 @@ export const roles = {
    SHIPPER: 'ROLE_SHIPPER',
 };
 
-export const statusOrder = {
-   PENDING: "PENDING",
-   CONFIRMED: "CONFIRMED",
-   SHIPPED: "SHIPPED",
-   DELIVERED: "DELIVERED",
-   CANCELLED: "CANCELLED",
-   RETURNED: "RETURNED"
-};
-
-export const statusOrderName = {
-   PENDING: "Đang chờ xử lý",
-   CONFIRMED: "Đã xác nhận",
-   SHIPPED: "Đã chuyển hàng",
-   DELIVERED: "Đã giao hàng",
-   CANCELLED: "Đã hủy",
-   RETURNED: "Đã hủy"
-};
-
 export const rolesName = {
    ROLE_ADMIN: 'Quản trị viên',
    ROLE_CUSTOMER: 'Khách hàng',
@@ -37,6 +19,84 @@ export const rolesName = {
    ROLE_DISTRIBUTOR: 'Nhà phân phối',
    ROLE_MANUFACTURER: 'Nhà sản xuất',
    ROLE_SHIPPER: 'Nhà vận chuyển',
+};
+
+export const orderStatus = {
+   PENDING: 'PENDING',
+   CONFIRMED: 'CONFIRMED',
+   SHIPPED: 'SHIPPED',
+   DELIVERED: 'DELIVERED',
+   CANCELLED: 'CANCELLED',
+   RETURNED: 'RETURNED',
+};
+
+export const orderStatusName = {
+   PENDING: 'Đang chờ xử lý',
+   CONFIRMED: 'Đã xác nhận',
+   SHIPPED: 'Đã chuyển hàng',
+   DELIVERED: 'Đã giao hàng',
+   CANCELLED: 'Đã hủy',
+   RETURNED: 'Đã hủy',
+};
+
+export const criteriaType = {
+   COST: 'COST',
+   QUALITY: 'QUALITY',
+   TIMELY_DELIVERY: 'TIMELY_DELIVERY',
+};
+
+export const criteriaTypesName = {
+   COST: 'Giá cả',
+   QUALITY: 'Chất lượng',
+   TIMELY_DELIVERY: 'Giao hàng đúng hạn',
+};
+
+export const deliveryMethods = {
+   GROUND: 'GROUND',
+   AIR: 'AIR',
+   SEA: 'SEA',
+   EXPRESS: 'EXPRESS',
+};
+
+export const deliveryMethodsName = {
+   GROUND: 'Đường bộ',
+   AIR: 'Đường hàng không',
+   SEA: 'Đường biển',
+   EXPRESS: 'Giao hàng nhanh',
+};
+
+export const orderTypes = {
+   INBOUND: 'INBOUND',
+   OUTBOUND: 'OUTBOUND',
+};
+
+export const orderTypesName = {
+   INBOUND: 'Nhập kho',
+   OUTBOUND: 'Xuất kho',
+};
+
+export const paymentTermsType = {
+   EOM: 'EOM',
+   COD: 'COD',
+   PREPAID: 'PREPAID',
+};
+
+export const paymentTermsTypesName = {
+   EOM: 'Thanh toán vào cuối tháng',
+   COD: 'Thanh toán khi nhận hàng',
+   PREPAID: 'Thanh toán trước',
+};
+
+export const shipmentStatus = {
+   IN_TRANSIT: 'IN_TRANSIT',
+   DELIVERED: 'DELIVERED',
+   RETURNED: 'RETURNED',
+};
+
+export const shipmentStatusName = {
+   IN_TRANSIT: 'Đang vận chuyển',
+   DELIVERED: 'Đã giao hàng',
+   RETURNED: 'Hoàn trả hàng',
 };
 
 export const statusCode = {

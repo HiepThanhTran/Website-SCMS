@@ -45,10 +45,10 @@ function App() {
                   <Route path={routeUrl.REGISTER} element={<Register />} />
                   <Route path={routeUrl.ACCOUNT} element={<Account />} />
                   <Route path={routeUrl.PROFILE} element={<Profile />} />
+                  <Route path={routeUrl.ORDER} element={<OrderCustomer />} />
+                  <Route path={routeUrl.CART} element={<WrappedCart />} />
                   <Route path={routeUrl.PRODUCT} element={<Product />} />
                   <Route path={routeUrl.PRODUCT_DETAILS(':productId')} element={<ProductDetails />} />
-                  <Route path={routeUrl.CART} element={<WrappedCart />} />
-                  <Route path={routeUrl.ORDER} element={<OrderCustomer />} />
                   <Route path={routeUrl.RATING} element={<Rating />} />
                   <Route path={routeUrl.RATING_DETAILS(':supplierId')} element={<RatingDetails />} />
                </Routes>

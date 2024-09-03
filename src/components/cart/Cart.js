@@ -9,7 +9,7 @@ import { authAPI, endpoints } from '../../configs/APIs';
 import { initialCart, useCart } from '../../store/contexts/CartContext';
 import { useUser } from '../../store/contexts/UserContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';
-import { defaultImage, statusCode } from '../../utils/Constatns';
+import { defaultImage, roles, statusCode } from '../../utils/Constatns';
 import Toast from '../../utils/Utils';
 import './Cart.css';
 
@@ -178,7 +178,7 @@ const Cart = () => {
       });
 
       let order = {
-         type: 'OUTBOUND',
+         type: user?.data?.role === roles.SUPPLIER ? 'INBOUND' : 'OUTBOUND',
          orderDetails: Object.values(cart).map((item) => ({
             productId: item.product.id,
             quantity: item.quantity,
@@ -246,8 +246,11 @@ const Cart = () => {
 
             if (stripeError) {
                Swal.hideLoading();
+               const message = stripeError.message.includes('insufficient funds')
+                  ? 'Số dư không đủ'
+                  : stripeError?.message;
                Swal.showValidationMessage(
-                  `Thanh toán thất bại: ${stripeError.message || 'Hệ thống đang bận, vui lòng thử lại sau!'}`,
+                  `Thanh toán thất bại: ${message || 'Hệ thống đang bận, vui lòng thử lại sau!'}`,
                );
                return;
             }
@@ -257,7 +260,7 @@ const Cart = () => {
          } catch (error) {
             Swal.hideLoading();
             Swal.showValidationMessage(
-               `Thanh toán thất bại: ${
+               `Xác thực thanh toán thất bại: ${
                   error?.response?.data.map((data) => data.message).join('\n') ||
                   'Hệ thống đang bận, vui lòng thử lại sau!'
                }`,

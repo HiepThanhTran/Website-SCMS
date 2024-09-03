@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, Col, Container, Modal, Row } from 'react-bootstrap';
 import { authAPI, endpoints } from '../../configs/APIs';
 import Loading from '../../layout/loading/Loading';
-import { statusOrderName } from '../../utils/Constatns';
+import { orderStatusName } from '../../utils/Constatns';
 import './Order.css';
 
 const OrderCustomer = () => {
@@ -11,19 +11,19 @@ const OrderCustomer = () => {
    const [currentOrder, setCurrentOrder] = useState(null);
    const [loading, setLoading] = useState(true);
 
-    const loadOrders = async () => {
-        try {
-            const res = await authAPI().get(endpoints.orders);
-            const data = res.data;
-            setOrders(data);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setTimeout(() => {
-                setLoading(false);
-            }, 1000);
-        } 
-    };
+   const loadOrders = async () => {
+      try {
+         const res = await authAPI().get(endpoints.orders);
+         const data = res.data;
+         setOrders(data);
+      } catch (error) {
+         console.error(error);
+      } finally {
+         setTimeout(() => {
+            setLoading(false);
+         }, 1000);
+      }
+   };
 
    useEffect(() => {
       loadOrders();
@@ -59,7 +59,7 @@ const OrderCustomer = () => {
                               Thời gian giao hàng: {order.expectedDelivery || 'Chưa cập nhật'}
                            </Card.Text>
                            <Card.Text className="order__title--content">
-                              Trạng thái: {statusOrderName[order.status] || 'Trạng thái không xác định'}
+                              Trạng thái: {orderStatusName[order.status] || 'Trạng thái không xác định'}
                            </Card.Text>
                         </Card.Body>
                      </Card>
@@ -86,7 +86,7 @@ const OrderCustomer = () => {
                      </p>
                      <p>
                         <strong>Trạng thái:</strong>{' '}
-                        {statusOrderName[currentOrder.status] || 'Trạng thái không xác định'}
+                        {orderStatusName[currentOrder.status] || 'Trạng thái không xác định'}
                      </p>
                      <hr />
                      <h5>Danh sách sản phẩm:</h5>
