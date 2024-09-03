@@ -5,6 +5,7 @@ import './App.css';
 import Rating from './components/rating/Rating';
 import RatingDetails from './components/rating/RatingDetails';
 import OrderCustomer from './components/order/OrderCustomer';
+import OrderSupplier from './components/order/OrderSupplier';
 import Home from './components/home/Home';
 import Login from './components/login/Login';
 import Product from './components/product/Product';
@@ -31,6 +32,7 @@ export const routeUrl = {
    ORDER: '/list-order',
    RATING: '/rating',
    RATING_DETAILS: (supplierId) => `/rating/${supplierId}`,
+   ORDER_SUPPLIER: '/order-supplier',
 };
 
 function App() {
@@ -51,6 +53,7 @@ function App() {
                   <Route path={routeUrl.ORDER} element={<OrderCustomer />} />
                   <Route path={routeUrl.RATING} element={<Rating />} />
                   <Route path={routeUrl.RATING_DETAILS(':supplierId')} element={<RatingDetails />} />
+                  <Route path={routeUrl.ORDER_SUPPLIER} element={<OrderSupplier />} />
                </Routes>
                <ConditionalFooter />
             </BrowserRouter>

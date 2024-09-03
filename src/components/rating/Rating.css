@@ -126,18 +126,19 @@
     text-align: center;
 }
 
-.rating-user{
+.rating-user {
     margin-left: 40px;
 }
 
-.rating-user__total{
+.rating-user__total {
     font-size: 1.125rem;
     color: var(--text-color);
     font-weight: 500;
     margin-top: 50px;
 }
 
-.rating-user__item{
+.rating-user__item {
+    position: relative;
     display: flex;
     border: 1px solid #ddd;
     margin: 20px;
@@ -148,29 +149,36 @@
     cursor: pointer;
 }
 
-.rating-user__item:hover{
+.rating-user__item:hover {
     border: 1px solid var(--primary-color);
 }
 
-.rating-user__image img{
+.rating-user__image img {
     width: 80px;
     height: 80px;
     border-radius: 50%;
 }
 
-.rating-user__content{
+.rating-user__content {
     margin-left: 20px;
+    position: relative;
 }
 
-.rating-user__content h1,
-.rating-user__content p{
+.rating-user__content h1 {
     font-size: 1.1rem;
     color: var(--text-color);
     font-weight: 500;
 }
 
+.rating-user__content p {
+    font-size: 1rem;
+    font-style: italic;
+    font-weight: 500;
+}
+
 .rating-modal-content {
     text-align: center;
+
 }
 
 .rating-modal-content img {
@@ -179,22 +187,62 @@
     border-radius: 50%;
 }
 
-.btn-rating-details:hover{
+.btn-rating-details:hover {
     background-color: var(--primary-color-hover) !important;
 }
 
-.add-rating-user{
+.add-rating-user {
     display: flex;
     justify-content: flex-end;
 }
 
-.add-rating-user i{
+.add-rating-user i {
     font-size: 2rem;
     color: var(--primary-color);
     cursor: pointer;
     margin-right: 70px;
 }
 
-.add-rating-user i:hover{
+.add-rating-user i:hover {
     color: var(--primary-color-hover);
-} 
+}
+
+/* Edit rating */
+.rating-user__dots {
+    position: absolute;
+    top: 0;
+    right: 20px;
+    font-size: 1.5rem;
+}
+
+.rating-user__dots:hover .rating-user__dots--box {
+    opacity: 1;
+}
+
+.rating-user__dots--box {
+    padding: 10px 0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 120px;
+    position: absolute;
+    background-color: var(--background-white);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    top: 36px;
+    right: -40px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.rating-user__dots--box span {
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: 500;
+    margin: 5px 0;
+    transition: color 0.3s ease;
+}
+
+.rating-user__dots--box span:hover {
+    color: var(--primary-color);
+}

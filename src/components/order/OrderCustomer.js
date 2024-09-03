@@ -11,19 +11,19 @@ const OrderCustomer = () => {
    const [currentOrder, setCurrentOrder] = useState(null);
    const [loading, setLoading] = useState(true);
 
-    const loadOrders = async () => {
-        try {
-            const res = await authAPI().get(endpoints.orders);
-            const data = res.data;
-            setOrders(data);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setTimeout(() => {
-                setLoading(false);
-            }, 1000);
-        } 
-    };
+   const loadOrders = async () => {
+      try {
+          const res = await authAPI().get(endpoints.orders);
+          const data = res.data;
+          setOrders(data);
+      } catch (error) {
+          console.error(error);
+      } finally {
+          setTimeout(() => {
+              setLoading(false);
+          }, 1000);
+      } 
+  };
 
    useEffect(() => {
       loadOrders();

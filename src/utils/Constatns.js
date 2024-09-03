@@ -27,7 +27,7 @@ export const statusOrderName = {
    SHIPPED: "Đã chuyển hàng",
    DELIVERED: "Đã giao hàng",
    CANCELLED: "Đã hủy",
-   RETURNED: "Đã hủy"
+   RETURNED: "Đã trả hàng"
 };
 
 export const criteria = {
@@ -40,6 +40,16 @@ export const criteriaName = {
    COST: "Giá cả",
    QUALITY: "Chất lượng",
    TIMELY_DELIVERY: "Giao hàng đúng hạn"
+};
+
+export const typeOrder = {
+   INBOUND: "INBOUND",
+   OUTBOUND: "OUTBOUND"
+};
+
+export const typeOrderName = {
+   INBOUND: "Nhập kho",
+   OUTBOUND: "Xuất kho"
 };
 
 export const rolesName = {

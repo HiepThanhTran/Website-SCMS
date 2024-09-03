@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Container, Row, Col, Button, Modal, Form, Toast } from "react-bootstrap";
+import { Container, Row, Col, Button, Modal, Form } from "react-bootstrap";
 import { CSSTransition } from "react-transition-group";
 import APIs, { authAPI, endpoints } from '../../configs/APIs';
 import Loading from '../../layout/loading/Loading';
 import { defaultImage, criteriaName, statusCode } from '../../utils/Constatns';
+import { useUser } from '../../store/contexts/UserContext';
 import './Rating.css';
 import Swal from "sweetalert2";
 
 const RatingDetails = () => {
+    const [user, dispatch] = useUser();
     const { supplierId } = useParams();
     const [supplier, setSupplier] = useState(null);
     const [ratings, setRatings] = useState([]);
@@ -21,8 +23,7 @@ const RatingDetails = () => {
     const [ratingValue, setRatingValue] = useState(1);
     const [criteriaValue, setCriteriaValue] = useState("");
     const [contentValue, setContentValue] = useState("");
-
-    console.log(typeof ratingValue);
+    const [menuVisible, setMenuVisible] = useState(null);
 
     const loadSupplierDetail = useCallback(async () => {
         setLoading(true);
@@ -133,10 +134,18 @@ const RatingDetails = () => {
             });
 
             if (res.status === statusCode.HTTP_200_OK) {
-                Toast.fire({
+                setRatings((prevRatings) => [res.data, ...prevRatings]);
+
+                setRatingValue(1);
+                setCriteriaValue(Object.keys(criteriaName)[0] || "");
+                setContentValue("");
+
+                handleCloseAddRatingModal();
+
+                Swal.fire({
                     icon: 'success',
-                    title: 'Gửi đánh giá thành công',
-                    text: 'Hồ sơ của bạn đã được cập nhật.',
+                    title: 'Đánh giá thành công',
+                    text: 'Bạn đã gửi đánh giá thành công',
                 });
             }
         } catch (error) {
@@ -148,7 +157,8 @@ const RatingDetails = () => {
                 text: errorMessage,
             });
         }
-    }
+    };
+
 
     return (
         <Container className="rating-details-container">
@@ -207,10 +217,25 @@ const RatingDetails = () => {
 
                                         <div className="rating-user__content">
                                             <h1>Username: {rating.user.username}</h1>
+                                            <p>Ngày: {rating.createdAt}</p>
                                             <h1>Nội dung: {rating.content}</h1>
                                             <h1>Đánh giá: {renderStars(rating.rating)}</h1>
                                             <h1>Tiêu chí: {criteriaName[rating.criteria]}</h1>
                                         </div>
+
+                                        {user?.data?.username === rating.user.username && (
+                                            <div className="rating-user__dots">
+
+                                                <div className="rating-user__dots--hover">
+                                                    ...
+                                                </div>
+                                                <div className="rating-user__dots--box">
+                                                    <span>Chỉnh sửa</span>
+                                                    <span>Xóa</span>
+                                                </div>
+                                            </div>
+                                        )}
+
                                     </div>
                                 ))}
                             </div>
