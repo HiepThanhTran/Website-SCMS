@@ -8,7 +8,6 @@ export const endpoints = {
    login: `${CONTEXT_PATH}/api/users/login`,
    register: `${CONTEXT_PATH}/api/users/register`,
    confirm: `${CONTEXT_PATH}/api/users/confirm`,
-   roles: `${CONTEXT_PATH}/api/users/roles`,
    profileUser: `${CONTEXT_PATH}/api/users/profile`,
    updateProfileUser: `${CONTEXT_PATH}/api/users/profile/update`,
    deleteProfileUser: `${CONTEXT_PATH}/api/users/profile/delete`,
@@ -30,6 +29,10 @@ export const endpoints = {
    updateProfileSupplier: `${CONTEXT_PATH}/api/suppliers/profile/update`,
    getRatingsOfSupplier: (supplierId) => `${CONTEXT_PATH}/api/suppliers/${supplierId}/ratings`,
    addRatingForSupplier: (supplierId) => `${CONTEXT_PATH}/api/suppliers/${supplierId}/rating/add`,
+   getProductsOfSupplier: (supplierId) => `${CONTEXT_PATH}/api/suppliers/${supplierId}/products`,
+   publishProduct: `${CONTEXT_PATH}/api/suppliers/product/publish`,
+   unpublishProduct: (productId) => `${CONTEXT_PATH}/api/suppliers/product/${productId}/unpublish`,
+   getOrdersOfSupplier: (supplierId) => `${CONTEXT_PATH}/api/suppliers/${supplierId}/orders`,
 
    shippers: `${CONTEXT_PATH}/api/shippers`,
    getShipper: (shipperId) => `${CONTEXT_PATH}/api/shippers/${shipperId}`,
@@ -43,6 +46,7 @@ export const endpoints = {
    taxes: `${CONTEXT_PATH}/api/taxes`,
    units: `${CONTEXT_PATH}/api/units`,
    ratings: `${CONTEXT_PATH}/api/ratings`,
+   rankedSuppliers: `${CONTEXT_PATH}/api/ratings/ranked-suppliers`,
    getRating: (ratingId) => `${CONTEXT_PATH}/api/ratings/${ratingId}`,
 
    invoices: `${CONTEXT_PATH}/api/invoices`,

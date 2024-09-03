@@ -4,7 +4,7 @@ import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { routeUrl } from '../../App';
-import APIs, { endpoints } from '../../configs/APIs';
+import APIs, { endpoints } from '../../configs/APIConfigs';
 import { roles, rolesName, statusCode } from '../../utils/Constatns';
 import Toast from '../../utils/Utils';
 

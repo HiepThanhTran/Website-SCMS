@@ -5,7 +5,7 @@ import { Button, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { routeUrl } from '../../App';
-import { authAPI, endpoints } from '../../configs/APIs';
+import { authAPI, endpoints } from '../../configs/APIConfigs';
 import { initialCart, useCart } from '../../store/contexts/CartContext';
 import { useUser } from '../../store/contexts/UserContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';

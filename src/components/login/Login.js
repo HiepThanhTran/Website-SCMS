@@ -4,7 +4,7 @@ import cookie from 'react-cookies';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { routeUrl } from '../../App';
-import APIs, { authAPI, endpoints } from '../../configs/APIs';
+import APIs, { authAPI, endpoints } from '../../configs/APIConfigs';
 import { useCart } from '../../store/contexts/CartContext';
 import { useUser } from '../../store/contexts/UserContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';

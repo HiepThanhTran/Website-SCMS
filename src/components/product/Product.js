@@ -1,12 +1,12 @@
+import { Chip } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { routeUrl } from '../../App';
-import APIs, { authAPI, endpoints } from '../../configs/APIs';
+import APIs, { authAPI, endpoints } from '../../configs/APIConfigs';
 import { useCart } from '../../store/contexts/CartContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';
 import { defaultImage } from '../../utils/Constatns';
-import { Chip } from '@mui/material';
 import './Product.css';
 
 const Product = () => {
@@ -115,9 +115,7 @@ const Product = () => {
 
    const handleTagChange = (tagId) => {
       setSelectedTags((prevTags) =>
-         prevTags.includes(tagId)
-            ? prevTags.filter((id) => id !== tagId)
-            : [...prevTags, tagId]
+         prevTags.includes(tagId) ? prevTags.filter((id) => id !== tagId) : [...prevTags, tagId],
       );
       setPage(1);
    };

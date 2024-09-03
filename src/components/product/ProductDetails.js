@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import APIs, { authAPI, endpoints } from '../../configs/APIs';
+import APIs, { authAPI, endpoints } from '../../configs/APIConfigs';
 import Loading from '../../layout/loading/Loading';
 import { useCart } from '../../store/contexts/CartContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';

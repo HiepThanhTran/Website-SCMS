@@ -4,7 +4,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { routeUrl } from '../../App';
-import { authAPI, endpoints } from '../../configs/APIs';
+import { authAPI, endpoints } from '../../configs/APIConfigs';
 import { useUser } from '../../store/contexts/UserContext';
 import { LOGOUT, UPDATE_USER } from '../../store/reducers/UserReducer';
 import { defaultImage, rolesName, statusCode } from '../../utils/Constatns';

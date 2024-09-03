@@ -8299,6 +8299,11 @@ react-bootstrap@^2.10.4:
     uncontrollable "^7.2.1"
     warning "^4.0.3"
 
+react-chatbotify@^2.0.0-beta.7:
+  version "2.0.0-beta.7"
+  resolved "https://registry.npmjs.org/react-chatbotify/-/react-chatbotify-2.0.0-beta.7.tgz"
+  integrity sha512-NMu3pnq9SaYNLu/QRaC9B6xaKc4BlUfHZQaaObUx/Lv3kcQK7Cw9PksN47Z2RK6LkRUO7DQWhLW9wMNBLiSFxw==
+
 react-cookies@^0.1.1:
   version "0.1.1"
   resolved "https://registry.npmjs.org/react-cookies/-/react-cookies-0.1.1.tgz"
