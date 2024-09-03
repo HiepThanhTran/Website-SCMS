@@ -30,6 +30,18 @@ export const statusOrderName = {
    RETURNED: "Đã hủy"
 };
 
+export const statusRating = {
+   COST: "COST",
+   QUALITY: "QUALITY",
+   TIMELY_DELIVERY: "TIMELY_DELIVERY"
+};
+
+export const statusRatingName = {
+   COST: "Giá cả",
+   QUALITY: "Chất lượng",
+   TIMELY_DELIVERY: "Giao hàng đúng hạn"
+};
+
 export const rolesName = {
    ROLE_ADMIN: 'Quản trị viên',
    ROLE_CUSTOMER: 'Khách hàng',

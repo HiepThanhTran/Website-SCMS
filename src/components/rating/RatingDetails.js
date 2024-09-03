@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Container, Row, Col, Button, Modal } from "react-bootstrap";
+import { Container, Row, Col, Button, Modal, Form } from "react-bootstrap";
 import { CSSTransition } from "react-transition-group";
 import APIs, { endpoints } from '../../configs/APIs';
 import Loading from '../../layout/loading/Loading';
-import { defaultImage } from '../../utils/Constatns';
+import { defaultImage, statusRatingName } from '../../utils/Constatns';
 import './Rating.css';
 
 const RatingDetails = () => {
     const { supplierId } = useParams();
     const [supplier, setSupplier] = useState(null);
     const [ratings, setRatings] = useState([]);
+    console.log(ratings);
     const [loading, setLoading] = useState(true);
     const [visibleRatingsCount, setVisibleRatingsCount] = useState(10);
     const [showAllRatings, setShowAllRatings] = useState(false);
@@ -48,7 +49,10 @@ const RatingDetails = () => {
     }, [loadRatings]);
 
     const handleShowMore = () => {
-        setVisibleRatingsCount(ratings.length);
+        setVisibleRatingsCount(prevCount => {
+            const newCount = prevCount + 10;
+            return newCount >= ratings.length ? ratings.length : newCount;
+        });
         setShowAllRatings(true);
     };
 
@@ -71,10 +75,10 @@ const RatingDetails = () => {
         const stars = [];
         for (let i = 0; i < 5; i++) {
             stars.push(
-                <i 
+                <i
                     key={i}
-                    className={`bx bxs-star ${i < rating ? 'filled' : ''}`} 
-                    style={{ color: i < rating ? '#FFD700' : '#ddd' }} 
+                    className={`bx bxs-star ${i < rating ? 'filled' : ''}`}
+                    style={{ color: i < rating ? 'var(--primary-color)' : '#ddd' }}
                 />
             );
         }
@@ -134,26 +138,43 @@ const RatingDetails = () => {
                                     >
                                         <div className="rating-user__image">
                                             <img src={rating.user.avatar || defaultImage.USER_AVATAR} alt="User Avatar" />
-                                        </div> 
+                                        </div>
 
                                         <div className="rating-user__content">
                                             <h1>Username: {rating.user.username}</h1>
                                             <h1>Nội dung: {rating.content}</h1>
                                             <h1>Đánh giá: {renderStars(rating.rating)}</h1>
+                                            <h1>Tiêu chí: {statusRatingName[rating.criteria] || rating.criteria}</h1>
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
-                            {ratings.length > 10 && (
-                                <div className="rating-user__actions d-flex justify-content-center">
-                                    {showAllRatings ? (
-                                        <Button variant="primary" onClick={handleShowLess}>Thu gọn</Button>
-                                    ) : (
-                                        <Button variant="primary" onClick={handleShowMore}>Xem thêm</Button>
-                                    )}
-                                </div>
-                            )}
+                            <div className="rating-user__actions d-flex justify-content-center">
+                                {ratings.length > 10 && (
+                                    <>
+                                        {showAllRatings ? (
+                                            <Button
+                                                className="btn-rating-details"
+                                                style={{
+                                                    backgroundColor: 'var(--primary-color)',
+                                                    border: 'none',
+                                                    fontWeight: 500
+                                                }}
+                                                onClick={handleShowLess}>Thu gọn</Button>
+                                        ) : (
+                                            <Button
+                                                className="btn-rating-details"
+                                                style={{
+                                                    backgroundColor: 'var(--primary-color)',
+                                                    border: 'none',
+                                                    fontWeight: 500
+                                                }}
+                                                onClick={handleShowMore}>Xem thêm</Button>
+                                        )}
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </Col>
                 </Row>
@@ -166,12 +187,68 @@ const RatingDetails = () => {
                 </Modal.Header>
                 <Modal.Body>
                     {selectedRating && (
-                        <div className="rating-modal-content">
-                            <img src={selectedRating.user.avatar || defaultImage.USER_AVATAR} alt="User Avatar" />
-                            <h2>Username: {selectedRating.user.username}</h2>
-                            <p>Nội dung: {selectedRating.content}</p>
-                            <p>Đánh giá: {renderStars(selectedRating.rating)}</p>
-                        </div>
+                        <Form>
+                            <div 
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}>
+                            <img 
+                                style={{
+                                    width: '100px',
+                                    height: '100px',
+                                }}
+                                src={selectedRating.user.avatar || defaultImage.USER_AVATAR} 
+                                alt="User Avatar" />
+                            </div>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Username</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={selectedRating.user.username || ''}
+                                    readOnly
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>Email</Form.Label>
+                                <Form.Control
+                                    type="email"
+                                    value={selectedRating.user.email || ''}
+                                    readOnly
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>Nội dung</Form.Label>
+                                <Form.Control
+                                    as="textarea"
+                                    rows={3}
+                                    value={selectedRating.content || ''}
+                                    readOnly
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>Đánh giá</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={selectedRating.rating}
+                                    readOnly
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>Tiêu chí</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={statusRatingName[selectedRating.criteria] || selectedRating.criteria || ''}
+                                    readOnly
+                                />
+                            </Form.Group>
+                        </Form>
+
                     )}
                 </Modal.Body>
             </Modal>

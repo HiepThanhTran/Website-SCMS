@@ -178,3 +178,7 @@
     height: 80px;
     border-radius: 50%;
 }
+
+.btn-rating-details:hover{
+    background-color: var(--primary-color-hover) !important;
+}
