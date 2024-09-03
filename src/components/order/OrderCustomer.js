@@ -22,7 +22,7 @@ const OrderCustomer = () => {
             setTimeout(() => {
                 setLoading(false);
             }, 1000);
-        }
+        } 
     };
 
     useEffect(() => {
