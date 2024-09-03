@@ -35,7 +35,6 @@ const ProductDetails = () => {
       Swal.fire({
          title: 'Đang thêm sản phẩm...',
          text: 'Vui lòng đợi một chút.',
-         allowOutsideClick: false,
          showConfirmButton: false,
          didOpen: () => {
             Swal.showLoading();
@@ -71,6 +70,7 @@ const ProductDetails = () => {
          }
       } catch (error) {
          Swal.showValidationMessage(`Thêm sản phẩm vào giỏ hàng thất bại: ${error.message}`);
+         Swal.hideLoading();
          throw error;
       }
    };

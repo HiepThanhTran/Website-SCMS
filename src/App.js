@@ -2,7 +2,6 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
-import Cart from './components/cart/Cart';
 import Rating from './components/rating/Rating';
 import RatingDetails from './components/rating/RatingDetails';
 import OrderCustomer from './components/order/OrderCustomer';
@@ -17,6 +16,7 @@ import Footer from './layout/footer/Footer';
 import Header from './layout/header/Header';
 import { CartProvider } from './store/contexts/CartContext';
 import { UserProvider } from './store/contexts/UserContext';
+import WrappedCart from './components/cart/Cart';
 
 export const routeUrl = {
    HOME: '/',
@@ -47,7 +47,7 @@ function App() {
                   <Route path={routeUrl.PROFILE} element={<Profile />} />
                   <Route path={routeUrl.PRODUCT} element={<Product />} />
                   <Route path={routeUrl.PRODUCT_DETAILS(':productId')} element={<ProductDetails />} />
-                  <Route path={routeUrl.CART} element={<Cart />} />
+                  <Route path={routeUrl.CART} element={<WrappedCart />} />
                   <Route path={routeUrl.ORDER} element={<OrderCustomer />} />
                   <Route path={routeUrl.RATING} element={<Rating />} />
                   <Route path={routeUrl.RATING_DETAILS(':supplierId')} element={<RatingDetails />} />

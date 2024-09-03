@@ -1,35 +1,42 @@
+import { CardElement, Elements, useElements, useStripe } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import { useCallback, useEffect, useState } from 'react';
 import { Button, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { routeUrl } from '../../App';
 import { authAPI, endpoints } from '../../configs/APIs';
-import { useCart } from '../../store/contexts/CartContext';
+import { initialCart, useCart } from '../../store/contexts/CartContext';
+import { useUser } from '../../store/contexts/UserContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';
 import { defaultImage, statusCode } from '../../utils/Constatns';
 import Toast from '../../utils/Utils';
-import { useUser } from '../../store/contexts/UserContext';
-import { CardElement, Elements, useStripe, useElements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
 import './Cart.css';
 
-const stripePromise = loadStripe('pk_test_51O41qGBy1BulLKF8k8qu0rqhO2HoDtOLogY9Yh757QmeFJvjTrj5o96LDJpJ4GWR6CNtEWe6K8aO0SrdV5P5UdfZ00mPyk9MSy');
+const stripePromise = loadStripe(
+   'pk_test_51O41qGBy1BulLKF8k8qu0rqhO2HoDtOLogY9Yh757QmeFJvjTrj5o96LDJpJ4GWR6CNtEWe6K8aO0SrdV5P5UdfZ00mPyk9MSy',
+);
 
 const Cart = () => {
-   const [user,] = useUser();
-   const [cart, dispatch] = useCart();
+   const [user] = useUser();
+   const [cart, cartDispatch] = useCart();
    const [quantities, setQuantities] = useState({});
    const [showModal, setShowModal] = useState(false);
-   const [formData, setFormData] = useState({ email: '', phone: '', address: '' });
-   const [paymentMethod, setPaymentMethod] = useState('');
    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cash');
+   const [formData, setFormData] = useState({
+      customerName: user?.data?.username || '',
+      customerEmail: user?.data?.email || '',
+      customerPhone: user?.profile?.phone || '',
+      customerAddress: user?.profile?.address || '',
+   });
+
    const navigate = useNavigate();
-   const stripe = useStripe();
    const elements = useElements();
+   const stripe = useStripe();
 
    const tax = 0.01;
    const totalAmount = Object.values(cart).reduce((total, item) => total + item.quantity * item.unitPrice, 0);
-   const totalWithFee = totalAmount + totalAmount * tax;
+   const totalWithFee = Math.round(totalAmount + totalAmount * tax);
 
    const formattedCurrency = useCallback(
       (data) =>
@@ -94,7 +101,7 @@ const Cart = () => {
                },
             };
 
-            dispatch({
+            cartDispatch({
                type: UPDATE_CART,
                payload: updatedCart,
             });
@@ -128,7 +135,7 @@ const Cart = () => {
                   const updatedCart = { ...cart };
 
                   delete updatedCart[productId];
-                  dispatch({
+                  cartDispatch({
                      type: UPDATE_CART,
                      payload: updatedCart,
                   });
@@ -148,15 +155,144 @@ const Cart = () => {
    };
 
    const handleShowModal = () => setShowModal(true);
+
    const handleCloseModal = () => setShowModal(false);
 
    const handleFormChange = (e) => {
       const { name, value } = e.target;
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormData({ ...formData, [name]: value });
    };
 
    const handlePaymentMethodChange = (e) => {
       setSelectedPaymentMethod(e.target.value);
+   };
+
+   const handleConfirmOrder = async () => {
+      Swal.fire({
+         title: 'Đang kiểm tra thông tin...',
+         text: 'Vui lòng đợi một chút.',
+         showConfirmButton: false,
+         didOpen: () => {
+            Swal.showLoading();
+         },
+      });
+
+      let order = {
+         type: 'OUTBOUND',
+         orderDetails: Object.values(cart).map((item) => ({
+            productId: item.product.id,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+         })),
+      };
+
+      let success = false;
+
+      if (selectedPaymentMethod === 'online') {
+         if (!stripe || !elements) {
+            return;
+         }
+
+         try {
+            const { error } = await stripe.createPaymentMethod({
+               type: 'card',
+               card: elements.getElement(CardElement),
+            });
+
+            if (error) {
+               Swal.hideLoading();
+               Swal.showValidationMessage(
+                  `Xác thực thông tin thanh toán thất bại: ${
+                     error.message || 'Hệ thống đang bận, vui lòng thử lại sau!'
+                  }`,
+               );
+               return;
+            }
+
+            const res = await authAPI().post(endpoints.charge, {
+               amount: totalWithFee,
+               customer: {
+                  customerName: formData.customerName,
+                  customerEmail: formData.customerEmail,
+                  customerPhone: formData.customerPhone,
+                  customerAddress: formData.customerAddress,
+               },
+               products: Object.values(cart).map((item) => ({
+                  id: item.product.id,
+                  name: item.product.name,
+                  price: item.product.price,
+               })),
+            });
+            const { clientSecret, error: serverError } = await res.data;
+
+            if (serverError) {
+               Swal.hideLoading();
+               Swal.showValidationMessage(
+                  `Xác thực thông tin thanh toán thất bại: ${
+                     serverError.message || 'Hệ thống đang bận, vui lòng thử lại sau!'
+                  }`,
+               );
+               return;
+            }
+
+            const { error: stripeError } = await stripe.confirmCardPayment(clientSecret, {
+               payment_method: {
+                  card: elements.getElement(CardElement),
+                  billing_details: {
+                     name: formData.customerName,
+                  },
+               },
+            });
+
+            if (stripeError) {
+               Swal.hideLoading();
+               Swal.showValidationMessage(
+                  `Thanh toán thất bại: ${stripeError.message || 'Hệ thống đang bận, vui lòng thử lại sau!'}`,
+               );
+               return;
+            }
+
+            success = true;
+            order = { ...order, paid: true };
+         } catch (error) {
+            Swal.hideLoading();
+            Swal.showValidationMessage(
+               `Thanh toán thất bại: ${
+                  error?.response?.data.map((data) => data.message).join('\n') ||
+                  'Hệ thống đang bận, vui lòng thử lại sau!'
+               }`,
+            );
+         }
+      } else {
+         success = true;
+      }
+
+      if (success) {
+         try {
+            const res = await authAPI().post(endpoints.checkout, order);
+
+            if (res.status === statusCode.HTTP_201_CREATED) {
+               Swal.fire({
+                  title: 'Đặt hàng thành công',
+                  text: 'Đơn hàng của bạn đã được đặt.',
+                  icon: 'success',
+                  confirmButtonText: 'Đóng',
+               }).then(async () => {
+                  handleCloseModal();
+                  cartDispatch({ type: UPDATE_CART, payload: initialCart });
+                  await authAPI().delete(endpoints.clearCart);
+               });
+            }
+         } catch (error) {
+            Swal.hideLoading();
+            Swal.showValidationMessage(
+               `Đặt hàng thất bại: ${
+                  error?.response?.data.map((data) => data.message).join('\n') ||
+                  'Hệ thống đang bận, vui lòng thử lại sau!'
+               }`,
+            );
+         }
+      }
    };
 
    return (
@@ -173,9 +309,7 @@ const Cart = () => {
                         paddingTop: '28px',
                      }}
                   >
-                     <h2>
-                        Giỏ hàng của bạn - {Object.entries(cart).length} sản phẩm
-                     </h2>
+                     <h2>Giỏ hàng của bạn - {Object.entries(cart).length} sản phẩm</h2>
                   </div>
                   <hr />
                   {Object.values(cart).map((c, index) => (
@@ -272,12 +406,12 @@ const Cart = () => {
                      <div className="summary-content">
                         <div className="summary-item ">
                            <h3 className="summary-item__title">Tổng</h3>
-                           <span className="summary-item__value">{formattedCurrency(totalAmount)}</span>
+                           <span className="summary-item__value">{formattedCurrency(totalAmount) || "0 VNĐ"}</span>
                         </div>
                         <div className="summary-item ">
                            <h3 className="summary-item__title">Số lượng</h3>
                            <span className="summary-item__value">
-                              {Object.values(cart).reduce((total, item) => total + item.quantity, 0)}
+                              {Object.values(cart).reduce((total, item) => total + item.quantity, 0) || "0"}
                            </span>
                         </div>
                         <div className="summary-item ">
@@ -286,15 +420,21 @@ const Cart = () => {
                         </div>
                      </div>
 
+                     <div className="summary-item ">
+                        <h3 className="summary-item__title">Thành tiền</h3>
+                        <span className="summary-item__value">{formattedCurrency(totalWithFee) || "0 VNĐ"}</span>
+                     </div>
+
                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                        <Button onClick={handleShowModal} className="summary-button">Đặt hàng</Button>
+                        <Button onClick={handleShowModal} className="summary-button">
+                           Đặt hàng
+                        </Button>
                      </div>
                   </div>
                </Container>
             </Col>
          </Row>
 
-         {/* Modal Form */}
          <Modal show={showModal} onHide={handleCloseModal}>
             <Modal.Header closeButton>
                <Modal.Title>Thông tin thanh toán</Modal.Title>
@@ -303,19 +443,14 @@ const Cart = () => {
                <Form>
                   <Form.Group className="mb-3">
                      <Form.Label>Tên</Form.Label>
-                     <Form.Control
-                        type="text"
-                        name="username"
-                        value={user?.data?.username}
-                        readOnly
-                     />
+                     <Form.Control type="text" name="customerName" value={formData.customerName} readOnly />
                   </Form.Group>
                   <Form.Group className="mb-3">
                      <Form.Label>Email</Form.Label>
                      <Form.Control
                         type="email"
-                        name="email"
-                        value={formData.email}
+                        name="customerEmail"
+                        value={formData.customerEmail}
                         onChange={handleFormChange}
                      />
                   </Form.Group>
@@ -323,8 +458,8 @@ const Cart = () => {
                      <Form.Label>Số điện thoại</Form.Label>
                      <Form.Control
                         type="text"
-                        name="phone"
-                        value={formData.phone}
+                        name="customerPhone"
+                        value={formData.customerPhone}
                         onChange={handleFormChange}
                      />
                   </Form.Group>
@@ -332,8 +467,8 @@ const Cart = () => {
                      <Form.Label>Địa chỉ</Form.Label>
                      <Form.Control
                         type="text"
-                        name="address"
-                        value={formData.address}
+                        name="customerAddress"
+                        value={formData.customerAddress}
                         onChange={handleFormChange}
                      />
                   </Form.Group>
@@ -342,7 +477,7 @@ const Cart = () => {
                      <div className="custom-radio">
                         <Form.Check
                            type="radio"
-                           label="Thanh toán tiền mặt"
+                           label="Thanh toán khi nhận hàng"
                            value="cash"
                            checked={selectedPaymentMethod === 'cash'}
                            onChange={handlePaymentMethodChange}
@@ -358,7 +493,11 @@ const Cart = () => {
                         />
                      </div>
                   </Form.Group>
-                  <div className={`payment-method-transition ${selectedPaymentMethod === 'online' ? 'fade-in' : 'fade-out'}`}>
+                  <div
+                     className={`payment-method-transition ${
+                        selectedPaymentMethod === 'online' ? 'fade-in' : 'fade-out'
+                     }`}
+                  >
                      {selectedPaymentMethod === 'online' && (
                         <Form.Group className="mb-3">
                            <Form.Label>Thẻ tín dụng</Form.Label>
@@ -372,13 +511,11 @@ const Cart = () => {
                <Button variant="secondary" onClick={handleCloseModal}>
                   Hủy
                </Button>
-               <Button 
-                  className="btn-confirm">
+               <Button className="btn-confirm" onClick={handleConfirmOrder}>
                   Xác nhận
                </Button>
             </Modal.Footer>
          </Modal>
-
       </Container>
    );
 };
