@@ -30,13 +30,13 @@ export const statusOrderName = {
    RETURNED: "Đã hủy"
 };
 
-export const statusRating = {
+export const criteria = {
    COST: "COST",
    QUALITY: "QUALITY",
    TIMELY_DELIVERY: "TIMELY_DELIVERY"
 };
 
-export const statusRatingName = {
+export const criteriaName = {
    COST: "Giá cả",
    QUALITY: "Chất lượng",
    TIMELY_DELIVERY: "Giao hàng đúng hạn"

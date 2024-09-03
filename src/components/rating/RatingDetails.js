@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Container, Row, Col, Button, Modal, Form } from "react-bootstrap";
+import { Container, Row, Col, Button, Modal, Form, Toast } from "react-bootstrap";
 import { CSSTransition } from "react-transition-group";
-import APIs, { endpoints } from '../../configs/APIs';
+import APIs, { authAPI, endpoints } from '../../configs/APIs';
 import Loading from '../../layout/loading/Loading';
-import { defaultImage, statusRatingName } from '../../utils/Constatns';
+import { defaultImage, criteriaName, statusCode } from '../../utils/Constatns';
 import './Rating.css';
+import Swal from "sweetalert2";
 
 const RatingDetails = () => {
     const { supplierId } = useParams();
@@ -18,8 +19,13 @@ const RatingDetails = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isAddRatingModalVisible, setIsAddRatingModalVisible] = useState(false);
     const [ratingValue, setRatingValue] = useState(1);
+    const [criteriaValue, setCriteriaValue] = useState("");
+    const [contentValue, setContentValue] = useState("");
+
+    console.log(typeof ratingValue);
 
     const loadSupplierDetail = useCallback(async () => {
+        setLoading(true);
         try {
             const res = await APIs.get(endpoints.getSupplier(supplierId));
             setSupplier(res.data);
@@ -49,6 +55,13 @@ const RatingDetails = () => {
         loadRatings();
     }, [loadRatings]);
 
+    useEffect(() => {
+        const firstCriteria = Object.keys(criteriaName)[0];
+        if (firstCriteria) {
+            setCriteriaValue(firstCriteria);
+        }
+    }, []);
+
     const handleShowMore = () => {
         setVisibleRatingsCount(prevCount => {
             const newCount = prevCount + 10;
@@ -77,8 +90,11 @@ const RatingDetails = () => {
 
     const handleRatingChange = (event) => {
         const value = Number(event.target.value);
-        // Nếu giá trị nhỏ hơn 1, đặt thành 1, nếu không giữ nguyên giá trị
         setRatingValue(value < 1 ? 1 : value);
+    };
+
+    const handleContentChange = (event) => {
+        setContentValue(event.target.value);
     };
 
     const renderStars = (rating) => {
@@ -95,8 +111,45 @@ const RatingDetails = () => {
         return stars;
     };
 
-    if (loading || !supplier) {
+    if (loading) {
         return <Loading />;
+    }
+
+    if (!supplier) {
+        return <Loading />;
+    }
+
+    const addRating = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('criteria', criteriaValue);
+        formData.append('content', contentValue);
+        formData.append('rating', ratingValue);
+
+        try {
+            let res = await authAPI().post(endpoints.addRatingForSupplier(supplierId), formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+
+            console.log(res.status);
+
+            if (res.status === statusCode.HTTP_200_OK) {
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Gửi đánh giá thành công',
+                    text: 'Hồ sơ của bạn đã được cập nhật.',
+                });
+            }
+        } catch (error) {
+            const errorMessage = error.response?.data?.[0]?.message || 'Đã xảy ra lỗi không xác định';
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Gửi đánh giá thất bại',
+                text: errorMessage,
+            });
+        }
     }
 
     return (
@@ -158,7 +211,7 @@ const RatingDetails = () => {
                                             <h1>Username: {rating.user.username}</h1>
                                             <h1>Nội dung: {rating.content}</h1>
                                             <h1>Đánh giá: {renderStars(rating.rating)}</h1>
-                                            <h1>Tiêu chí: {statusRatingName[rating.criteria] || rating.criteria}</h1>
+                                            <h1>Tiêu chí: {criteriaName[rating.criteria]}</h1>
                                         </div>
                                     </div>
                                 ))}
@@ -261,7 +314,7 @@ const RatingDetails = () => {
                                 <Form.Label>Tiêu chí</Form.Label>
                                 <Form.Control
                                     type="text"
-                                    value={statusRatingName[selectedRating.criteria] || selectedRating.criteria || ''}
+                                    value={criteriaName[selectedRating.criteria] || selectedRating.criteria || ''}
                                     readOnly
                                 />
                             </Form.Group>
@@ -270,10 +323,9 @@ const RatingDetails = () => {
                 </Modal.Body>
             </Modal>
 
+            {/* Add Rating Modal */}
             <Modal
-                style={{height: '520px',
-                    marginTop: '100px'
-                }}
+                style={{ height: '520px', marginTop: '100px' }}
                 show={isAddRatingModalVisible}
                 onHide={handleCloseAddRatingModal}
                 centered
@@ -288,9 +340,10 @@ const RatingDetails = () => {
                             <Form.Label>Tiêu chí</Form.Label>
                             <Form.Control
                                 as="select"
-                            // Xử lý sự thay đổi giá trị tiêu chí ở đây
+                                value={criteriaValue}
+                                onChange={(e) => setCriteriaValue(e.target.value)}
                             >
-                                {Object.entries(statusRatingName).map(([key, value]) => (
+                                {Object.entries(criteriaName).map(([key, value]) => (
                                     <option key={key} value={key}>{value}</option>
                                 ))}
                             </Form.Control>
@@ -301,7 +354,8 @@ const RatingDetails = () => {
                             <Form.Control
                                 as="textarea"
                                 rows={3}
-                            // Xử lý sự thay đổi nội dung ở đây
+                                value={contentValue}
+                                onChange={handleContentChange}
                             />
                         </Form.Group>
 
@@ -310,7 +364,6 @@ const RatingDetails = () => {
                             <Form.Control
                                 type="number"
                                 min="1"
-                                max="5"
                                 value={ratingValue}
                                 onChange={handleRatingChange}
                             />
@@ -330,11 +383,8 @@ const RatingDetails = () => {
                                     fontWeight: 500,
                                     width: '120px'
                                 }}
+                                onClick={addRating}
                                 variant="primary"
-                                onClick={() => {
-                                    // Xử lý gửi dữ liệu đánh giá ở đây
-                                    console.log("Đánh giá được gửi:", ratingValue);
-                                }}
                             >
                                 Gửi đánh giá
                             </Button>
@@ -342,7 +392,6 @@ const RatingDetails = () => {
                     </Form>
                 </Modal.Body>
             </Modal>
-
         </Container>
     );
 };
