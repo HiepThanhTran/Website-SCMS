@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { routeUrl } from '../../App';
@@ -8,13 +8,24 @@ import { useCart } from '../../store/contexts/CartContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';
 import { defaultImage, statusCode } from '../../utils/Constatns';
 import Toast from '../../utils/Utils';
+import { useUser } from '../../store/contexts/UserContext';
+import { CardElement, Elements, useStripe, useElements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import './Cart.css';
 
+const stripePromise = loadStripe('pk_test_51O41qGBy1BulLKF8k8qu0rqhO2HoDtOLogY9Yh757QmeFJvjTrj5o96LDJpJ4GWR6CNtEWe6K8aO0SrdV5P5UdfZ00mPyk9MSy');
+
 const Cart = () => {
+   const [user,] = useUser();
    const [cart, dispatch] = useCart();
    const [quantities, setQuantities] = useState({});
-
+   const [showModal, setShowModal] = useState(false);
+   const [formData, setFormData] = useState({ email: '', phone: '', address: '' });
+   const [paymentMethod, setPaymentMethod] = useState('');
+   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cash');
    const navigate = useNavigate();
+   const stripe = useStripe();
+   const elements = useElements();
 
    const tax = 0.01;
    const totalAmount = Object.values(cart).reduce((total, item) => total + item.quantity * item.unitPrice, 0);
@@ -136,6 +147,70 @@ const Cart = () => {
       });
    };
 
+   const handleShowModal = () => setShowModal(true);
+   const handleCloseModal = () => setShowModal(false);
+
+   const handleFormChange = (e) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+   };
+
+   const handlePaymentMethodChange = (e) => {
+      setSelectedPaymentMethod(e.target.value);
+   };
+
+   const handleConfirmOrder = async () => {
+      if (selectedPaymentMethod === 'online') {
+         if (!stripe || !elements) {
+            // Stripe.js has not loaded yet
+            return;
+         }
+
+         const { error, paymentMethod: method } = await stripe.createPaymentMethod({
+            type: 'card',
+            card: elements.getElement(CardElement),
+         });
+
+         if (error) {
+            Swal.fire({
+               title: 'Lỗi',
+               text: error.message,
+               icon: 'error',
+               confirmButtonText: 'Đóng',
+            });
+            return;
+         }
+
+         setPaymentMethod(method.id);
+      }
+
+      try {
+         const res = await authAPI().post(endpoints.createOrder, {
+            ...formData,
+            paymentMethodId: paymentMethod,
+            cart,
+         });
+
+         if (res.status === statusCode.HTTP_201_CREATED) {
+            Swal.fire({
+               title: 'Thành công',
+               text: 'Đơn hàng của bạn đã được đặt.',
+               icon: 'success',
+               confirmButtonText: 'Đóng',
+            }).then(() => {
+               handleCloseModal();
+            });
+         }
+      } catch (error) {
+         Swal.fire({
+            title: 'Lỗi',
+            text: `Đặt hàng thất bại: ${error.message}`,
+            icon: 'error',
+            confirmButtonText: 'Đóng',
+         });
+      }
+   };
+
    return (
       <Container fluid className="cart-container" style={Object.entries(cart).length < 1 ? { minHeight: '100vh' } : {}}>
          <Row>
@@ -183,11 +258,15 @@ const Cart = () => {
                                     <Col sm={4}>
                                        <div className="d-flex align-items-center">
                                           <Button
-                                             className="fs-5 me-2"
+                                             style={{
+                                                background: 'var(--primary-color)',
+                                                border: 'none',
+                                             }}
+                                             className="fs-5 me-2 btn-cart"
                                              variant="primary"
                                              onClick={() => updateQuantity(c?.product?.id, -1)}
                                           >
-                                             <i class="bx bx-minus"></i>
+                                             <i className="bx bx-minus"></i>
                                           </Button>
                                           <Form.Group style={{ position: 'relative' }} controlId={`quantity-${index}`}>
                                              <Form.Label
@@ -209,11 +288,15 @@ const Cart = () => {
                                              />
                                           </Form.Group>
                                           <Button
-                                             className="fs-5 ms-2"
+                                             style={{
+                                                background: 'var(--primary-color)',
+                                                border: 'none',
+                                             }}
+                                             className="fs-5 ms-2 btn-cart"
                                              variant="primary"
                                              onClick={() => updateQuantity(c?.product?.id, 1)}
                                           >
-                                             <i class="bx bx-plus"></i>
+                                             <i className="bx bx-plus"></i>
                                           </Button>
                                        </div>
                                     </Col>
@@ -223,7 +306,7 @@ const Cart = () => {
                                     variant="danger"
                                     onClick={() => removeProduct(c?.product?.id)}
                                  >
-                                    <i class="bx bxs-trash-alt"></i>
+                                    <i className="bx bxs-trash-alt"></i>
                                  </Button>
                               </div>
                            </Col>
@@ -255,20 +338,108 @@ const Cart = () => {
                         </div>
                      </div>
 
-                     <div className="summary-item ">
-                        <h3 className="summary-item__title">Thành tiền</h3>
-                        <span className="summary-item__value">{formattedCurrency(totalWithFee)}</span>
-                     </div>
-
                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                        <Button onClick={() => navigate("/charge")} className="summary-button">Đặt hàng</Button>
+                        <Button onClick={handleShowModal} className="summary-button">Đặt hàng</Button>
                      </div>
                   </div>
                </Container>
             </Col>
          </Row>
+
+         {/* Modal Form */}
+         <Modal show={showModal} onHide={handleCloseModal}>
+            <Modal.Header closeButton>
+               <Modal.Title>Thông tin thanh toán</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+               <Form>
+                  <Form.Group className="mb-3">
+                     <Form.Label>Tên</Form.Label>
+                     <Form.Control
+                        type="text"
+                        name="username"
+                        value={user?.data?.username}
+                        readOnly
+                     />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                     <Form.Label>Email</Form.Label>
+                     <Form.Control
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleFormChange}
+                     />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                     <Form.Label>Số điện thoại</Form.Label>
+                     <Form.Control
+                        type="text"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleFormChange}
+                     />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                     <Form.Label>Địa chỉ</Form.Label>
+                     <Form.Control
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleFormChange}
+                     />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                     <Form.Label>Hình thức thanh toán</Form.Label>
+                     <div className="custom-radio">
+                        <Form.Check
+                           type="radio"
+                           label="Thanh toán tiền mặt"
+                           value="cash"
+                           checked={selectedPaymentMethod === 'cash'}
+                           onChange={handlePaymentMethodChange}
+                           custom
+                        />
+                        <Form.Check
+                           type="radio"
+                           label="Thanh toán online"
+                           value="online"
+                           checked={selectedPaymentMethod === 'online'}
+                           onChange={handlePaymentMethodChange}
+                           custom
+                        />
+                     </div>
+                  </Form.Group>
+                  <div className={`payment-method-transition ${selectedPaymentMethod === 'online' ? 'fade-in' : 'fade-out'}`}>
+                     {selectedPaymentMethod === 'online' && (
+                        <Form.Group className="mb-3">
+                           <Form.Label>Thẻ tín dụng</Form.Label>
+                           <CardElement className="stripe-card-element" />
+                        </Form.Group>
+                     )}
+                  </div>
+               </Form>
+            </Modal.Body>
+            <Modal.Footer>
+               <Button variant="secondary" onClick={handleCloseModal}>
+                  Hủy
+               </Button>
+               <Button 
+                  className="btn-confirm"
+                  onClick={handleConfirmOrder}>
+                  Xác nhận
+               </Button>
+            </Modal.Footer>
+         </Modal>
+
       </Container>
    );
 };
 
-export default Cart;
+const WrappedCart = () => (
+   <Elements stripe={stripePromise}>
+      <Cart />
+   </Elements>
+);
+
+export default WrappedCart;
