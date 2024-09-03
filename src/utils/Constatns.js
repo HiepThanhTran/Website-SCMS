@@ -3,82 +3,6 @@ export const defaultImage = {
    PRODUCT_IMAGE: 'https://res.cloudinary.com/dtthwldgs/image/upload/v1716737233/default-user-cover.jpg',
 };
 
-export const roles = {
-   ADMIN: 'ROLE_ADMIN',
-   CUSTOMER: 'ROLE_CUSTOMER',
-   SUPPLIER: 'ROLE_SUPPLIER',
-   DISTRIBUTOR: 'ROLE_DISTRIBUTOR',
-   MANUFACTURER: 'ROLE_MANUFACTURER',
-   SHIPPER: 'ROLE_SHIPPER',
-};
-
-export const statusOrder = {
-   PENDING: "PENDING",
-   CONFIRMED: "CONFIRMED",
-   SHIPPED: "SHIPPED",
-   DELIVERED: "DELIVERED",
-   CANCELLED: "CANCELLED",
-   RETURNED: "RETURNED"
-};
-
-export const statusOrderName = {
-   PENDING: "Đang chờ xử lý",
-   CONFIRMED: "Đã xác nhận",
-   SHIPPED: "Đã chuyển hàng",
-   DELIVERED: "Đã giao hàng",
-   CANCELLED: "Đã hủy",
-   RETURNED: "Đã trả hàng"
-};
-
-export const criteria = {
-   COST: "COST",
-   QUALITY: "QUALITY",
-   TIMELY_DELIVERY: "TIMELY_DELIVERY"
-};
-
-export const criteriaName = {
-   COST: "Giá cả",
-   QUALITY: "Chất lượng",
-   TIMELY_DELIVERY: "Giao hàng đúng hạn"
-};
-
-export const typeOrder = {
-   INBOUND: "INBOUND",
-   OUTBOUND: "OUTBOUND"
-};
-
-export const typeOrderName = {
-   INBOUND: "Nhập kho",
-   OUTBOUND: "Xuất kho"
-};
-
-export const rolesName = {
-   ROLE_ADMIN: 'Quản trị viên',
-   ROLE_CUSTOMER: 'Khách hàng',
-   ROLE_SUPPLIER: 'Nhà cung cấp',
-   ROLE_DISTRIBUTOR: 'Nhà phân phối',
-   ROLE_MANUFACTURER: 'Nhà sản xuất',
-   ROLE_SHIPPER: 'Nhà vận chuyển',
-};
-
-export const orderStatus = {
-   PENDING: 'PENDING',
-   CONFIRMED: 'CONFIRMED',
-   SHIPPED: 'SHIPPED',
-   DELIVERED: 'DELIVERED',
-   CANCELLED: 'CANCELLED',
-   RETURNED: 'RETURNED',
-};
-
-export const orderStatusName = {
-   PENDING: 'Đang chờ xử lý',
-   CONFIRMED: 'Đã xác nhận',
-   SHIPPED: 'Đã chuyển hàng',
-   DELIVERED: 'Đã giao hàng',
-   CANCELLED: 'Đã hủy',
-   RETURNED: 'Đã hủy',
-};
-
 export const criteriaType = {
    COST: 'COST',
    QUALITY: 'QUALITY',
@@ -103,6 +27,24 @@ export const deliveryMethodsName = {
    AIR: 'Đường hàng không',
    SEA: 'Đường biển',
    EXPRESS: 'Giao hàng nhanh',
+};
+
+export const orderStatus = {
+   PENDING: 'PENDING',
+   CONFIRMED: 'CONFIRMED',
+   SHIPPED: 'SHIPPED',
+   DELIVERED: 'DELIVERED',
+   CANCELLED: 'CANCELLED',
+   RETURNED: 'RETURNED',
+};
+
+export const orderStatusName = {
+   PENDING: 'Đang chờ xử lý',
+   CONFIRMED: 'Đã xác nhận',
+   SHIPPED: 'Đã chuyển hàng',
+   DELIVERED: 'Đã giao hàng',
+   CANCELLED: 'Đã hủy',
+   RETURNED: 'Đã hủy',
 };
 
 export const orderTypes = {
@@ -137,6 +79,24 @@ export const shipmentStatusName = {
    IN_TRANSIT: 'Đang vận chuyển',
    DELIVERED: 'Đã giao hàng',
    RETURNED: 'Hoàn trả hàng',
+};
+
+export const roles = {
+   ADMIN: 'ROLE_ADMIN',
+   CUSTOMER: 'ROLE_CUSTOMER',
+   SUPPLIER: 'ROLE_SUPPLIER',
+   DISTRIBUTOR: 'ROLE_DISTRIBUTOR',
+   MANUFACTURER: 'ROLE_MANUFACTURER',
+   SHIPPER: 'ROLE_SHIPPER',
+};
+
+export const rolesName = {
+   ROLE_ADMIN: 'Quản trị viên',
+   ROLE_CUSTOMER: 'Khách hàng',
+   ROLE_SUPPLIER: 'Nhà cung cấp',
+   ROLE_DISTRIBUTOR: 'Nhà phân phối',
+   ROLE_MANUFACTURER: 'Nhà sản xuất',
+   ROLE_SHIPPER: 'Nhà vận chuyển',
 };
 
 export const statusCode = {

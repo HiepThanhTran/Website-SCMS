@@ -1,41 +1,39 @@
-import { Container, Row, Col } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { Col, Container, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import APIs, { authAPI, endpoints } from '../../configs/APIConfigs';
+import { routeUrl } from '../../App';
+import APIs, { endpoints } from '../../configs/APIConfigs';
 import Loading from '../../layout/loading/Loading';
 import './Rating.css';
-import { routeUrl } from '../../App';
 
 const Rating = () => {
-    const [suppliers, setSuppliers] = useState([]);
-    const [page, setPage] = useState(1);
-    const [size, setSize] = useState(10);
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
-    
-    const loadSuppliers = async () => {
-        try {
-            const res = await APIs.get(endpoints.suppliers);
-            const data = res.data;
-            setSuppliers(data);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    }
+   const [suppliers, setSuppliers] = useState([]);
+   const [page, setPage] = useState(1);
+   const [size] = useState(10);
+   const [loading, setLoading] = useState(true);
+
+   const navigate = useNavigate();
+
+   const loadSuppliers = useCallback(async () => {
+      setLoading(true);
+      try {
+         const res = await APIs.get(endpoints.suppliers, { params: { page, size } });
+
+         setSuppliers(res.data);
+      } catch (error) {
+         console.error(error);
+      } finally {
+         setLoading(false);
+      }
+   }, [page, size]);
 
    useEffect(() => {
       loadSuppliers();
-   }, []);
+   }, [loadSuppliers]);
 
    if (loading) {
       return <Loading />;
    }
-
-   const handleSupplierClick = (supplierId) => {
-      navigate(routeUrl.RATING_DETAILS(supplierId));
-   };
 
    return (
       <Container className="rating-container">
@@ -46,7 +44,7 @@ const Rating = () => {
                   <Col sm={12} md={4} lg={3} key={supplier.id} className="mb-3">
                      <div
                         className="supplier-card shadow-sm p-3 bg-body rounded"
-                        onClick={() => handleSupplierClick(supplier.id)}
+                        onClick={() => navigate(routeUrl.RATING_DETAILS(supplier.id))}
                      >
                         <div className="supplier-card__item">
                            <i className="bx bxs-id-card"></i>
