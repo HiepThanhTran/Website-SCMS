@@ -12,6 +12,46 @@ export const roles = {
    SHIPPER: 'ROLE_SHIPPER',
 };
 
+export const statusOrder = {
+   PENDING: "PENDING",
+   CONFIRMED: "CONFIRMED",
+   SHIPPED: "SHIPPED",
+   DELIVERED: "DELIVERED",
+   CANCELLED: "CANCELLED",
+   RETURNED: "RETURNED"
+};
+
+export const statusOrderName = {
+   PENDING: "Đang chờ xử lý",
+   CONFIRMED: "Đã xác nhận",
+   SHIPPED: "Đã chuyển hàng",
+   DELIVERED: "Đã giao hàng",
+   CANCELLED: "Đã hủy",
+   RETURNED: "Đã trả hàng"
+};
+
+export const criteria = {
+   COST: "COST",
+   QUALITY: "QUALITY",
+   TIMELY_DELIVERY: "TIMELY_DELIVERY"
+};
+
+export const criteriaName = {
+   COST: "Giá cả",
+   QUALITY: "Chất lượng",
+   TIMELY_DELIVERY: "Giao hàng đúng hạn"
+};
+
+export const typeOrder = {
+   INBOUND: "INBOUND",
+   OUTBOUND: "OUTBOUND"
+};
+
+export const typeOrderName = {
+   INBOUND: "Nhập kho",
+   OUTBOUND: "Xuất kho"
+};
+
 export const rolesName = {
    ROLE_ADMIN: 'Quản trị viên',
    ROLE_CUSTOMER: 'Khách hàng',

@@ -7,22 +7,23 @@ import './Rating.css';
 import { routeUrl } from '../../App';
 
 const Rating = () => {
-   const [suppliers, setSuppliers] = useState([]);
-   const [loading, setLoading] = useState(true);
-   const navigate = useNavigate();
-
-   console.log(suppliers);
-   const loadSuppliers = async () => {
-      try {
-         const res = await APIs.get(endpoints.suppliers);
-         const data = res.data;
-         setSuppliers(data);
-      } catch (error) {
-         console.error(error);
-      } finally {
-         setLoading(false);
-      }
-   };
+    const [suppliers, setSuppliers] = useState([]);
+    const [page, setPage] = useState(1);
+    const [size, setSize] = useState(10);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    
+    const loadSuppliers = async () => {
+        try {
+            const res = await APIs.get(endpoints.suppliers);
+            const data = res.data;
+            setSuppliers(data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
    useEffect(() => {
       loadSuppliers();

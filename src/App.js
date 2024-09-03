@@ -7,6 +7,7 @@ import WrappedCart from './components/cart/Cart';
 import Home from './components/home/Home';
 import Login from './components/login/Login';
 import Order from './components/order/Order';
+import OrderSupplier from './components/order/OrderSupplier';
 import Product from './components/product/Product';
 import ProductDetails from './components/product/ProductDetails';
 import Account from './components/profile/Account';
@@ -26,8 +27,10 @@ export const routeUrl = {
    REGISTER: '/register',
    ACCOUNT: '/users',
    PROFILE: '/users/profile',
-   ORDER: '/orders',
+   ORDER_CUSTOMER: '/orders-customer',
    CART: '/cart',
+
+   ORDER_SUPPLIER: '/orders-supplier',
 
    PRODUCT: '/products',
    PRODUCT_DETAILS: (productId) => `/products/${productId}`,
@@ -48,12 +51,13 @@ function App() {
                   <Route path={routeUrl.REGISTER} element={<Register />} />
                   <Route path={routeUrl.ACCOUNT} element={<Account />} />
                   <Route path={routeUrl.PROFILE} element={<Profile />} />
-                  <Route path={routeUrl.ORDER} element={<Order />} />
+                  <Route path={routeUrl.ORDER_CUSTOMER} element={<Order />} />
                   <Route path={routeUrl.CART} element={<WrappedCart />} />
                   <Route path={routeUrl.PRODUCT} element={<Product />} />
                   <Route path={routeUrl.PRODUCT_DETAILS(':productId')} element={<ProductDetails />} />
                   <Route path={routeUrl.RATING} element={<Rating />} />
                   <Route path={routeUrl.RATING_DETAILS(':supplierId')} element={<RatingDetails />} />
+                  <Route path={routeUrl.ORDER_SUPPLIER} element={<OrderSupplier />} />
                </Routes>
                <ConditionalFooter />
             </BrowserRouter>

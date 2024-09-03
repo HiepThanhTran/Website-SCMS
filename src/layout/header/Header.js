@@ -51,6 +51,9 @@ const Header = () => {
                   <Nav.Link as={NavLink} to="/rating" className="navbar-custom__menu--item">
                      Đánh giá nhà cung cấp
                   </Nav.Link>
+                  <Nav.Link as={NavLink} to="/order-supplier" className="navbar-custom__menu--item">
+                     Xử lý đơn hàng
+                  </Nav.Link>
                </Nav>
 
                <Nav className="navbar-custom__menu">
