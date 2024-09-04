@@ -125,13 +125,13 @@ const ProductSupplier = () => {
         formData.append('expiryDate', newProduct.expiryDate);
         formData.append('unit', newProduct.unit);
         formData.append('category', newProduct.category);
-        formData.append('tags', newProduct.tags);
-
+        formData.append('tags', newProduct.tags.join(','));
+    
         try {
-            let res = await authAPI().post(endpoints.products, formData, {
+            let res = await authAPI().post(endpoints.publishProduct, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
-
+    
             if (res.status === statusCode.HTTP_200_OK) {
                 setProducts((prevProducts) => [res.data, ...prevProducts]);
                 setNewProduct({
@@ -144,29 +144,26 @@ const ProductSupplier = () => {
                     tags: [],
                 });
                 handleCloseModal();
-
+    
                 Swal.fire({
                     icon: 'success',
                     title: 'Thành công!',
                     text: 'Thêm sản phẩm thành công.',
-                    confirmButtonText: 'OK'
+                    confirmButtonText: 'OK',
                 });
             }
         } catch (error) {
             Toast.fire({
                 icon: 'error',
-                title: 'Xóa đánh giá thất bại',
+                title: 'Thêm sản phẩm thất bại',
                 text:
                     error?.response?.data.map((data) => data.message).join('\n') ||
                     'Hệ thống đang bận, vui lòng thử lại sau',
             });
         }
     };
-
+    
     const handleUnpublishProduct = async (e, productId) => {
-        e.stopPropagation();
-        e.preventDefault();
-
         Swal.fire({
             title: 'Xác nhận ẩn sản phẩm',
             text: 'Bạn chắc chắn muốn  ẩn sản phẩm này?',
