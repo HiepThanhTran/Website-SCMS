@@ -25,6 +25,8 @@ const RatingDetails = () => {
     const [contentValue, setContentValue] = useState("");
     const [menuVisible, setMenuVisible] = useState(null);
 
+    console.log(contentValue);
+
     const loadSupplierDetail = useCallback(async () => {
         setLoading(true);
         try {
@@ -127,6 +129,10 @@ const RatingDetails = () => {
         formData.append('criteria', criteriaValue);
         formData.append('content', contentValue);
         formData.append('rating', ratingValue);
+
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
 
         try {
             let res = await authAPI().post(endpoints.addRatingForSupplier(supplierId), formData, {

@@ -153,6 +153,11 @@
     border: 1px solid var(--primary-color);
 }
 
+.rating-user__image{
+    display: flex;
+    align-items: center;
+}
+
 .rating-user__image img {
     width: 80px;
     height: 80px;
@@ -162,12 +167,16 @@
 .rating-user__content {
     margin-left: 20px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .rating-user__content h1 {
     font-size: 1.1rem;
     color: var(--text-color);
     font-weight: 500;
+    margin: 6px 0;
 }
 
 .rating-user__content p {
