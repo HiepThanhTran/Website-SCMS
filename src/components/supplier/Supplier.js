@@ -57,17 +57,17 @@ const Supplier = () => {
                               </div>
 
                               <div className="supplier-card__item">
-                                 <i className="bx bxs-id-card"></i>
+                                 <i class='bx bx-current-location'></i>
                                  <span>Địa chỉ: {supplier.address}</span>
                               </div>
 
                               <div className="supplier-card__item">
-                                 <i className="bx bxs-id-card"></i>
+                                 <i class='bx bxs-phone'></i>
                                  <span>SĐT: {supplier.phone}</span>
                               </div>
 
                               <div className="supplier-card__item">
-                                 <i className="bx bxs-phone"></i>
+                                 <i class='bx bxs-contact' ></i>
                                  <span>Thông tin liên hệ: {supplier.contactInfo}</span>
                               </div>
                            </div>

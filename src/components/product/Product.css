@@ -1,4 +1,5 @@
-.product-container {
+.product-container,
+.product-supplier-container {
    height: 100%;
    margin: 120px auto 50px auto;
 }
@@ -242,4 +243,27 @@
 
 .tag-item.selected {
    background-color: var(--primary-color-hover);
+}
+
+/* Product Supplier */
+.product-supplier-container--title{
+   font-size: 2rem;
+   font-weight: 600;
+   color: var(--text-color);
+   text-align: center;
+}
+
+.add-product{
+   display: flex;
+   justify-content: flex-end;
+}
+
+.add-product i{
+   font-size: 2.5rem;
+   color: var(--primary-color);
+   margin: 5px 20px 10px 0;
+}
+
+.add-product i:hover{
+   cursor: pointer;
 }

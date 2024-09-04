@@ -86,6 +86,11 @@ const Header = () => {
                                  >
                                     Đơn hàng
                                  </NavLink>
+                                 {user?.data?.role === roles.SUPPLIER && (
+                                    <NavLink className="dropdown-item" to={routeUrl.PRODUCT_SUPPLIER}>
+                                       Hàng hóa
+                                    </NavLink>
+                                 )}
                                  <button className="dropdown-item" onClick={handleLogout}>
                                     Đăng xuất
                                  </button>
