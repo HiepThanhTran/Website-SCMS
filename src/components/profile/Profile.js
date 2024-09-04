@@ -14,13 +14,12 @@ import ProfileSupplier from './ProfileSupplier';
 
 const Profile = () => {
    const [user, dispatch] = useUser();
+
    const [profile, setProfile] = useState(user?.profile);
 
    const navigate = useNavigate();
 
-   const processUpdateProfile = (field, value) => {
-      setProfile({ ...profile, [field]: value });
-   };
+   const processUpdateProfile = (field, value) => setProfile({ ...profile, [field]: value });
 
    const handleUpdateProfile = async (e) => {
       e.preventDefault();

@@ -6,11 +6,13 @@ import { routeUrl } from '../../App';
 import APIs, { authAPI, endpoints } from '../../configs/APIConfigs';
 import { useCart } from '../../store/contexts/CartContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';
-import { defaultImage } from '../../utils/Constatns';
+import { defaultImage, statusCode } from '../../utils/Constatns';
+import Toast from '../../utils/Utils';
 import './Product.css';
 
 const Product = () => {
    const [cart, dispatch] = useCart();
+   
    const [products, setProducts] = useState([]);
    const [categories, setCategories] = useState([]);
    const [units, setUnits] = useState([]);
@@ -102,8 +104,21 @@ const Product = () => {
       });
 
       try {
-         await authAPI().post(endpoints.addProductToCart, { productId: product.id, quantity: 1 });
+         const res = await authAPI().post(endpoints.addProductToCart, { productId: product.id, quantity: 1 });
+
+         if (res.status === statusCode.HTTP_200_OK) {
+            Toast.fire({
+               icon: 'success',
+               title: 'Thành công!',
+               text: `Thêm sản phẩm ${product.name} vào giỏ hàng thành công.`,
+            });
+         }
       } catch (error) {
+         Toast.fire({
+            icon: 'error',
+            title: 'Thất bại!',
+            text: `Thêm sản phẩm ${product.name} vào giỏ hàng thất bại.`,
+         });
          console.error('Thêm sản phẩm vào giỏ hàng thất bại:', error);
       }
    };
@@ -254,7 +269,7 @@ const Product = () => {
                                           style={{ cursor: 'pointer' }}
                                           onClick={() => navigate(routeUrl.PRODUCT_DETAILS(product.id))}
                                        >
-                                          <h1 className="product-card__content--title">{product.name}</h1>
+                                          <h2 className="product-card__content--title">{product.name}</h2>
                                           <p className="product-card__content--des">Mô tả: {product.description}</p>
                                           <span>
                                              Giá:{' '}

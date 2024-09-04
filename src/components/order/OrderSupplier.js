@@ -1,91 +1,91 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, Card, Col, Container, Form, Modal, Row } from 'react-bootstrap';
-import Swal from 'sweetalert2';
-import { authAPI, endpoints } from '../../configs/APIs';
+import { authAPI, endpoints } from '../../configs/APIConfigs';
 import Loading from '../../layout/loading/Loading';
-import { statusOrderName, typeOrderName } from '../../utils/Constatns';
+import { useUser } from '../../store/contexts/UserContext';
+import { orderStatusName, orderTypes, orderTypesName, statusCode } from '../../utils/Constatns';
+import Toast from '../../utils/Utils';
 
 const OrderSupplier = () => {
-   const [loading, setLoading] = useState(true);
-   const [orderSupplier, setOrderSupplier] = useState([]);
-   const [filteredOrders, setFilteredOrders] = useState([]);
-   const [showModal, setShowModal] = useState(false);
-   const [currentOrderSupplier, setCurrentOrderSupplier] = useState(null);
-   const [selectedStatus, setSelectedStatus] = useState('');
-   const [filterType, setFilterType] = useState('');
-   const [filterStatus, setFilterStatus] = useState('');
+   const [user] = useUser();
 
-   const loadOrdersSupplier = async () => {
+   const [orders, setOrders] = useState([]);
+   const [selectedOrder, setSelectedOrder] = useState(null);
+   const [page, setPage] = useState(1);
+   const [size] = useState(9);
+   const [loading, setLoading] = useState(false);
+   const [showModal, setShowModal] = useState(false);
+   const [selectedStatus, setSelectedStatus] = useState('');
+   const [type, setType] = useState('');
+   const [status, setStatus] = useState('');
+
+   const loadOrdersSupplier = useCallback(async () => {
+      setLoading(true);
       try {
-         const res = await authAPI().get(endpoints.orders);
-         const data = res.data;
-         setOrderSupplier(data);
-         setFilteredOrders(data);
+         const res = await authAPI().get(endpoints.getOrdersOfSupplier(user?.profile?.id), {
+            params: { page, size, type, status },
+         });
+
+         setOrders(res.data);
       } catch (error) {
          console.error(error);
       } finally {
-         setTimeout(() => {
-            setLoading(false);
-         }, 1000);
+         setLoading(false);
       }
-   };
+   }, [user?.profile?.id, page, size, type, status]);
 
    useEffect(() => {
       loadOrdersSupplier();
-   }, []);
-
-   useEffect(() => {
-      const filtered = orderSupplier.filter(
-         (order) =>
-            (filterType ? order.type === filterType : true) && (filterStatus ? order.status === filterStatus : true),
-      );
-      setFilteredOrders(filtered);
-   }, [filterType, filterStatus, orderSupplier]);
-
-   const handleCardClick = (order) => {
-      setCurrentOrderSupplier(order);
-      setSelectedStatus(order.status);
-      setShowModal(true);
-   };
-
-   const handleCloseModal = () => {
-      setShowModal(false);
-   };
-
-   const handleStatusChange = (e) => {
-      setSelectedStatus(e.target.value);
-   };
-
-   const handleFilterTypeChange = (e) => {
-      setFilterType(e.target.value);
-   };
-
-   const handleFilterStatusChange = (e) => {
-      setFilterStatus(e.target.value);
-   };
+   }, [loadOrdersSupplier]);
 
    const updateOrderStatus = async () => {
       try {
-         const url = endpoints.updateStatusOrder(currentOrderSupplier.orderNumber);
-
-         await authAPI().patch(url, { status: selectedStatus });
-
-         Swal.fire({
-            icon: 'success',
-            title: 'Cập nhật thành công',
-            text: 'Trạng thái đơn hàng đã được cập nhật thành công',
+         const res = await authAPI().patch(endpoints.updateStatusOrder(selectedOrder.id), {
+            status: selectedStatus,
          });
 
-         loadOrdersSupplier();
-         handleCloseModal();
+         if (res.status === statusCode.HTTP_200_OK) {
+            Toast.fire({
+               icon: 'success',
+               title: 'Cập nhật thành công',
+               text: 'Trạng thái đơn hàng đã được cập nhật thành công',
+            });
+
+            loadOrdersSupplier();
+            handleCloseModal();
+         }
       } catch (error) {
-         Swal.fire({
+         Toast.fire({
             icon: 'error',
             title: 'Lỗi',
             text: 'Không thể cập nhật trạng thái đơn hàng',
          });
       }
    };
+
+   const handleCardClick = (order) => {
+      setSelectedStatus(order.status);
+      setSelectedOrder(order);
+      setShowModal(true);
+   };
+
+   const handleCloseModal = () => setShowModal(false);
+
+   const handleStatusChange = (e) => setSelectedStatus(e.target.value);
+
+   const handleFilterTypeChange = (e) => {
+      setType(e.target.value);
+      setPage(1);
+   };
+
+   const handleFilterStatusChange = (e) => {
+      setStatus(e.target.value);
+      setPage(1);
+   };
+
+   const handleNextPage = () => setPage((prevPage) => prevPage + 1);
+
+   const handlePrevPage = () => setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));
 
    if (loading) return <Loading />;
 
@@ -105,9 +105,9 @@ const OrderSupplier = () => {
                      >
                         Lọc theo loại
                      </Form.Label>
-                     <Form.Control as="select" value={filterType} onChange={handleFilterTypeChange}>
+                     <Form.Control as="select" value={type} onChange={handleFilterTypeChange}>
                         <option value="">Tất cả loại</option>
-                        {Object.entries(typeOrderName).map(([key, value]) => (
+                        {Object.entries(orderTypesName).map(([key, value]) => (
                            <option key={key} value={key}>
                               {value}
                            </option>
@@ -126,9 +126,9 @@ const OrderSupplier = () => {
                      >
                         Lọc theo trạng thái
                      </Form.Label>
-                     <Form.Control as="select" value={filterStatus} onChange={handleFilterStatusChange}>
+                     <Form.Control as="select" value={status} onChange={handleFilterStatusChange}>
                         <option value="">Tất cả trạng thái</option>
-                        {Object.entries(statusOrderName).map(([key, value]) => (
+                        {Object.entries(orderStatusName).map(([key, value]) => (
                            <option key={key} value={key}>
                               {value}
                            </option>
@@ -138,7 +138,7 @@ const OrderSupplier = () => {
                </Col>
             </Row>
             <Row>
-               {filteredOrders.map((order) => (
+               {orders.map((order) => (
                   <Col sm={12} md={4} key={order.orderNumber} className="mb-3">
                      <Card className="order__card" onClick={() => handleCardClick(order)}>
                         <Card.Body>
@@ -152,15 +152,23 @@ const OrderSupplier = () => {
                               Thời gian giao hàng: {order.expectedDelivery || 'Chưa cập nhật'}
                            </Card.Text>
                            <Card.Text className="order__title--content">
-                              Loại: {typeOrderName[order.type] || 'Trạng thái không xác định'}
+                              Loại: {orderTypesName[order.type] || 'Trạng thái không xác định'}
                            </Card.Text>
                            <Card.Text className="order__title--content">
-                              Trạng thái: {statusOrderName[order.status] || 'Trạng thái không xác định'}
+                              Trạng thái: {orderStatusName[order.status] || 'Trạng thái không xác định'}
                            </Card.Text>
                         </Card.Body>
                      </Card>
                   </Col>
                ))}
+               <div className="text-center mt-4">
+                  <button className="btn-page me-2 me-3" onClick={handlePrevPage} disabled={page === 1}>
+                     <i className="bx bxs-left-arrow"></i>
+                  </button>
+                  <button className="btn-page" onClick={handleNextPage} disabled={orders.length < size}>
+                     <i className="bx bxs-right-arrow"></i>
+                  </button>
+               </div>
             </Row>
          </div>
 
@@ -169,24 +177,30 @@ const OrderSupplier = () => {
                <Modal.Title>Chi tiết đơn hàng</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-               {currentOrderSupplier && (
+               {selectedOrder && (
                   <>
                      <p>
-                        <strong>Mã đơn hàng:</strong> {currentOrderSupplier.orderNumber}
+                        <strong>Mã đơn hàng:</strong> {selectedOrder.orderNumber}
                      </p>
                      <p>
-                        <strong>Ngày đặt hàng:</strong> {currentOrderSupplier.orderDate}
+                        <strong>Ngày đặt hàng:</strong> {selectedOrder.orderDate}
                      </p>
                      <p>
-                        <strong>Thời gian giao hàng:</strong> {currentOrderSupplier.expectedDelivery || 'Chưa cập nhật'}
+                        <strong>Thời gian giao hàng:</strong> {selectedOrder.expectedDelivery || 'Chưa cập nhật'}
                      </p>
                      <p>
-                        <strong>Loại:</strong> {typeOrderName[currentOrderSupplier.type] || 'Trạng thái không xác định'}
+                        <strong>Loại: </strong>
+                        {orderTypesName[selectedOrder.type] || 'Trạng thái không xác định'}
                      </p>
                      <Form.Group controlId="formOrderStatus">
                         <Form.Label>Trạng thái đơn hàng</Form.Label>
-                        <Form.Control as="select" value={selectedStatus} onChange={handleStatusChange}>
-                           {Object.entries(statusOrderName).map(([key, value]) => (
+                        <Form.Control
+                           disabled={selectedOrder.type === orderTypes.INBOUND}
+                           as="select"
+                           value={selectedStatus}
+                           onChange={handleStatusChange}
+                        >
+                           {Object.entries(orderStatusName).map(([key, value]) => (
                               <option key={key} value={key}>
                                  {value}
                               </option>
@@ -195,9 +209,9 @@ const OrderSupplier = () => {
                      </Form.Group>
                      <hr />
                      <h5>Danh sách sản phẩm:</h5>
-                     {currentOrderSupplier.orderDetailsSet.length > 0 ? (
+                     {selectedOrder.orderDetailsSet.length > 0 ? (
                         <ul>
-                           {currentOrderSupplier.orderDetailsSet.map((detail) => (
+                           {selectedOrder.orderDetailsSet.map((detail) => (
                               <li key={detail.id}>
                                  <p>
                                     <strong>Sản phẩm:</strong> {detail.product.name}
@@ -225,9 +239,11 @@ const OrderSupplier = () => {
                <Button variant="secondary" onClick={handleCloseModal}>
                   Đóng
                </Button>
-               <Button variant="primary" onClick={updateOrderStatus}>
-                  Cập nhật
-               </Button>
+               {selectedOrder && selectedOrder.type !== orderTypes.INBOUND && (
+                  <Button variant="primary" onClick={updateOrderStatus}>
+                     Cập nhật
+                  </Button>
+               )}
             </Modal.Footer>
          </Modal>
       </Container>

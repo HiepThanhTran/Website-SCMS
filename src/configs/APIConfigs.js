@@ -47,7 +47,7 @@ export const endpoints = {
    units: `${CONTEXT_PATH}/api/units`,
    ratings: `${CONTEXT_PATH}/api/ratings`,
    rankedSuppliers: `${CONTEXT_PATH}/api/ratings/ranked-suppliers`,
-   getRating: (ratingId) => `${CONTEXT_PATH}/api/ratings/${ratingId}`,
+   detailsRating: (ratingId) => `${CONTEXT_PATH}/api/ratings/${ratingId}`,
 
    invoices: `${CONTEXT_PATH}/api/invoices`,
    charge: `${CONTEXT_PATH}/api/invoices/charge`,

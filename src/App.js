@@ -12,9 +12,9 @@ import Product from './components/product/Product';
 import ProductDetails from './components/product/ProductDetails';
 import Account from './components/profile/Account';
 import Profile from './components/profile/Profile';
-import Rating from './components/rating/Rating';
-import RatingDetails from './components/rating/RatingDetails';
 import Register from './components/register/Register';
+import Supplier from './components/supplier/Supplier';
+import SupplierDetails from './components/supplier/SupplierDetails';
 import { ChatBotFlow, ChatBoxSettings } from './configs/ChatBotConfigs';
 import Footer from './layout/footer/Footer';
 import Header from './layout/header/Header';
@@ -34,8 +34,8 @@ export const routeUrl = {
 
    PRODUCT: '/products',
    PRODUCT_DETAILS: (productId) => `/products/${productId}`,
-   RATING: '/ratings',
-   RATING_DETAILS: (supplierId) => `/ratings/${supplierId}`,
+   SUPPLIER: '/suppliers',
+   SUPPLIER_DETAILS: (supplierId) => `/suppliers/${supplierId}`,
 };
 
 function App() {
@@ -51,13 +51,14 @@ function App() {
                   <Route path={routeUrl.REGISTER} element={<Register />} />
                   <Route path={routeUrl.ACCOUNT} element={<Account />} />
                   <Route path={routeUrl.PROFILE} element={<Profile />} />
-                  <Route path={routeUrl.ORDER_CUSTOMER} element={<OrderCustomer />} />
                   <Route path={routeUrl.CART} element={<WrappedCart />} />
-                  <Route path={routeUrl.ORDER_SUPPLIER} element={<OrderSupplier />} />
+                  <Route path={routeUrl.SUPPLIER} element={<Supplier />} />
+                  <Route path={routeUrl.SUPPLIER_DETAILS(':supplierId')} element={<SupplierDetails />} />
                   <Route path={routeUrl.PRODUCT} element={<Product />} />
                   <Route path={routeUrl.PRODUCT_DETAILS(':productId')} element={<ProductDetails />} />
-                  <Route path={routeUrl.RATING} element={<Rating />} />
-                  <Route path={routeUrl.RATING_DETAILS(':supplierId')} element={<RatingDetails />} />
+
+                  <Route path={routeUrl.ORDER_CUSTOMER} element={<OrderCustomer />} />
+                  <Route path={routeUrl.ORDER_SUPPLIER} element={<OrderSupplier />} />
                </Routes>
                <ConditionalFooter />
             </BrowserRouter>

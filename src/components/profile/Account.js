@@ -13,6 +13,7 @@ import './Profile.css';
 
 const Account = () => {
    const [user, dispatch] = useUser();
+
    const [profile, setProfile] = useState(user?.data);
    const [previewAvatar, setPreviewAvatar] = useState(null);
    const [confirmPassword, setConfirmPassword] = useState('');

@@ -44,7 +44,7 @@ export const orderStatusName = {
    SHIPPED: 'Đã chuyển hàng',
    DELIVERED: 'Đã giao hàng',
    CANCELLED: 'Đã hủy',
-   RETURNED: 'Đã hủy',
+   RETURNED: 'Đã trả hàng',
 };
 
 export const orderTypes = {

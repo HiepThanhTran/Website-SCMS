@@ -1,42 +1,53 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Container, Modal, Row } from 'react-bootstrap';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Button, Card, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import { authAPI, endpoints } from '../../configs/APIConfigs';
 import Loading from '../../layout/loading/Loading';
-import { orderStatusName } from '../../utils/Constatns';
+import { orderStatusName, orderTypesName } from '../../utils/Constatns';
 import './Order.css';
 
 const OrderCustomer = () => {
    const [orders, setOrders] = useState([]);
+   const [page, setPage] = useState(1);
+   const [size] = useState(9);
+   const [loading, setLoading] = useState(false);
    const [showModal, setShowModal] = useState(false);
    const [currentOrder, setCurrentOrder] = useState(null);
-   const [loading, setLoading] = useState(true);
+   const [type, setType] = useState('');
+   const [status, setStatus] = useState('');
 
-   const loadOrders = async () => {
+   const loadOrders = useCallback(async () => {
+      setLoading(true);
       try {
-         const res = await authAPI().get(endpoints.orders);
-         const data = res.data;
-         setOrders(data);
+         const res = await authAPI().get(endpoints.orders, {
+            params: { page, size, type, status },
+         });
+
+         setOrders(res.data);
       } catch (error) {
          console.error(error);
       } finally {
-         setTimeout(() => {
-            setLoading(false);
-         }, 1000);
+         setLoading(false);
       }
-   };
+   }, [page, size, type, status]);
 
    useEffect(() => {
       loadOrders();
-   }, []);
+   }, [loadOrders]);
 
    const handleCardClick = (order) => {
       setCurrentOrder(order);
       setShowModal(true);
    };
 
-   const handleCloseModal = () => {
-      setShowModal(false);
-   };
+   const handleCloseModal = () => setShowModal(false);
+
+   const handleFilterTypeChange = (e) => setType(e.target.value);
+
+   const handleFilterStatusChange = (e) => setStatus(e.target.value);
+
+   const handleNextPage = () => setPage((prevPage) => prevPage + 1);
+
+   const handlePrevPage = () => setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));
 
    if (loading) return <Loading />;
 
@@ -44,6 +55,50 @@ const OrderCustomer = () => {
       <Container className="order-container">
          <div className="shadow-lg p-3 mb-3 bg-body rounded gap-3">
             <h1 className="order__title mt-4 mb-4">Đơn hàng của bạn</h1>
+            <Row className="mb-3">
+               <Col md={6}>
+                  <Form.Group controlId="filterType">
+                     <Form.Label
+                        style={{
+                           fontSize: '1.125rem',
+                           color: 'var(--text-color)',
+                           fontWeight: '500',
+                        }}
+                     >
+                        Lọc theo loại
+                     </Form.Label>
+                     <Form.Control as="select" value={type} onChange={handleFilterTypeChange}>
+                        <option value="">Tất cả loại</option>
+                        {Object.entries(orderTypesName).map(([key, value]) => (
+                           <option key={key} value={key}>
+                              {value}
+                           </option>
+                        ))}
+                     </Form.Control>
+                  </Form.Group>
+               </Col>
+               <Col md={6}>
+                  <Form.Group controlId="filterStatus">
+                     <Form.Label
+                        style={{
+                           fontSize: '1.125rem',
+                           color: 'var(--text-color)',
+                           fontWeight: '500',
+                        }}
+                     >
+                        Lọc theo trạng thái
+                     </Form.Label>
+                     <Form.Control as="select" value={status} onChange={handleFilterStatusChange}>
+                        <option value="">Tất cả trạng thái</option>
+                        {Object.entries(orderStatusName).map(([key, value]) => (
+                           <option key={key} value={key}>
+                              {value}
+                           </option>
+                        ))}
+                     </Form.Control>
+                  </Form.Group>
+               </Col>
+            </Row>
             <Row>
                {orders.map((order) => (
                   <Col sm={12} md={4} key={order.orderNumber} className="mb-3">
@@ -65,6 +120,14 @@ const OrderCustomer = () => {
                      </Card>
                   </Col>
                ))}
+               <div className="text-center mt-4">
+                  <button className="btn-page me-2 me-3" onClick={handlePrevPage} disabled={page === 1}>
+                     <i className="bx bxs-left-arrow"></i>
+                  </button>
+                  <button className="btn-page" onClick={handleNextPage} disabled={orders.length < size}>
+                     <i className="bx bxs-right-arrow"></i>
+                  </button>
+               </div>
             </Row>
          </div>
 

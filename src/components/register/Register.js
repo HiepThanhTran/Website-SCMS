@@ -11,6 +11,7 @@ import Toast from '../../utils/Utils';
 const Register = () => {
    const [user, setUser] = useState({ userRole: roles.CUSTOMER });
    const [errors, setErrors] = useState({});
+
    const [q] = useSearchParams();
    const nav = useNavigate();
 
@@ -110,9 +111,7 @@ const Register = () => {
       }
    };
 
-   const processUpdateUser = (field, value) => {
-      setUser({ ...user, [field]: value });
-   };
+   const processUpdateUser = (field, value) => setUser({ ...user, [field]: value });
 
    const validateFields = (fields, messageError) => {
       fields.forEach((field) => {

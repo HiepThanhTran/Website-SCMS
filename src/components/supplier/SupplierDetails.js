@@ -3,78 +3,69 @@ import { Button, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 import Swal from 'sweetalert2';
-import APIs, { authAPI, endpoints } from '../../configs/APIs';
+import APIs, { authAPI, endpoints } from '../../configs/APIConfigs';
 import Loading from '../../layout/loading/Loading';
 import { useUser } from '../../store/contexts/UserContext';
-import { criteriaName, defaultImage, statusCode } from '../../utils/Constatns';
-import './Rating.css';
+import { criteriaTypesName, defaultImage, statusCode } from '../../utils/Constatns';
+import Toast from '../../utils/Utils';
+import './Supplier.css';
 
-const RatingDetails = () => {
-   const [user, dispatch] = useUser();
-   const { supplierId } = useParams();
+const SupplierDetails = () => {
+   const [user] = useUser();
+
    const [supplier, setSupplier] = useState(null);
    const [ratings, setRatings] = useState([]);
-   const [loading, setLoading] = useState(true);
-   const [visibleRatingsCount, setVisibleRatingsCount] = useState(10);
-   const [showAllRatings, setShowAllRatings] = useState(false);
    const [selectedRating, setSelectedRating] = useState(null);
+   const [criteriaValue, setCriteriaValue] = useState(Object.keys(criteriaTypesName)[0]);
+   const [contentValue, setContentValue] = useState('');
+   const [ratingValue, setRatingValue] = useState(1);
+   const [loading, setLoading] = useState(false);
+   const [visibleRatingsCount, setVisibleRatingsCount] = useState(10);
    const [isModalVisible, setIsModalVisible] = useState(false);
    const [isAddRatingModalVisible, setIsAddRatingModalVisible] = useState(false);
-   const [ratingValue, setRatingValue] = useState(1);
-   const [criteriaValue, setCriteriaValue] = useState('');
-   const [contentValue, setContentValue] = useState('');
-   const [menuVisible, setMenuVisible] = useState(null);
 
-   const loadSupplierDetail = useCallback(async () => {
+   const { supplierId } = useParams();
+
+   const loadSupplierDetails = useCallback(async () => {
       setLoading(true);
       try {
          const res = await APIs.get(endpoints.getSupplier(supplierId));
+
          setSupplier(res.data);
       } catch (error) {
          console.error(error);
       } finally {
-         setTimeout(() => {
-            setLoading(false);
-         }, 1000);
+         setLoading(false);
       }
    }, [supplierId]);
 
    const loadRatings = useCallback(async () => {
+      setLoading(true);
       try {
          const res = await APIs.get(endpoints.getRatingsOfSupplier(supplierId));
-         setRatings(res.data);
+
+         const sortedRatings = res.data.sort((a, b) => b.id - a.id);
+         setRatings(sortedRatings);
       } catch (error) {
          console.error(error);
+      } finally {
+         setLoading(false);
       }
    }, [supplierId]);
 
    useEffect(() => {
-      loadSupplierDetail();
-   }, [loadSupplierDetail]);
-
-   useEffect(() => {
+      loadSupplierDetails();
       loadRatings();
-   }, [loadRatings]);
-
-   useEffect(() => {
-      const firstCriteria = Object.keys(criteriaName)[0];
-      if (firstCriteria) {
-         setCriteriaValue(firstCriteria);
-      }
-   }, []);
+   }, [loadSupplierDetails, loadRatings]);
 
    const handleShowMore = () => {
       setVisibleRatingsCount((prevCount) => {
          const newCount = prevCount + 10;
          return newCount >= ratings.length ? ratings.length : newCount;
       });
-      setShowAllRatings(true);
    };
 
-   const handleShowLess = () => {
-      setVisibleRatingsCount(10);
-      setShowAllRatings(false);
-   };
+   const handleShowLess = () => setVisibleRatingsCount(10);
 
    const handleShowModal = (rating) => {
       setSelectedRating(rating);
@@ -87,16 +78,15 @@ const RatingDetails = () => {
    };
 
    const handleShowAddRatingModal = () => setIsAddRatingModalVisible(true);
+
    const handleCloseAddRatingModal = () => setIsAddRatingModalVisible(false);
 
    const handleRatingChange = (event) => {
       const value = Number(event.target.value);
-      setRatingValue(value < 1 ? 1 : value);
+      setRatingValue(value < 1 ? 1 : value > 5 ? 5 : value);
    };
 
-   const handleContentChange = (event) => {
-      setContentValue(event.target.value);
-   };
+   const handleContentChange = (event) => setContentValue(event.target.value);
 
    const renderStars = (rating) => {
       const stars = [];
@@ -111,14 +101,6 @@ const RatingDetails = () => {
       }
       return stars;
    };
-
-   if (loading) {
-      return <Loading />;
-   }
-
-   if (!supplier) {
-      return <Loading />;
-   }
 
    const addRating = async (e) => {
       e.preventDefault();
@@ -136,35 +118,83 @@ const RatingDetails = () => {
          if (res.status === statusCode.HTTP_200_OK) {
             setRatings((prevRatings) => [res.data, ...prevRatings]);
 
-            setRatingValue(1);
-            setCriteriaValue(Object.keys(criteriaName)[0] || '');
+            setCriteriaValue(Object.keys(criteriaTypesName)[0] || '');
             setContentValue('');
+            setRatingValue(1);
 
             handleCloseAddRatingModal();
 
-            Swal.fire({
+            Toast.fire({
                icon: 'success',
                title: 'Đánh giá thành công',
                text: 'Bạn đã gửi đánh giá thành công',
             });
          }
       } catch (error) {
-         const errorMessage = error.response?.data?.[0]?.message || 'Đã xảy ra lỗi không xác định';
-
-         Swal.fire({
+         Toast.fire({
             icon: 'error',
             title: 'Gửi đánh giá thất bại',
-            text: errorMessage,
+            text:
+               error?.response?.data.map((data) => data.message).join('\n') ||
+               'Hệ thống đang bận, vui lòng thử lại sau',
          });
       }
    };
+
+   const updateRating = async (e, ratingId) => {
+      e.stopPropagation();
+      e.preventDefault();
+   }
+
+   const deleteRating = async (e, ratingId) => {
+      e.stopPropagation();
+      e.preventDefault();
+
+      Swal.fire({
+         title: 'Xác nhận xóa đánh giá',
+         text: 'Bạn chắc chắn muốn xóa đánh giá?',
+         icon: 'warning',
+         showCancelButton: true,
+         confirmButtonText: 'Có',
+         cancelButtonText: 'Không',
+         customClass: {
+            confirmButton: 'swal2-confirm',
+         },
+      }).then(async (result) => {
+         if (result.isConfirmed) {
+            try {
+               const res = await authAPI().delete(endpoints.detailsRating(ratingId));
+
+               if (res.status === statusCode.HTTP_204_NO_CONTENT) {
+                  setRatings((prevRatings) => prevRatings.filter((rating) => rating.id !== ratingId));
+
+                  Toast.fire({
+                     icon: 'success',
+                     title: 'Xóa đánh giá thành công',
+                     text: 'Bạn đã xóa đánh giá thành công',
+                  });
+               }
+            } catch (error) {
+               Toast.fire({
+                  icon: 'error',
+                  title: 'Xóa đánh giá thất bại',
+                  text:
+                     error?.response?.data.map((data) => data.message).join('\n') ||
+                     'Hệ thống đang bận, vui lòng thử lại sau',
+               });
+            }
+         }
+      });
+   };
+
+   if (!supplier) return <Loading />;
 
    return (
       <Container className="rating-details-container">
          <div className="shadow-lg p-3 mb-3 bg-body rounded gap-3">
             <Row>
                <Col sm={12}>
-                  <h1 className="rating-details-title mb-4 mt-3">Đánh giá của người dùng</h1>
+                  <h1 className="rating-details-title mb-4 mt-3">CHI TIẾT NHÀ CUNG CẤP</h1>
                   <CSSTransition in={!loading} timeout={1000} classNames="fade" unmountOnExit>
                      <Container className="container-rating">
                         <div className="rating-details-card">
@@ -192,9 +222,8 @@ const RatingDetails = () => {
                   </CSSTransition>
 
                   <div className="rating-user">
-                     <h1 className="rating-user__total">Tổng số bình luận: {ratings.length}</h1>
-
                      <div className="add-rating-user">
+                        <h1 className="rating-user__total">Các đánh giá - {ratings.length} đánh giá</h1>
                         <i className="bx bxs-message-add" onClick={handleShowAddRatingModal}></i>
                      </div>
 
@@ -206,19 +235,29 @@ const RatingDetails = () => {
                               </div>
 
                               <div className="rating-user__content">
-                                 <h1>Username: {rating.user.username}</h1>
-                                 <p>Ngày: {rating.createdAt}</p>
-                                 <h1>Nội dung: {rating.content}</h1>
+                                 <h1>Người đánh giá: {rating.user.username}</h1>
+                                 <p>Ngày đánh giá: {rating.createdAt}</p>
+                                 <h1>Tiêu chí: {criteriaTypesName[rating.criteria]}</h1>
                                  <h1>Đánh giá: {renderStars(rating.rating)}</h1>
-                                 <h1>Tiêu chí: {criteriaName[rating.criteria]}</h1>
+                                 <h1>Nội dung: {rating.content}</h1>
                               </div>
 
                               {user?.data?.username === rating.user.username && (
                                  <div className="rating-user__dots">
                                     <div className="rating-user__dots--hover">...</div>
                                     <div className="rating-user__dots--box">
-                                       <span>Chỉnh sửa</span>
-                                       <span>Xóa</span>
+                                       <span
+                                          onClick={(e) => updateRating(e, rating.id)}
+                                          style={{ padding: '12px 12px 4px 12px' }}
+                                       >
+                                          Chỉnh sửa
+                                       </span>
+                                       <span
+                                          onClick={(e) => deleteRating(e, rating.id)}
+                                          style={{ padding: '4px 12px 12px 12px' }}
+                                       >
+                                          Xóa
+                                       </span>
                                     </div>
                                  </div>
                               )}
@@ -266,7 +305,6 @@ const RatingDetails = () => {
             </Row>
          </div>
 
-         {/* Rating Detail Modal */}
          <Modal show={isModalVisible} onHide={handleCloseModal} centered>
             <Modal.Header closeButton>
                <Modal.Title>Chi tiết đánh giá</Modal.Title>
@@ -291,7 +329,7 @@ const RatingDetails = () => {
                         />
                      </div>
                      <Form.Group className="mb-3">
-                        <Form.Label>Username</Form.Label>
+                        <Form.Label>Người đánh giá</Form.Label>
                         <Form.Control type="text" value={selectedRating.user.username || ''} readOnly />
                      </Form.Group>
 
@@ -314,7 +352,7 @@ const RatingDetails = () => {
                         <Form.Label>Tiêu chí</Form.Label>
                         <Form.Control
                            type="text"
-                           value={criteriaName[selectedRating.criteria] || selectedRating.criteria || ''}
+                           value={criteriaTypesName[selectedRating.criteria] || selectedRating.criteria || ''}
                            readOnly
                         />
                      </Form.Group>
@@ -323,7 +361,6 @@ const RatingDetails = () => {
             </Modal.Body>
          </Modal>
 
-         {/* Add Rating Modal */}
          <Modal
             style={{ height: '520px', marginTop: '100px' }}
             show={isAddRatingModalVisible}
@@ -339,7 +376,7 @@ const RatingDetails = () => {
                   <Form.Group className="mb-3">
                      <Form.Label>Tiêu chí</Form.Label>
                      <Form.Control as="select" value={criteriaValue} onChange={(e) => setCriteriaValue(e.target.value)}>
-                        {Object.entries(criteriaName).map(([key, value]) => (
+                        {Object.entries(criteriaTypesName).map(([key, value]) => (
                            <option key={key} value={key}>
                               {value}
                            </option>
@@ -384,4 +421,4 @@ const RatingDetails = () => {
    );
 };
 
-export default RatingDetails;
+export default SupplierDetails;

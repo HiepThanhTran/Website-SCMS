@@ -20,15 +20,17 @@ const stripePromise = loadStripe(
 const Cart = () => {
    const [user] = useUser();
    const [cart, cartDispatch] = useCart();
-   const [quantities, setQuantities] = useState({});
-   const [showModal, setShowModal] = useState(false);
-   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cash');
+
    const [formData, setFormData] = useState({
       customerName: user?.data?.username || '',
       customerEmail: user?.data?.email || '',
       customerPhone: user?.profile?.phone || '',
       customerAddress: user?.profile?.address || '',
    });
+   const [quantities, setQuantities] = useState({});
+
+   const [showModal, setShowModal] = useState(false);
+   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cash');
 
    const navigate = useNavigate();
    const elements = useElements();
@@ -409,12 +411,12 @@ const Cart = () => {
                      <div className="summary-content">
                         <div className="summary-item ">
                            <h3 className="summary-item__title">Tổng</h3>
-                           <span className="summary-item__value">{formattedCurrency(totalAmount) || "0 VNĐ"}</span>
+                           <span className="summary-item__value">{formattedCurrency(totalAmount) || '0 VNĐ'}</span>
                         </div>
                         <div className="summary-item ">
                            <h3 className="summary-item__title">Số lượng</h3>
                            <span className="summary-item__value">
-                              {Object.values(cart).reduce((total, item) => total + item.quantity, 0) || "0"}
+                              {Object.values(cart).reduce((total, item) => total + item.quantity, 0) || '0'}
                            </span>
                         </div>
                         <div className="summary-item ">
@@ -425,7 +427,7 @@ const Cart = () => {
 
                      <div className="summary-item ">
                         <h3 className="summary-item__title">Thành tiền</h3>
-                        <span className="summary-item__value">{formattedCurrency(totalWithFee) || "0 VNĐ"}</span>
+                        <span className="summary-item__value">{formattedCurrency(totalWithFee) || '0 VNĐ'}</span>
                      </div>
 
                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>

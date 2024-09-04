@@ -31,6 +31,10 @@ a {
    text-decoration: none;
 }
 
+h1 {
+   text-transform: uppercase;
+}
+
 button {
    border: none;
    outline: none;
