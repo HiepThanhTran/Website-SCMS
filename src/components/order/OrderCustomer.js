@@ -167,6 +167,9 @@ const OrderCustomer = () => {
                         <strong>Mã đơn hàng:</strong> {currentOrder.orderNumber}
                      </p>
                      <p>
+                        <strong>Mã hóa đơn:</strong> {currentOrder.invoiceNumber}
+                     </p>
+                     <p>
                         <strong>Ngày đặt hàng:</strong> {currentOrder.orderDate}
                      </p>
                      <p>

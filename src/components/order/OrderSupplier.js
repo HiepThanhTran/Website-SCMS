@@ -183,6 +183,9 @@ const OrderSupplier = () => {
                         <strong>Mã đơn hàng:</strong> {selectedOrder.orderNumber}
                      </p>
                      <p>
+                        <strong>Mã hóa đơn:</strong> {selectedOrder.invoiceNumber}
+                     </p>
+                     <p>
                         <strong>Ngày đặt hàng:</strong> {selectedOrder.orderDate}
                      </p>
                      <p>
