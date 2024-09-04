@@ -4,13 +4,14 @@ import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { routeUrl } from '../../App';
-import APIs, { endpoints } from '../../configs/APIs';
+import APIs, { endpoints } from '../../configs/APIConfigs';
 import { roles, rolesName, statusCode } from '../../utils/Constatns';
 import Toast from '../../utils/Utils';
 
 const Register = () => {
    const [user, setUser] = useState({ userRole: roles.CUSTOMER });
    const [errors, setErrors] = useState({});
+
    const [q] = useSearchParams();
    const nav = useNavigate();
 
@@ -110,9 +111,7 @@ const Register = () => {
       }
    };
 
-   const processUpdateUser = (field, value) => {
-      setUser({ ...user, [field]: value });
-   };
+   const processUpdateUser = (field, value) => setUser({ ...user, [field]: value });
 
    const validateFields = (fields, messageError) => {
       fields.forEach((field) => {

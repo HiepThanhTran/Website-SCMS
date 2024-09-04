@@ -4,15 +4,16 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { routeUrl } from '../../App';
-import { authAPI, endpoints } from '../../configs/APIs';
+import { authAPI, endpoints } from '../../configs/APIConfigs';
 import { useUser } from '../../store/contexts/UserContext';
 import { LOGOUT, UPDATE_USER } from '../../store/reducers/UserReducer';
 import { defaultImage, rolesName, statusCode } from '../../utils/Constatns';
-import './Profile.css';
 import Toast from '../../utils/Utils';
+import './Profile.css';
 
 const Account = () => {
    const [user, dispatch] = useUser();
+
    const [profile, setProfile] = useState(user?.data);
    const [previewAvatar, setPreviewAvatar] = useState(null);
    const [confirmPassword, setConfirmPassword] = useState('');

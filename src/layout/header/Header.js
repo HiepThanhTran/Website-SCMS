@@ -5,6 +5,7 @@ import { routeUrl } from '../../App';
 import { useCart } from '../../store/contexts/CartContext';
 import { useUser } from '../../store/contexts/UserContext';
 import { LOGOUT } from '../../store/reducers/UserReducer';
+import { roles } from '../../utils/Constatns';
 import './Header.css';
 
 const Header = () => {
@@ -48,11 +49,8 @@ const Header = () => {
                   <Nav.Link as={NavLink} to={routeUrl.PRODUCT} className="navbar-custom__menu--item">
                      Sản phẩm
                   </Nav.Link>
-                  <Nav.Link as={NavLink} to="/rating" className="navbar-custom__menu--item">
-                     Đánh giá nhà cung cấp
-                  </Nav.Link>
-                  <Nav.Link as={NavLink} to="/order-supplier" className="navbar-custom__menu--item">
-                     Xử lý đơn hàng
+                  <Nav.Link as={NavLink} to={routeUrl.SUPPLIER} className="navbar-custom__menu--item">
+                     Nhà cung cấp
                   </Nav.Link>
                </Nav>
 
@@ -78,7 +76,14 @@ const Header = () => {
                                  <NavLink className="dropdown-item" to={routeUrl.PROFILE}>
                                     Hồ sơ
                                  </NavLink>
-                                 <NavLink className="dropdown-item" to="/list-order">
+                                 <NavLink
+                                    className="dropdown-item"
+                                    to={
+                                       user?.data?.role === roles.CUSTOMER
+                                          ? routeUrl.ORDER_CUSTOMER
+                                          : routeUrl.ORDER_SUPPLIER
+                                    }
+                                 >
                                     Đơn hàng
                                  </NavLink>
                                  <button className="dropdown-item" onClick={handleLogout}>

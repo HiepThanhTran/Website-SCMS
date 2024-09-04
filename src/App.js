@@ -1,23 +1,25 @@
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import ChatBot from 'react-chatbotify';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
-import Rating from './components/rating/Rating';
-import RatingDetails from './components/rating/RatingDetails';
-import OrderCustomer from './components/order/OrderCustomer';
-import OrderSupplier from './components/order/OrderSupplier';
+import WrappedCart from './components/cart/Cart';
 import Home from './components/home/Home';
 import Login from './components/login/Login';
+import OrderCustomer from './components/order/OrderCustomer';
+import OrderSupplier from './components/order/OrderSupplier';
 import Product from './components/product/Product';
 import ProductDetails from './components/product/ProductDetails';
 import Account from './components/profile/Account';
 import Profile from './components/profile/Profile';
 import Register from './components/register/Register';
+import Supplier from './components/supplier/Supplier';
+import SupplierDetails from './components/supplier/SupplierDetails';
+import { ChatBotFlow, ChatBoxSettings } from './configs/ChatBotConfigs';
 import Footer from './layout/footer/Footer';
 import Header from './layout/header/Header';
 import { CartProvider } from './store/contexts/CartContext';
 import { UserProvider } from './store/contexts/UserContext';
-import WrappedCart from './components/cart/Cart';
 
 export const routeUrl = {
    HOME: '/',
@@ -25,14 +27,15 @@ export const routeUrl = {
    REGISTER: '/register',
    ACCOUNT: '/users',
    PROFILE: '/users/profile',
-
+   ORDER_CUSTOMER: '/orders-customer',
    CART: '/cart',
-   PRODUCT: '/product',
-   PRODUCT_DETAILS: (productId) => `/product/${productId}`,
-   ORDER: '/list-order',
-   RATING: '/rating',
-   RATING_DETAILS: (supplierId) => `/rating/${supplierId}`,
-   ORDER_SUPPLIER: '/order-supplier',
+
+   ORDER_SUPPLIER: '/orders-supplier',
+
+   PRODUCT: '/products',
+   PRODUCT_DETAILS: (productId) => `/products/${productId}`,
+   SUPPLIER: '/suppliers',
+   SUPPLIER_DETAILS: (supplierId) => `/suppliers/${supplierId}`,
 };
 
 function App() {
@@ -40,6 +43,7 @@ function App() {
       <UserProvider>
          <CartProvider>
             <BrowserRouter>
+               <ChatBot flow={ChatBotFlow} settings={ChatBoxSettings} />
                <Header />
                <Routes>
                   <Route path={routeUrl.HOME} element={<Home />} />
@@ -47,12 +51,13 @@ function App() {
                   <Route path={routeUrl.REGISTER} element={<Register />} />
                   <Route path={routeUrl.ACCOUNT} element={<Account />} />
                   <Route path={routeUrl.PROFILE} element={<Profile />} />
+                  <Route path={routeUrl.CART} element={<WrappedCart />} />
+                  <Route path={routeUrl.SUPPLIER} element={<Supplier />} />
+                  <Route path={routeUrl.SUPPLIER_DETAILS(':supplierId')} element={<SupplierDetails />} />
                   <Route path={routeUrl.PRODUCT} element={<Product />} />
                   <Route path={routeUrl.PRODUCT_DETAILS(':productId')} element={<ProductDetails />} />
-                  <Route path={routeUrl.CART} element={<WrappedCart />} />
-                  <Route path={routeUrl.ORDER} element={<OrderCustomer />} />
-                  <Route path={routeUrl.RATING} element={<Rating />} />
-                  <Route path={routeUrl.RATING_DETAILS(':supplierId')} element={<RatingDetails />} />
+
+                  <Route path={routeUrl.ORDER_CUSTOMER} element={<OrderCustomer />} />
                   <Route path={routeUrl.ORDER_SUPPLIER} element={<OrderSupplier />} />
                </Routes>
                <ConditionalFooter />

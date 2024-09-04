@@ -5,11 +5,11 @@ import { Button, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { routeUrl } from '../../App';
-import { authAPI, endpoints } from '../../configs/APIs';
+import { authAPI, endpoints } from '../../configs/APIConfigs';
 import { initialCart, useCart } from '../../store/contexts/CartContext';
 import { useUser } from '../../store/contexts/UserContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';
-import { defaultImage, statusCode } from '../../utils/Constatns';
+import { defaultImage, roles, statusCode } from '../../utils/Constatns';
 import Toast from '../../utils/Utils';
 import './Cart.css';
 
@@ -20,15 +20,17 @@ const stripePromise = loadStripe(
 const Cart = () => {
    const [user] = useUser();
    const [cart, cartDispatch] = useCart();
-   const [quantities, setQuantities] = useState({});
-   const [showModal, setShowModal] = useState(false);
-   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cash');
+
    const [formData, setFormData] = useState({
       customerName: user?.data?.username || '',
       customerEmail: user?.data?.email || '',
       customerPhone: user?.profile?.phone || '',
       customerAddress: user?.profile?.address || '',
    });
+   const [quantities, setQuantities] = useState({});
+
+   const [showModal, setShowModal] = useState(false);
+   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cash');
 
    const navigate = useNavigate();
    const elements = useElements();
@@ -178,7 +180,7 @@ const Cart = () => {
       });
 
       let order = {
-         type: 'OUTBOUND',
+         type: user?.data?.role === roles.SUPPLIER ? 'INBOUND' : 'OUTBOUND',
          orderDetails: Object.values(cart).map((item) => ({
             productId: item.product.id,
             quantity: item.quantity,
@@ -246,8 +248,11 @@ const Cart = () => {
 
             if (stripeError) {
                Swal.hideLoading();
+               const message = stripeError.message.includes('insufficient funds')
+                  ? 'Số dư không đủ'
+                  : stripeError?.message;
                Swal.showValidationMessage(
-                  `Thanh toán thất bại: ${stripeError.message || 'Hệ thống đang bận, vui lòng thử lại sau!'}`,
+                  `Thanh toán thất bại: ${message || 'Hệ thống đang bận, vui lòng thử lại sau!'}`,
                );
                return;
             }
@@ -257,7 +262,7 @@ const Cart = () => {
          } catch (error) {
             Swal.hideLoading();
             Swal.showValidationMessage(
-               `Thanh toán thất bại: ${
+               `Xác thực thanh toán thất bại: ${
                   error?.response?.data.map((data) => data.message).join('\n') ||
                   'Hệ thống đang bận, vui lòng thử lại sau!'
                }`,
@@ -406,12 +411,12 @@ const Cart = () => {
                      <div className="summary-content">
                         <div className="summary-item ">
                            <h3 className="summary-item__title">Tổng</h3>
-                           <span className="summary-item__value">{formattedCurrency(totalAmount) || "0 VNĐ"}</span>
+                           <span className="summary-item__value">{formattedCurrency(totalAmount) || '0 VNĐ'}</span>
                         </div>
                         <div className="summary-item ">
                            <h3 className="summary-item__title">Số lượng</h3>
                            <span className="summary-item__value">
-                              {Object.values(cart).reduce((total, item) => total + item.quantity, 0) || "0"}
+                              {Object.values(cart).reduce((total, item) => total + item.quantity, 0) || '0'}
                            </span>
                         </div>
                         <div className="summary-item ">
@@ -422,7 +427,7 @@ const Cart = () => {
 
                      <div className="summary-item ">
                         <h3 className="summary-item__title">Thành tiền</h3>
-                        <span className="summary-item__value">{formattedCurrency(totalWithFee) || "0 VNĐ"}</span>
+                        <span className="summary-item__value">{formattedCurrency(totalWithFee) || '0 VNĐ'}</span>
                      </div>
 
                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>

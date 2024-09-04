@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { routeUrl } from '../../App';
-import { authAPI, endpoints } from '../../configs/APIs';
+import { authAPI, endpoints } from '../../configs/APIConfigs';
 import { useUser } from '../../store/contexts/UserContext';
 import { UPDATE_USER } from '../../store/reducers/UserReducer';
 import { roles, statusCode } from '../../utils/Constatns';
@@ -14,13 +14,12 @@ import ProfileSupplier from './ProfileSupplier';
 
 const Profile = () => {
    const [user, dispatch] = useUser();
+
    const [profile, setProfile] = useState(user?.profile);
 
    const navigate = useNavigate();
 
-   const processUpdateProfile = (field, value) => {
-      setProfile({ ...profile, [field]: value });
-   };
+   const processUpdateProfile = (field, value) => setProfile({ ...profile, [field]: value });
 
    const handleUpdateProfile = async (e) => {
       e.preventDefault();

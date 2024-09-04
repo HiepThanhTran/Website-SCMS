@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import APIs, { authAPI, endpoints } from '../../configs/APIs';
+import APIs, { authAPI, endpoints } from '../../configs/APIConfigs';
 import Loading from '../../layout/loading/Loading';
 import { useCart } from '../../store/contexts/CartContext';
 import { UPDATE_CART } from '../../store/reducers/CartReducer';
@@ -12,6 +12,7 @@ import './Product.css';
 
 const ProductDetails = () => {
    const [cart, dispatch] = useCart();
+   
    const [product, setProduct] = useState(null);
    const [quantity, setQuantity] = useState(1);
 
@@ -98,7 +99,7 @@ const ProductDetails = () => {
 
                         <Col sm={7}>
                            <div className="product-detail__content d-flex flex-column justify-content-between h-100">
-                              <h1 className="product-detail__content--name">{product.name}</h1>
+                              <h2 className="product-detail__content--name">{product.name}</h2>
                               <p className="product-detail__content--description">
                                  Mô tả sản phẩm: {product.description}
                               </p>
