@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { authAPI, endpoints } from '../../configs/APIConfigs';
 import { defaultImage, statusCode } from '../../utils/Constatns';
 import Toast from '../../utils/Utils';
+import Swal from 'sweetalert2';
 import './Product.css';
 import { useUser } from '../../store/contexts/UserContext';
 
@@ -115,25 +116,92 @@ const ProductSupplier = () => {
         }));
     };
 
-    const handleAddProduct = async () => {
+    const handlePublishProduct = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('name', newProduct.name);
+        formData.append('description', newProduct.description);
+        formData.append('price', newProduct.price);
+        formData.append('expiryDate', newProduct.expiryDate);
+        formData.append('unit', newProduct.unit);
+        formData.append('category', newProduct.category);
+        formData.append('tags', newProduct.tags);
+
         try {
-            await authAPI().post(endpoints.addProduct, newProduct);
-            Toast.success('Sản phẩm đã được thêm thành công!');
-            setNewProduct({
-                name: '',
-                description: '',
-                price: '',
-                expiryDate: '',
-                unit: '',
-                category: '',
-                tags: []
+            let res = await authAPI().post(endpoints.products, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
             });
-            handleCloseModal();
-            loadProducts();
+
+            if (res.status === statusCode.HTTP_200_OK) {
+                setProducts((prevProducts) => [res.data, ...prevProducts]);
+                setNewProduct({
+                    name: '',
+                    description: '',
+                    price: '',
+                    expiryDate: '',
+                    unit: '',
+                    category: '',
+                    tags: [],
+                });
+                handleCloseModal();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: 'Thêm sản phẩm thành công.',
+                    confirmButtonText: 'OK'
+                });
+            }
         } catch (error) {
-            console.error('Error adding product:', error);
-            Toast.error('Thêm sản phẩm thất bại!');
+            Toast.fire({
+                icon: 'error',
+                title: 'Xóa đánh giá thất bại',
+                text:
+                    error?.response?.data.map((data) => data.message).join('\n') ||
+                    'Hệ thống đang bận, vui lòng thử lại sau',
+            });
         }
+    };
+
+    const handleUnpublishProduct = async (e, productId) => {
+        e.stopPropagation();
+        e.preventDefault();
+
+        Swal.fire({
+            title: 'Xác nhận ẩn sản phẩm',
+            text: 'Bạn chắc chắn muốn  ẩn sản phẩm này?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không',
+            customClass: {
+                confirmButton: 'swal2-confirm',
+            },
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const res = await authAPI().delete(endpoints.unpublishProduct(productId));
+
+                    if (res.status === statusCode.HTTP_204_NO_CONTENT) {
+                        setProducts((prevProducts) => prevProducts.filter((product) => product.id !== productId));
+
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Ẩn sản phẩm thành công',
+                            text: 'Bạn đã ẩn sản phẩm thành công',
+                        });
+                    }
+                } catch (error) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Ẩn sản phẩm thất bại',
+                        text:
+                            error?.response?.data.map((data) => data.message).join('\n') ||
+                            'Hệ thống đang bận, vui lòng thử lại sau',
+                    });
+                }
+            }
+        });
     };
 
     return (
@@ -282,6 +350,13 @@ const ProductSupplier = () => {
                                                             })}
                                                         </span>
                                                     </div>
+
+                                                    <div className='product-card-unpublish'>
+                                                        <i 
+                                                            onClick={() => handleUnpublishProduct(product.id)}
+                                                            class='bx bxs-low-vision'
+                                                            ></i>
+                                                    </div>
                                                 </div>
                                             </Col>
                                         ))}
@@ -337,7 +412,7 @@ const ProductSupplier = () => {
                         <Form.Group className="mb-3">
                             <Form.Label>Giá</Form.Label>
                             <Form.Control
-                                type="number"
+                                type="text"
                                 name="price"
                                 value={newProduct.price}
                                 onChange={handleNewProductChange}
@@ -405,7 +480,13 @@ const ProductSupplier = () => {
                     <Button variant="secondary" onClick={handleCloseModal}>
                         Đóng
                     </Button>
-                    <Button variant="primary" onClick={handleAddProduct}>
+                    <Button
+                        style={{
+                            border: 'none',
+                            backgroundColor: 'var(--primary-color)',
+                        }}
+                        variant="primary"
+                        onClick={handlePublishProduct}>
                         Thêm sản phẩm
                     </Button>
                 </Modal.Footer>

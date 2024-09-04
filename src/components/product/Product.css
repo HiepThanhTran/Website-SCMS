@@ -267,3 +267,18 @@
 .add-product i:hover{
    cursor: pointer;
 }
+
+.product-card-unpublish{
+   display: flex;
+   justify-content: flex-end;
+}
+
+.product-card-unpublish i{
+   font-size: 1.5rem;
+   color: var(--primary-color);
+   margin: 5px 20px 10px 0;
+}
+
+.product-card-unpublish i:hover{
+   cursor: pointer;
+}
