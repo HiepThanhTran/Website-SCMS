@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Card, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import { authAPI, endpoints } from '../../configs/APIConfigs';
 import Loading from '../../layout/loading/Loading';
-import { orderStatusName, orderTypesName } from '../../utils/Constatns';
+import { orderStatusName, orderTypesName, statusCode } from '../../utils/Constatns';
+import Toast from '../../utils/Utils';
 import './Order.css';
 
 const OrderCustomer = () => {
@@ -37,6 +38,30 @@ const OrderCustomer = () => {
    const handleCardClick = (order) => {
       setCurrentOrder(order);
       setShowModal(true);
+   };
+
+   const handleCancelOrder = async (e) => {
+      e.preventDefault();
+
+      try {
+         const res = await authAPI().patch(endpoints.cancelOrder(currentOrder.id));
+
+         if (res.status === statusCode.HTTP_200_OK) {
+            Toast.fire({
+               icon: 'success',
+               title: 'Hủy đơn hàng thành công',
+            });
+            loadOrders();
+         }
+      } catch (error) {
+         Toast.fire({
+            icon: 'error',
+            title: 'Hủy đơn hàng thất bại',
+            text:
+               error?.response?.data.map((data) => data.message).join('\n') ||
+               'Hệ thống đang bận, vui lòng thử lại sau',
+         });
+      }
    };
 
    const handleCloseModal = () => setShowModal(false);
@@ -182,6 +207,9 @@ const OrderCustomer = () => {
             <Modal.Footer>
                <Button variant="secondary" onClick={handleCloseModal}>
                   Đóng
+               </Button>
+               <Button variant="primary" onClick={handleCancelOrder}>
+                  Hủy đơn hàng
                </Button>
             </Modal.Footer>
          </Modal>
