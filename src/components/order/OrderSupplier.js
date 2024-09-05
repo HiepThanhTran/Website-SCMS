@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Button, Card, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import { authAPI, endpoints } from '../../configs/APIConfigs';
-import Loading from '../../layout/loading/Loading';
 import { useUser } from '../../store/contexts/UserContext';
 import { orderStatusName, orderTypes, orderTypesName, statusCode } from '../../utils/Constatns';
 import Toast from '../../utils/Utils';
@@ -13,14 +12,13 @@ const OrderSupplier = () => {
    const [selectedOrder, setSelectedOrder] = useState(null);
    const [page, setPage] = useState(1);
    const [size] = useState(9);
-   const [loading, setLoading] = useState(false);
+
    const [showModal, setShowModal] = useState(false);
    const [selectedStatus, setSelectedStatus] = useState('');
    const [type, setType] = useState('');
    const [status, setStatus] = useState('');
 
    const loadOrdersSupplier = useCallback(async () => {
-      setLoading(true);
       try {
          const res = await authAPI().get(endpoints.getOrdersOfSupplier(user?.profile?.id), {
             params: { page, size, type, status },
@@ -29,8 +27,6 @@ const OrderSupplier = () => {
          setOrders(res.data);
       } catch (error) {
          console.error(error);
-      } finally {
-         setLoading(false);
       }
    }, [user?.profile?.id, page, size, type, status]);
 
@@ -82,8 +78,6 @@ const OrderSupplier = () => {
    const handleNextPage = () => setPage((prevPage) => prevPage + 1);
 
    const handlePrevPage = () => setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));
-
-   if (loading) return <Loading />;
 
    return (
       <Container className="order-supplier-container">

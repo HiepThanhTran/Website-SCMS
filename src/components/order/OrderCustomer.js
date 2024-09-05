@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Card, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import { authAPI, endpoints } from '../../configs/APIConfigs';
-import Loading from '../../layout/loading/Loading';
 import { orderStatusName, orderTypesName, statusCode } from '../../utils/Constatns';
 import Toast from '../../utils/Utils';
 import './Order.css';
@@ -10,14 +9,12 @@ const OrderCustomer = () => {
    const [orders, setOrders] = useState([]);
    const [page, setPage] = useState(1);
    const [size] = useState(9);
-   const [loading, setLoading] = useState(false);
    const [showModal, setShowModal] = useState(false);
    const [currentOrder, setCurrentOrder] = useState(null);
    const [type, setType] = useState('');
    const [status, setStatus] = useState('');
 
    const loadOrders = useCallback(async () => {
-      setLoading(true);
       try {
          const res = await authAPI().get(endpoints.orders, {
             params: { page, size, type, status },
@@ -26,8 +23,6 @@ const OrderCustomer = () => {
          setOrders(res.data);
       } catch (error) {
          console.error(error);
-      } finally {
-         setLoading(false);
       }
    }, [page, size, type, status]);
 
@@ -73,8 +68,6 @@ const OrderCustomer = () => {
    const handleNextPage = () => setPage((prevPage) => prevPage + 1);
 
    const handlePrevPage = () => setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));
-
-   if (loading) return <Loading />;
 
    return (
       <Container className="order-container">
