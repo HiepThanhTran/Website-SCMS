@@ -19,6 +19,7 @@ import Footer from './layout/footer/Footer';
 import Header from './layout/header/Header';
 import { CartProvider } from './store/contexts/CartContext';
 import { UserProvider } from './store/contexts/UserContext';
+import ProductSupplier from './components/product/ProductSupplier';
 
 export const routeUrl = {
    HOME: '/',
@@ -35,6 +36,7 @@ export const routeUrl = {
    PRODUCT_DETAILS: (productId) => `/products/${productId}`,
    SUPPLIER: '/suppliers',
    SUPPLIER_DETAILS: (supplierId) => `/suppliers/${supplierId}`,
+   PRODUCT_SUPPLIER: '/products-supplier',
 };
 
 function App() {
@@ -58,6 +60,7 @@ function App() {
 
                   <Route path={routeUrl.ORDER_CUSTOMER} element={<OrderCustomer />} />
                   <Route path={routeUrl.ORDER_SUPPLIER} element={<OrderSupplier />} />
+                  <Route path={routeUrl.PRODUCT_SUPPLIER} element={<ProductSupplier />} />
                </Routes>
                <ConditionalFooter />
             </BrowserRouter>

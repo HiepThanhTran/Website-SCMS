@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import APIs, { authAPI, endpoints } from '../../configs/APIConfigs';
 import Loading from '../../layout/loading/Loading';
 import { useUser } from '../../store/contexts/UserContext';
-import { criteriaTypesName, defaultImage, statusCode } from '../../utils/Constatns';
+import { criteriaTypesName, criteriaType, defaultImage, statusCode } from '../../utils/Constatns';
 import Toast from '../../utils/Utils';
 import './Supplier.css';
 
@@ -24,13 +24,31 @@ const SupplierDetails = () => {
    const [isModalVisible, setIsModalVisible] = useState(false);
    const [isAddRatingModalVisible, setIsAddRatingModalVisible] = useState(false);
 
+   const [isEditRatingModalVisible, setIsEditRatingModalVisible] = useState(false);
+   const [editContentValue, setEditContentValue] = useState('');
+   const [editRatingValue, setEditRatingValue] = useState(1);
+   const [editCriteriaValue, setEditCriteriaValue] = useState('');
+   const [editRatingId, setEditRatingId] = useState(null);
+
+   const handleShowEditRatingModal = (rating) => {
+      setEditContentValue(rating.content);
+      setEditRatingValue(rating.rating);
+      setEditCriteriaValue(rating.criteria);
+      setEditRatingId(rating.id);
+      setIsEditRatingModalVisible(true);
+   };
+
+   const handleCloseEditRatingModal = () => {
+      setIsEditRatingModalVisible(false);
+      setEditRatingId(null);
+   };
+
    const { supplierId } = useParams();
 
    const loadSupplierDetails = useCallback(async () => {
       setLoading(true);
       try {
          const res = await APIs.get(endpoints.getSupplier(supplierId));
-
          setSupplier(res.data);
       } catch (error) {
          console.error(error);
@@ -141,11 +159,44 @@ const SupplierDetails = () => {
       }
    };
 
-   const updateRating = async (e, ratingId) => {
-      e.stopPropagation();
+   const updateRating = async (e) => {
       e.preventDefault();
-   }
 
+      handleCloseEditRatingModal();
+      const formData = new FormData();
+      formData.append('criteria', editCriteriaValue);
+      formData.append('content', editContentValue);
+      formData.append('rating', editRatingValue);
+  
+      try {
+          const res = await authAPI().post(endpoints.detailsRating(editRatingId), formData, {
+              headers: { 'Content-Type': 'multipart/form-data' },
+          });
+  
+          if (res.status === statusCode.HTTP_200_OK) {
+              setRatings((prevRatings) => 
+                  prevRatings.map((rating) =>
+                      rating.id === editRatingId ? res.data : rating
+                  )
+              );
+  
+              Toast.fire({
+                  icon: 'success',
+                  title: 'Cập nhật đánh giá thành công',
+                  text: 'Bạn đã cập nhật đánh giá thành công',
+              });
+          }
+      } catch (error) {
+          Toast.fire({
+              icon: 'error',
+              title: 'Cập nhật đánh giá thất bại',
+              text: 
+                  error?.response?.data.map((data) => data.message).join('\n') ||
+                  'Hệ thống đang bận, vui lòng thử lại sau',
+          });
+      }
+  };
+  
    const deleteRating = async (e, ratingId) => {
       e.stopPropagation();
       e.preventDefault();
@@ -247,7 +298,10 @@ const SupplierDetails = () => {
                                     <div className="rating-user__dots--hover">...</div>
                                     <div className="rating-user__dots--box">
                                        <span
-                                          onClick={(e) => updateRating(e, rating.id)}
+                                          onClick={(e) => {
+                                             e.stopPropagation();
+                                             handleShowEditRatingModal(rating);
+                                          }}
                                           style={{ padding: '12px 12px 4px 12px' }}
                                        >
                                           Chỉnh sửa
@@ -417,6 +471,80 @@ const SupplierDetails = () => {
                </Form>
             </Modal.Body>
          </Modal>
+
+         {/* Modal Edit Rating */}
+         <Modal
+            style={{ height: '520px', marginTop: '100px' }}
+            show={isEditRatingModalVisible}
+            onHide={handleCloseEditRatingModal}
+            centered
+            scrollable
+         >
+            <Modal.Header closeButton>
+               <Modal.Title>Chỉnh sửa đánh giá</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+               <Form>
+                  <Form.Group className="mb-3">
+                     <Form.Label>Tiêu chí</Form.Label>
+                     <Form.Control
+                        as="select"
+                        value={editCriteriaValue}
+                        onChange={(e) => setEditCriteriaValue(e.target.value)}
+                     >
+                        {Object.entries(criteriaTypesName).map(([key, value]) => (
+                           <option key={key} value={key}>
+                              {value}
+                           </option>
+                        ))}
+                     </Form.Control>
+                  </Form.Group>
+
+                  <Form.Group className="mb-3">
+                     <Form.Label>Nội dung</Form.Label>
+                     <Form.Control
+                        as="textarea"
+                        rows={3}
+                        value={editContentValue}
+                        onChange={(e) => setEditContentValue(e.target.value)}
+                     />
+                  </Form.Group>
+
+                  <Form.Group className="mb-3">
+                     <Form.Label>Đánh giá</Form.Label>
+                     <Form.Control
+                        type="number"
+                        min="1"
+                        max="5"
+                        value={editRatingValue}
+                        onChange={(e) => setEditRatingValue(Number(e.target.value))}
+                     />
+                  </Form.Group>
+
+                  <div
+                     style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                     }}
+                  >
+                     <Button
+                        onClick={updateRating}
+                        style={{
+                           backgroundColor: 'var(--primary-color)',
+                           border: 'none',
+                           fontWeight: 500,
+                           width: '120px',
+                        }}
+                        variant="primary"
+                     >
+                        Cập nhật
+                     </Button>
+                  </div>
+               </Form>
+            </Modal.Body>
+         </Modal>
+
       </Container>
    );
 };
