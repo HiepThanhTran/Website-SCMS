@@ -3,7 +3,6 @@ import { Col, Container, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { routeUrl } from '../../App';
 import APIs, { endpoints } from '../../configs/APIConfigs';
-import Loading from '../../layout/loading/Loading';
 import './Supplier.css';
 
 const Supplier = () => {
@@ -11,20 +10,16 @@ const Supplier = () => {
 
    const [page, setPage] = useState(1);
    const [size] = useState(12);
-   const [loading, setLoading] = useState(true);
 
    const navigate = useNavigate();
 
    const loadSuppliers = useCallback(async () => {
-      setLoading(true);
       try {
          const res = await APIs.get(endpoints.suppliers, { params: { page, size } });
 
          setSuppliers(res.data);
       } catch (error) {
          console.error(error);
-      } finally {
-         setLoading(false);
       }
    }, [page, size]);
 
@@ -35,8 +30,6 @@ const Supplier = () => {
    const handleNextPage = () => setPage((prevPage) => prevPage + 1);
 
    const handlePrevPage = () => setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));
-
-   if (loading) return <Loading />;
 
    return (
       <Container className="rating-container">
@@ -57,17 +50,17 @@ const Supplier = () => {
                               </div>
 
                               <div className="supplier-card__item">
-                                 <i class='bx bx-current-location'></i>
+                                 <i class="bx bx-current-location"></i>
                                  <span>Địa chỉ: {supplier.address}</span>
                               </div>
 
                               <div className="supplier-card__item">
-                                 <i class='bx bxs-phone'></i>
+                                 <i class="bx bxs-phone"></i>
                                  <span>SĐT: {supplier.phone}</span>
                               </div>
 
                               <div className="supplier-card__item">
-                                 <i class='bx bxs-contact' ></i>
+                                 <i class="bx bxs-contact"></i>
                                  <span>Thông tin liên hệ: {supplier.contactInfo}</span>
                               </div>
                            </div>

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import cookie from 'react-cookies';
+import { statusCode } from '../utils/Constatns';
 
 const CONTEXT_PATH = '/harmony';
 const BASE_URL = 'http://localhost:8080';
@@ -50,8 +51,10 @@ export const endpoints = {
    detailsRating: (ratingId) => `${CONTEXT_PATH}/api/ratings/${ratingId}`,
 
    invoices: `${CONTEXT_PATH}/api/invoices`,
+   getInvoiceByInvoiceNumber: (invoiceNumber) => `${CONTEXT_PATH}/api/invoices/${invoiceNumber}`,
    charge: `${CONTEXT_PATH}/api/invoices/charge`,
    orders: `${CONTEXT_PATH}/api/orders`,
+   getOrderByOrderNumber: (orderNumber) => `${CONTEXT_PATH}/api/orders/${orderNumber.toString()}`,
    checkout: `${CONTEXT_PATH}/api/orders/checkout`,
    checkin: `${CONTEXT_PATH}/api/orders/checkin`,
    cancelOrder: (orderId) => `${CONTEXT_PATH}/api/orders/${orderId}/cancel`,
@@ -69,4 +72,41 @@ export const authAPI = () => {
          Authorization: cookie.load('token'),
       },
    });
+};
+
+export const findOrderByOrderNumber = async (orderNumber) => {
+   try {
+      const res = await authAPI().get(endpoints.getOrderByOrderNumber(orderNumber));
+
+      if (res.status === statusCode.HTTP_200_OK) {
+         return res.data;
+      }
+
+      return null;
+   } catch (error) {
+      console.log(error);
+      if (error.response.status === statusCode.HTTP_401_UNAUTHORIZED) {
+         return 'Vui lòng đăng nhập để tìm kiếm';
+      }
+
+      return "Không tìm thấy đơn hàng. Vui lòng thử lại!"
+   }
+};
+
+export const findInvoiceByInvoiceNumber = async (invoiceNumber) => {
+   try {
+      const res = await authAPI().get(endpoints.getInvoiceByInvoiceNumber(invoiceNumber));
+
+      if (res.status === statusCode.HTTP_200_OK) {
+         return res.data;
+      }
+
+      return null;
+   } catch (error) {
+      if (error.response.status === statusCode.HTTP_401_UNAUTHORIZED) {
+         return 'Vui lòng đăng nhập để tìm kiếm';
+      }
+
+      return 'Không tìm thấy hóa đơn. Vui lòng thử lại!';
+   }
 };

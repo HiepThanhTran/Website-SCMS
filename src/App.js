@@ -1,26 +1,25 @@
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import ChatBot from 'react-chatbotify';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import WrappedCart from './components/cart/Cart';
 import Home from './components/home/Home';
+import MyChatBot from './components/home/MyChatBot';
 import Login from './components/login/Login';
 import OrderCustomer from './components/order/OrderCustomer';
 import OrderSupplier from './components/order/OrderSupplier';
 import Product from './components/product/Product';
 import ProductDetails from './components/product/ProductDetails';
+import ProductSupplier from './components/product/ProductSupplier';
 import Account from './components/profile/Account';
 import Profile from './components/profile/Profile';
 import Register from './components/register/Register';
 import Supplier from './components/supplier/Supplier';
 import SupplierDetails from './components/supplier/SupplierDetails';
-import { ChatBotFlow, ChatBoxSettings } from './configs/ChatBotConfigs';
 import Footer from './layout/footer/Footer';
 import Header from './layout/header/Header';
 import { CartProvider } from './store/contexts/CartContext';
 import { UserProvider } from './store/contexts/UserContext';
-import ProductSupplier from './components/product/ProductSupplier';
 
 export const routeUrl = {
    HOME: '/',
@@ -45,7 +44,7 @@ function App() {
       <UserProvider>
          <CartProvider>
             <BrowserRouter>
-               <ChatBot flow={ChatBotFlow} settings={ChatBoxSettings} />
+               <MyChatBot />
                <Header />
                <Routes>
                   <Route path={routeUrl.HOME} element={<Home />} />

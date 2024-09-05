@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Button, Card, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import { authAPI, endpoints } from '../../configs/APIConfigs';
-import Loading from '../../layout/loading/Loading';
 import { useUser } from '../../store/contexts/UserContext';
 import { orderStatusName, orderTypes, orderTypesName, statusCode } from '../../utils/Constatns';
 import Toast from '../../utils/Utils';
@@ -13,14 +12,13 @@ const OrderSupplier = () => {
    const [selectedOrder, setSelectedOrder] = useState(null);
    const [page, setPage] = useState(1);
    const [size] = useState(9);
-   const [loading, setLoading] = useState(false);
+
    const [showModal, setShowModal] = useState(false);
    const [selectedStatus, setSelectedStatus] = useState('');
    const [type, setType] = useState('');
    const [status, setStatus] = useState('');
 
    const loadOrdersSupplier = useCallback(async () => {
-      setLoading(true);
       try {
          const res = await authAPI().get(endpoints.getOrdersOfSupplier(user?.profile?.id), {
             params: { page, size, type, status },
@@ -29,8 +27,6 @@ const OrderSupplier = () => {
          setOrders(res.data);
       } catch (error) {
          console.error(error);
-      } finally {
-         setLoading(false);
       }
    }, [user?.profile?.id, page, size, type, status]);
 
@@ -52,7 +48,7 @@ const OrderSupplier = () => {
             });
 
             loadOrdersSupplier();
-            handleCloseModal();
+            setShowModal(false);
          }
       } catch (error) {
          Toast.fire({
@@ -69,10 +65,6 @@ const OrderSupplier = () => {
       setShowModal(true);
    };
 
-   const handleCloseModal = () => setShowModal(false);
-
-   const handleStatusChange = (e) => setSelectedStatus(e.target.value);
-
    const handleFilterTypeChange = (e) => {
       setType(e.target.value);
       setPage(1);
@@ -86,8 +78,6 @@ const OrderSupplier = () => {
    const handleNextPage = () => setPage((prevPage) => prevPage + 1);
 
    const handlePrevPage = () => setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));
-
-   if (loading) return <Loading />;
 
    return (
       <Container className="order-supplier-container">
@@ -172,7 +162,7 @@ const OrderSupplier = () => {
             </Row>
          </div>
 
-         <Modal show={showModal} onHide={handleCloseModal} className="custom-modal">
+         <Modal show={showModal} onHide={() => setShowModal(false)} className="custom-modal">
             <Modal.Header closeButton>
                <Modal.Title>Chi tiết đơn hàng</Modal.Title>
             </Modal.Header>
@@ -181,6 +171,9 @@ const OrderSupplier = () => {
                   <>
                      <p>
                         <strong>Mã đơn hàng:</strong> {selectedOrder.orderNumber}
+                     </p>
+                     <p>
+                        <strong>Mã hóa đơn:</strong> {selectedOrder.invoiceNumber}
                      </p>
                      <p>
                         <strong>Ngày đặt hàng:</strong> {selectedOrder.orderDate}
@@ -198,7 +191,7 @@ const OrderSupplier = () => {
                            disabled={selectedOrder.type === orderTypes.INBOUND}
                            as="select"
                            value={selectedStatus}
-                           onChange={handleStatusChange}
+                           onChange={(e) => setSelectedStatus(e.target.value)}
                         >
                            {Object.entries(orderStatusName).map(([key, value]) => (
                               <option key={key} value={key}>
@@ -236,7 +229,7 @@ const OrderSupplier = () => {
                )}
             </Modal.Body>
             <Modal.Footer>
-               <Button variant="secondary" onClick={handleCloseModal}>
+               <Button variant="secondary" onClick={() => setShowModal(false)}>
                   Đóng
                </Button>
                {selectedOrder && selectedOrder.type !== orderTypes.INBOUND && (
