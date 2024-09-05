@@ -52,7 +52,7 @@ const OrderSupplier = () => {
             });
 
             loadOrdersSupplier();
-            handleCloseModal();
+            setShowModal(false);
          }
       } catch (error) {
          Toast.fire({
@@ -68,10 +68,6 @@ const OrderSupplier = () => {
       setSelectedOrder(order);
       setShowModal(true);
    };
-
-   const handleCloseModal = () => setShowModal(false);
-
-   const handleStatusChange = (e) => setSelectedStatus(e.target.value);
 
    const handleFilterTypeChange = (e) => {
       setType(e.target.value);
@@ -172,7 +168,7 @@ const OrderSupplier = () => {
             </Row>
          </div>
 
-         <Modal show={showModal} onHide={handleCloseModal} className="custom-modal">
+         <Modal show={showModal} onHide={() => setShowModal(false)} className="custom-modal">
             <Modal.Header closeButton>
                <Modal.Title>Chi tiết đơn hàng</Modal.Title>
             </Modal.Header>
@@ -201,7 +197,7 @@ const OrderSupplier = () => {
                            disabled={selectedOrder.type === orderTypes.INBOUND}
                            as="select"
                            value={selectedStatus}
-                           onChange={handleStatusChange}
+                           onChange={(e) => setSelectedStatus(e.target.value)}
                         >
                            {Object.entries(orderStatusName).map(([key, value]) => (
                               <option key={key} value={key}>
@@ -239,7 +235,7 @@ const OrderSupplier = () => {
                )}
             </Modal.Body>
             <Modal.Footer>
-               <Button variant="secondary" onClick={handleCloseModal}>
+               <Button variant="secondary" onClick={() => setShowModal(false)}>
                   Đóng
                </Button>
                {selectedOrder && selectedOrder.type !== orderTypes.INBOUND && (

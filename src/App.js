@@ -4,22 +4,22 @@ import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import WrappedCart from './components/cart/Cart';
 import Home from './components/home/Home';
+import MyChatBot from './components/home/MyChatBot';
 import Login from './components/login/Login';
 import OrderCustomer from './components/order/OrderCustomer';
 import OrderSupplier from './components/order/OrderSupplier';
 import Product from './components/product/Product';
 import ProductDetails from './components/product/ProductDetails';
+import ProductSupplier from './components/product/ProductSupplier';
 import Account from './components/profile/Account';
 import Profile from './components/profile/Profile';
 import Register from './components/register/Register';
 import Supplier from './components/supplier/Supplier';
 import SupplierDetails from './components/supplier/SupplierDetails';
-import MyChatBot from './components/home/MyChatBot';
 import Footer from './layout/footer/Footer';
 import Header from './layout/header/Header';
 import { CartProvider } from './store/contexts/CartContext';
 import { UserProvider } from './store/contexts/UserContext';
-import ProductSupplier from './components/product/ProductSupplier';
 
 export const routeUrl = {
    HOME: '/',
